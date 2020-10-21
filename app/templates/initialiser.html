@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+	<form name="login" action="" method="post" enctype="multipart/form-data" novalidate>
+   <fieldset class="form-group">
+     
+	   {{ form.hidden_tag() }}       
+	   
+		   <p> {{ form.col_name.label }}</br>
+			   {{ form.col_name }}
+			   {% for error in form.col_name.errors %}
+				<span class="error-message">{{ error }}</span>
+			   {% endfor %}
+		   </p>
+	   
+		   <p> {{ form.file_input.label }}</br>
+			   {{ form.file_input }}
+			   {% for error in form.file_input.errors %}
+				<span class="error-message">{{ error }}</span>
+			   {% endfor %}
+		   </p>
+
+		   <p> 
+			   {{ form.submit() }}
+		   </p>
+	   
+   </fieldset>
+   </form>
+</div>
+{% endblock %}

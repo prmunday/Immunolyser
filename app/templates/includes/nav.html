@@ -1,0 +1,11 @@
+    <header>
+        <nav>
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link {% if index %}active{% endif %}">Home</a></li>
+                <li class="nav-item"><a href="{{ url_for('initialiser') }}" class="nav-link {% if initialiser %}active{% endif %}">Initialiser</a></li>
+                <li class="nav-item"><a href="{{ url_for('analytics') }}" class="nav-link {% if analytics %}active{% endif %}">Generic Analytics</a></li>
+
+            </ul>
+        </nav>
+        <hr style="clear:both">
+    </header>

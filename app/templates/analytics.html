@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+ 
+    <div class="header">
+        <h2>
+            Plotly Chart Demo
+        </h2>
+    </div>
+ 
+    <div id="chart" class="chart">
+    </div>
+
+ 
+    <!-- D3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+ 
+    <script type="text/javascript">
+         
+        var graphs = {{plot | safe}};
+        
+        Plotly.plot('chart',graphs,{});        
+ 
+    </script>
+{% endblock %}
