@@ -4,7 +4,8 @@ from app.forms import InitialiserForm
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
-from app.utils import create_plot, filterPeaksFile
+from app.utils import plot_lenght_distribution, filterPeaksFile
+from app.sample import Sample
 
 @app.route("/")
 @app.route("/index")
@@ -16,14 +17,29 @@ def index():
 def initialiser():
     form = InitialiserForm()
     if form.validate_on_submit():
+        
+        sampleName = form.col_name.name
+        
+        # Have to take this input from user
+        maxLen = 30
+        minLen = 1
+        # filename = secure_filename(f.filename)
+        # f.save(os.path.join('data', filename))
+        files_filenames = []
+        for smaple in form.file_input.data:
+            file_filename = secure_filename(smaple.filename)
+            smaple.save(os.path.join('data', file_filename))
+            files_filenames.append(file_filename)
+        print(files_filenames)
 
-        f = form.file_input.data
-        filename = secure_filename(f.filename)
-        f.save(os.path.join('data', filename))
+        sample = Sample(sampleName)
 
-        data = pd.read_csv('data/{}'.format(filename))
-        data = filterPeaksFile(data, maxLen=30)
-        bar = create_plot(data, normalized = False)
+        for replicate in files_filenames:
+            sample.addReplicate(replicate, pd.read_csv(os.path.join('data', replicate)))
+
+        # Have to later add the user input for length
+        sample.data = filterPeaksFile(sample.data, minLen=minLen, maxLen=maxLen)
+        bar = plot_lenght_distribution({sample.name:sample})
 
         return render_template('analytics.html', plot=bar)
     return render_template("initialiser.html", form=form)
