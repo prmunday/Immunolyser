@@ -11,17 +11,20 @@ def plot_lenght_distribution(samples):
 
     # Appeding all samples
     for sample_name,sample in samples.items():
+
+        len_data = sample.getCombniedData()['Length']
+
         fig.add_trace(go.Histogram(
-                            x=sample.getCombniedData()['Length'],
+                            x=len_data,
                             histnorm = 'percent',
-                            name = sample_name
-                            # error_y=dict( 
-                            #     type='constant', 
-                            #     value=0.1, 
-                            #     color='green', 
-                            #     thickness=1.5, 
-                            #     width=3, 
-                            # )
+                            name = sample_name,
+                            error_y=dict( 
+                                type='data', 
+                                array=sample.getPeptideLengthError()/2, 
+                                color='green', 
+                                thickness=1, 
+                                width=5, 
+                            )
                         )
         )
 
