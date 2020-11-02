@@ -2,6 +2,7 @@ import plotly
 import plotly.graph_objs as go
 import json
 import re
+import pandas as pd
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples):
@@ -12,7 +13,31 @@ def plot_lenght_distribution(samples):
     # Appeding all samples
     for sample_name,sample in samples.items():
 
-        len_data = sample.getCombniedData()['Length']
+        # len_data = sample.getCombniedData()['Length']
+
+        data = []
+        
+        for replicateData in sample.values():
+            data.append(replicateData)
+        
+        len_data = pd.concat(data)['Length']
+
+        peptideProportion = {}
+
+        # Storing the proportions of each n-mer
+        for replicate, data in sample.items():
+            peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
+
+        # Initializing two values to hold minimum and maximum propotions of peptide lengths
+        maxProportion = next(iter(peptideProportion.values()))
+        minProportion = next(iter(peptideProportion.values()))
+
+        # Iterating through replicates
+        for proportions in peptideProportion.values():
+            minProportion = minProportion.combine(proportions, min, fill_value=1000)
+            maxProportion = maxProportion.combine(proportions, max, fill_value=0)
+
+        errors = maxProportion-minProportion
 
         fig.add_trace(go.Histogram(
                             x=len_data,
@@ -20,7 +45,8 @@ def plot_lenght_distribution(samples):
                             name = sample_name,
                             error_y=dict( 
                                 type='data', 
-                                array=sample.getPeptideLengthError()/2, 
+                                # array=sample.getPeptideLengthError()/2,
+                                array=errors/2,
                                 color='green', 
                                 thickness=1, 
                                 width=5, 

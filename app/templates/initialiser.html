@@ -7,24 +7,38 @@
      
 	   {{ form.hidden_tag() }}       
 	   
-		   <p> {{ form.col_name.label }}</br>
-			   {{ form.col_name }}
-			   {% for error in form.col_name.errors %}
+		   <p> {{ form.sample_one_name.label }}</br>
+			   {{ form.sample_one_name }}
+			   {% for error in form.sample_one_name.errors %}
 				<span class="error-message">{{ error }}</span>
 			   {% endfor %}
 		   </p>
 	   
-		   <p> {{ form.file_input.label }}</br>
-			   {{ form.file_input }}
-			   {% for error in form.file_input.errors %}
+		   <p> {{ form.sample_one.label }}</br>
+			   {{ form.sample_one }}
+			   {% for error in form.sample_one.errors %}
 				<span class="error-message">{{ error }}</span>
 			   {% endfor %}
 		   </p>
 
+		   <p> 	{{ form.sample_two_name.label }}</br>
+				{{ form.sample_two_name }}
+				{% for error in form.sample_two_name.errors %}
+			 	<span class="error-message">{{ error }}</span>
+				{% endfor %}
+			</p>
+
+		   	<p> {{ form.sample_two.label }}</br>
+				{{ form.sample_two }}
+				{% for error in form.sample_two.errors %}
+				<span class="error-message">{{ error }}</span>
+				{% endfor %}
+			</p>
+
 		   <p> 
 			   {{ form.submit() }}
 		   </p>
-	   
+		   
    </fieldset>
    </form>
 </div>
