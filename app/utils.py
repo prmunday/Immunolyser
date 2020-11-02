@@ -3,9 +3,10 @@ import plotly.graph_objs as go
 import json
 import re
 import pandas as pd
+from numpy import std
 
 # The following method reutrns a histogram of list passed in JSON form.
-def plot_lenght_distribution(samples):
+def plot_lenght_distribution(samples, hist="percent"):
 
     # Initializing plotly figure
     fig = go.Figure()
@@ -24,24 +25,22 @@ def plot_lenght_distribution(samples):
 
         peptideProportion = {}
 
-        # Storing the proportions of each n-mer
-        for replicate, data in sample.items():
-            peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
+        if hist=='percent':
+            # Storing the proportions of each n-mer
+            for replicate, data in sample.items():
+                peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
+        else:
+            for replicate, data in sample.items():
+                peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
 
-        # Initializing two values to hold minimum and maximum propotions of peptide lengths
-        maxProportion = next(iter(peptideProportion.values()))
-        minProportion = next(iter(peptideProportion.values()))
+        # Combining arrays to further calculate the standard deviation
+        errors = pd.concat(peptideProportion, axis=1).apply(lambda x : std(x), axis=1)
 
-        # Iterating through replicates
-        for proportions in peptideProportion.values():
-            minProportion = minProportion.combine(proportions, min, fill_value=1000)
-            maxProportion = maxProportion.combine(proportions, max, fill_value=0)
 
-        errors = maxProportion-minProportion
 
         fig.add_trace(go.Histogram(
                             x=len_data,
-                            histnorm = 'percent',
+                            histnorm = hist,
                             name = sample_name,
                             error_y=dict( 
                                 type='data', 
@@ -49,7 +48,7 @@ def plot_lenght_distribution(samples):
                                 array=errors/2,
                                 color='green', 
                                 thickness=1, 
-                                width=5, 
+                                width=3, 
                             )
                         )
         )

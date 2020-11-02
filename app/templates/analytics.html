@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block content %}
- 
+    
+    <div class="custom-control custom-switch">
+    <input type="checkbox" class="custom-control-input" id="customSwitch1" onclick="myfunction()">
+    <label class="custom-control-label" for="customSwitch1">Percent/Density</label>
+  </div>
     <div id="chart" class="chart">
     </div>
 
@@ -12,10 +16,24 @@
     <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
  
     <script type="text/javascript">
-         
-        var graphs = {{plot | safe}};
+        
+        
+        var graphs = {{peptide_percent | safe}};
+        var graphsd = {{peptide_density | safe}};
         
         Plotly.plot('chart',graphs,{});        
+
+        function myfunction(){
+            checkbox = document.getElementById('customSwitch1');
+
+        if(checkbox.checked){
+            Plotly.newPlot('chart',graphsd,{});                    
+        }
+        else{
+            Plotly.newPlot('chart',graphs,{});                    
+        }
+        }
+
  
     </script>
 {% endblock %}

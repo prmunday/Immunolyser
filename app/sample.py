@@ -35,16 +35,10 @@ class Sample:
         peptideProportion = {}
 
         # Storing the proportions of each n-mer
-        for replicate, data in self.data.items():
+        for replicate, data in sample.items():
             peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
 
-        # Initializing two values to hold minimum and maximum propotions of peptide lengths
-        maxProportion = next(iter(peptideProportion.values()))
-        minProportion = next(iter(peptideProportion.values()))
+        # Combining arrays to further calculate the standard deviation
+        errors = pd.concat(peptideProportion, axis=1).apply(lambda x : std(x), axis=1)
 
-        # Iterating through replicates
-        for proportions in peptideProportion.values():
-            minProportion = minProportion.combine(proportions, min, fill_value=1000)
-            maxProportion = maxProportion.combine(proportions, max, fill_value=0)
-
-        return(maxProportion-minProportion)
+        return(errors)

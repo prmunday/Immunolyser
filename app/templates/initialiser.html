@@ -7,37 +7,32 @@
      
 	   {{ form.hidden_tag() }}       
 	   
-		   <p> {{ form.sample_one_name.label }}</br>
-			   {{ form.sample_one_name }}
-			   {% for error in form.sample_one_name.errors %}
-				<span class="error-message">{{ error }}</span>
-			   {% endfor %}
-		   </p>
-	   
-		   <p> {{ form.sample_one.label }}</br>
-			   {{ form.sample_one }}
-			   {% for error in form.sample_one.errors %}
-				<span class="error-message">{{ error }}</span>
-			   {% endfor %}
-		   </p>
-
-		   <p> 	{{ form.sample_two_name.label }}</br>
-				{{ form.sample_two_name }}
-				{% for error in form.sample_two_name.errors %}
-			 	<span class="error-message">{{ error }}</span>
+			
+		
+			{% for childform in form.children %}
+			<p>
+				{% for field in childform %}
+				<p>
+					{{ field.label }} 
+					{{ field }}
+				</p>  
+				<span>
+					{% if field.errors %}
+					  {% for error in field.errors %}
+						{{ error }}
+					  {% endfor %}
+					{% endif %}
+				</span> 
 				{% endfor %}
 			</p>
+			
+			{% endfor %}
 
-		   	<p> {{ form.sample_two.label }}</br>
-				{{ form.sample_two }}
-				{% for error in form.sample_two.errors %}
-				<span class="error-message">{{ error }}</span>
-				{% endfor %}
-			</p>
-
+			{{ form.add_sample }}
 		   <p> 
 			   {{ form.submit() }}
 		   </p>
+		   
 		   
    </fieldset>
    </form>

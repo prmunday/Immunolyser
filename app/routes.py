@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, url_for
-from app.forms import InitialiserForm
+from app.forms import InitialiserForm, ParentForm
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
@@ -19,13 +19,23 @@ def index():
 
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():
-    form = InitialiserForm()
+    form = ParentForm()
+
+    if form.add_sample.data:
+        form.children.append_entry()
+        return render_template("initialiser.html", form=form, initialiser=True)
+
     if form.validate_on_submit():
-        
+
         experiment_id = getExperminetId()
         
-        sample_one_name = form.sample_one_name.data
-        sample_two_name = form.sample_two_name.data
+
+        samples = []
+        for sample in form.children.data:
+            samples.append(sample)
+    #     sample_one_name = form.sample_one_name.data
+    #     sample_two_name = form.sample_two_name.data
+    
         # Have to take this input from user
         maxLen = 30
         minLen = 1
@@ -41,53 +51,48 @@ def initialiser():
             print("Directory " , dirName ,  " already exists")
 
         # Creating sub directories to store sample data
-        try:
-            os.mkdir(os.path.join(dirName, sample_one_name))
-            print("Directory Created") 
-        except FileExistsError:
-            print("Directory already exists")
+        for sample in samples:
+            try:
+                os.mkdir(os.path.join(dirName, sample['sample_name']))
+                print("Directory Created") 
+            except FileExistsError:
+                print("Directory already exists")     
 
-        try:
-            os.mkdir(os.path.join(dirName, sample_two_name))
-            print("Directory Created") 
-        except FileExistsError:
-            print("Directory already exists")        
+        data = {}
 
-        sample_one = []
-        for sample in form.sample_one.data:
-            file_filename = secure_filename(sample.filename)
-            sample.save(os.path.join(dirName, sample_one_name, file_filename))
-            sample_one.append(file_filename)
+        # Saving the data and loading into the dictionary
+        for sample in samples:
+            data[sample['sample_name']] = list()
+            for replicate in sample['sample']:
+                file_filename = secure_filename(replicate.filename)
+                replicate.save(os.path.join(dirName, sample['sample_name'], file_filename))
+                # sample_one.append(file_filename)
+                data[sample['sample_name']].append(file_filename)
 
-        sample_two = []
-        for sample in form.sample_two.data:
-            file_filename = secure_filename(sample.filename)
-            sample.save(os.path.join(dirName, sample_two_name, file_filename))
-            sample_two.append(file_filename)
+    #     # Storing in classes
+    #     # sample1 = Sample(sample_one_name)
+    #     # sample2 = Sample(sample_two_name)
 
-        
-        # Storing in classes
-        # sample1 = Sample(sample_one_name)
-        # sample2 = Sample(sample_two_name)
+    #     # Or in variables
+    #     sample1 = {}
+    #     sample2 = {}
 
-        # Or in variables
-        sample1 = {}
-        sample2 = {}
+        sample_data = {}
 
-        for replicate in sample_one:
-            sample1[replicate] = pd.read_csv(os.path.join(dirName, sample_one_name, replicate))
-
-        for replicate in sample_two:
-            sample2[replicate] = pd.read_csv(os.path.join(dirName, sample_two_name, replicate))   
+        for sample_name, file_names in data.items():
+            sample_data[sample_name] = dict()
+            for replicate in file_names:
+                sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
 
         # Have to later add the user input for length
-        sample1 = filterPeaksFile(sample1, minLen=minLen, maxLen=maxLen)
-        sample2 = filterPeaksFile(sample2, minLen=minLen, maxLen=maxLen)
+        for sample_name, sample in sample_data.items():
+            sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
 
 
-        bar = plot_lenght_distribution({sample_one_name:sample1, sample_two_name:sample2})
+        bar_percent = plot_lenght_distribution(sample_data, hist='percent')
+        bar_density = plot_lenght_distribution(sample_data, hist='density')
 
-        return render_template('analytics.html', plot=bar, analytics=True)
+        return render_template('analytics.html', peptide_percent=bar_percent, peptide_density=bar_density, analytics=True)
     return render_template("initialiser.html", form=form, initialiser=True)
 
 @app.route("/analytics")
