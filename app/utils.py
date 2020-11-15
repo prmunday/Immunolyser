@@ -4,6 +4,7 @@ import json
 import re
 import pandas as pd
 from numpy import std
+import os
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples, hist="percent"):
@@ -29,9 +30,15 @@ def plot_lenght_distribution(samples, hist="percent"):
             # Storing the proportions of each n-mer
             for replicate, data in sample.items():
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
+
+            title = 'The frequency distribution of the peptide lengths'
+            yaxis_label = '% Peptides'
         else:
             for replicate, data in sample.items():
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
+
+            title = 'The density distribution of the peptide lengths'
+            yaxis_label = 'Numebr of Peptides'
 
         # Combining arrays to further calculate the standard deviation
         errors = pd.concat(peptideProportion, axis=1).apply(lambda x : std(x), axis=1)
@@ -55,11 +62,11 @@ def plot_lenght_distribution(samples, hist="percent"):
 
     # Adding labels in the chart
     fig.update_layout(
-            title='The frequency distribution of the peptide lengths',
+            title= title,
             xaxis = dict(title='<i>Length</i>'),
-            yaxis = dict(title='<i>% Peptides</i>')
+            yaxis = dict(title='<i>'+ yaxis_label +'</i>')
         )
-
+    
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     return graphJSON
@@ -71,16 +78,34 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
     
     for file_name,sample in samples.items():
 #       Removing rows with no accession identity
-        samples[file_name] = sample.dropna(subset=['Accession'])
+        temp = sample.dropna(subset=['Accession'])
         
 #       Dropping the peptides with Post translational modifications
         if dropPTM:
-            samples[file_name] = sample[sample.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
+            temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
 
 #       Removing contamincation founf from accession number 
-        samples[file_name] = sample[sample.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
+        temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
         
 #       Filtering on the basis of the peptide length
-        samples[file_name] = sample[sample.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
+        temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
     
+        samples[file_name] = temp
+
     return samples
+
+def saveNmerData(location, samples, peptideLength = 9):
+
+    for file_name, data in samples.items():
+        for replicate_name, replicate_data in data.items():
+            replicate_data[replicate_data.Length == 9]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'.txt'), header=False, index=False)
+
+
+def getSeqLogosImages(samples_data):
+
+    seqlogos = {}
+
+    for sample,replicates in samples_data.items():
+        seqlogos[sample] = [replicate[:-4]+'-001.png' for replicate in replicates.keys()]
+
+    return seqlogos

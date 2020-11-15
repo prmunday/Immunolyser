@@ -3,38 +3,60 @@
 {% block content %}
 <div class="container">
 	<form name="login" action="" method="post" enctype="multipart/form-data" novalidate>
-   <fieldset class="form-group">
-     
-	   {{ form.hidden_tag() }}       
-	   
-			
 		
-			{% for childform in form.children %}
-			<p>
-				{% for field in childform %}
-				<p>
-					{{ field.label }} 
-					{{ field }}
-				</p>  
-				<span>
-					{% if field.errors %}
-					  {% for error in field.errors %}
-						{{ error }}
-					  {% endfor %}
-					{% endif %}
-				</span> 
-				{% endfor %}
-			</p>
-			
-			{% endfor %}
+		<div class="form-row">
+			<div class="col-md-3 mb-3">Sample Name</div>
+			<div class="col-md-6 mb-3">Sample Files</div>
+		</div>
+		<div id="samples">
+			<div id="sample" class="form-row">
+				<label for="sample_name" hidden>Sample</label> 
+				<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-3 mb-3">
+				<br>
+				<label for="sample" hidden>Peptide File</label> 
+				<input id="sample" multiple name="sample-1" required type="file" class="col-md-6 mb-3">	
+			</div>
+		</div>
+		
+		
 
-			{{ form.add_sample }}
-		   <p> 
-			   {{ form.submit() }}
-		   </p>
-		   
-		   
-   </fieldset>
+	<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
+	<input id="remove_sample" name="remove_sample" type="button" value="Remove Sample" onclick="deleteSample()">
+
+	<p> 
+	   <input id="submit" name="submit" type="submit" value="Submit">
+   </p>
    </form>
 </div>
+
+<script>
+	sampleId = 1;
+
+	function addSample(){
+		var samples = document.getElementById('samples');
+		var sample = document.getElementById('sample');
+
+		count = ++sampleId;
+
+		var cln = sample.cloneNode(true)
+		cln.children[1].name = "sample-"+ count;
+		cln.children[1].value = "";
+		cln.children[4].name = "sample-"+ count;
+		cln.children[4].value = "";
+		samples.appendChild(cln)
+		console.log(cln)
+	}
+
+	function deleteSample(){
+		if(sampleId>1){
+			--sampleId;
+			var select = document.getElementById('samples')
+			select.removeChild(select.lastChild);
+		}
+		else{
+			alert('Analysis require atleast one sample')
+		}
+		
+	}
+</script>
 {% endblock %}
