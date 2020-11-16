@@ -11,18 +11,17 @@ import time
 from pathlib import Path
 
 # Experiment ID
-EXPERIMENT_ID = 0
+TASK_COUNTER = 0
 
 @app.route("/")
 @app.route("/index")
 @app.route("/home")
 def index():
-    temp = {'a':[1,2,3], 'b':[4,4,6]}
-    return render_template("index.html", index=True, temp =temp )
+    return render_template("index.html", index=True)
 
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():
-    experiment_id = getExperminetId()
+    # experiment_id = getExperminetId()
     
     samples = []
 
@@ -33,8 +32,9 @@ def initialiser():
     # Creating directory for the experiment
     # Create directory
 
-    experiment_id_date = str(experiment_id)+'-ID-'+time.strftime("%Y-%m-%d")
-    dirName = os.path.join('data', experiment_id_date)
+    # experiment_id_date = time.strftime("%Y%m%d")+str(experiment_id)
+    taskId = getTaskId()
+    dirName = os.path.join('data', taskId)
     try:
         # Create target Directory
         os.makedirs(dirName)
@@ -52,7 +52,7 @@ def initialiser():
         # Creating sub directories to store sample data
         try:
             # for seqlogos
-            path_for_logos = os.path.join('app', 'static', 'images', experiment_id_date, sample_name, 'seqlogos')
+            path_for_logos = os.path.join('app', 'static', 'images', taskId, sample_name, 'seqlogos')
             if not os.path.exists(path_for_logos):
                 # os.makedirs(directory)
                 Path(path_for_logos).mkdir(parents=True, exist_ok=True)
@@ -109,7 +109,7 @@ def initialiser():
     saveNmerData(dirName, sample_data, peptideLength=9)
 
     # Calling script to generate sequence logos
-    subprocess.call('python app\\seqlogo.py {}'.format(experiment_id_date), shell=True)
+    subprocess.call('python app\\seqlogo.py {}'.format(taskId), shell=True)
 
     # Method to return names of png files of seqlogos
     # This value is supposed to be returned from saveNmerDate method but for now writting
@@ -117,7 +117,7 @@ def initialiser():
     
     seqlogos = getSeqLogosImages(sample_data)
 
-    return render_template('analytics.html', experiment_id_date=experiment_id_date,peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, analytics=True)
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, analytics=True)
     # return render_template("initialiser.html", form=form, initialiser=True)
 
 @app.route("/analytics")
@@ -125,8 +125,9 @@ def analytics():
     return render_template("analytics.html", analytics=True, iframe = 'data/6-ID-2020-11-13/Inferon/seqlogos/peptide_AB190613_1106_IFN_PEAKS10_DT9-001.png')
 
 # Method to manage experiment ID
-def getExperminetId():
-    global EXPERIMENT_ID
-    EXPERIMENT_ID = EXPERIMENT_ID+1
+def getTaskId():
+    global TASK_COUNTER
+    TASK_COUNTER = TASK_COUNTER+1
+    task_Id = time.strftime("%Y%m%d")+str(TASK_COUNTER)
 
-    return EXPERIMENT_ID
+    return task_Id

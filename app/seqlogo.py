@@ -15,7 +15,7 @@ for sample in os.listdir('data\\{}'.format(experiment_id_date)):
             print ("Successfully created the directory %s " % 'data\\{}\\{}\\seqlogos'.format(experiment_id_date,sample))
         if replicate[-3:] == 'txt':
             print(replicate)
-            call('app\\tools\\Python2\\python.exe app\\tools\\seq2logo-2.1\\Seq2Logo.py -f data\\{}\\{}\\{} --format [PNG] -o {}\\{}\\{}\\seqlogos\\{}'.format(experiment_id_date, sample, replicate, 'app\\static\\images',experiment_id_date,sample,replicate[:-4]))
+            call('app\\tools\\Python2\\python.exe app\\tools\\seq2logo-2.1\\Seq2Logo.py -f data\\{}\\{}\\{} --format [JPEG] -o {}\\{}\\{}\\seqlogos\\{}'.format(experiment_id_date, sample, replicate, 'app\\static\\images',experiment_id_date,sample,replicate[:-4]))
             # call('tools\\Python2\\python.exe -m pip install numpy')
 
             

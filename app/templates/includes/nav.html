@@ -1,11 +1,20 @@
     <header>
-        <nav>
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link {% if index %}active{% endif %}">Home</a></li>
-                <li class="nav-item"><a href="{{ url_for('initialiser') }}" class="nav-link {% if initialiser %}active{% endif %}">Initialiser</a></li>
-                <li class="nav-item"><a href="{{ url_for('analytics') }}" class="nav-link {% if analytics %}active{% endif %}">Generic Analytics</a></li>
-
-            </ul>
-        </nav>
-        <hr style="clear:both">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if index %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('index') }}">Home<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item {% if initialiser %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('initialiser') }}">Initialiser</a>
+                </li>
+                <li class="nav-item {% if analytics %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('analytics') }}">Generic Analytics</a>
+                </li>
+              </ul>
+              <span class="navbar-text">
+                {% if analytics %}Task ID: {{taskId}}{% endif %}
+              </span>
+            </div>
+          </nav>
     </header>

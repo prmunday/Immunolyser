@@ -106,6 +106,6 @@ def getSeqLogosImages(samples_data):
     seqlogos = {}
 
     for sample,replicates in samples_data.items():
-        seqlogos[sample] = [replicate[:-4]+'-001.png' for replicate in replicates.keys()]
+        seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
 
     return seqlogos
