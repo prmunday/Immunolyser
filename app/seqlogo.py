@@ -2,20 +2,18 @@ import sys
 import os
 from subprocess import call
 
-experiment_id_date = sys.argv[1]
+task_id = sys.argv[1]
 
-for sample in os.listdir('data\\{}'.format(experiment_id_date)):
-    for replicate in os.listdir('data\\{}\\{}'.format(experiment_id_date,sample)):
+for sample in os.listdir('data\\{}'.format(task_id)):
+    for replicate in os.listdir('data\\{}\\{}'.format(task_id,sample)):
         
         try:
-            os.mkdir('data\\{}\\{}\\seqlogos'.format(experiment_id_date,sample))
+            os.mkdir('data\\{}\\{}\\seqlogos'.format(task_id,sample))
         except OSError:
-            print ("Creation of the directory %s failed" % 'data\\{}\\{}\\seqlogos'.format(experiment_id_date,sample))
+            print ("Creation of the directory %s failed" % 'data\\{}\\{}\\seqlogos'.format(task_id,sample))
         else:
-            print ("Successfully created the directory %s " % 'data\\{}\\{}\\seqlogos'.format(experiment_id_date,sample))
+            print ("Successfully created the directory %s " % 'data\\{}\\{}\\seqlogos'.format(task_id,sample))
         if replicate[-3:] == 'txt':
             print(replicate)
-            call('app\\tools\\Python2\\python.exe app\\tools\\seq2logo-2.1\\Seq2Logo.py -f data\\{}\\{}\\{} --format [JPEG] -o {}\\{}\\{}\\seqlogos\\{}'.format(experiment_id_date, sample, replicate, 'app\\static\\images',experiment_id_date,sample,replicate[:-4]))
+            call('app\\tools\\Python2\\python.exe app\\tools\\seq2logo-2.1\\Seq2Logo.py -f data\\{}\\{}\\{} --format [JPEG] -o {}\\{}\\{}\\seqlogos\\{} -t {} -S 2 -I 2 '.format(task_id, sample, replicate, 'app\\static\\images',task_id,sample,replicate[:-4], replicate[:-4]))
             # call('tools\\Python2\\python.exe -m pip install numpy')
-
-            
