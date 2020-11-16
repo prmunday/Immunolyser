@@ -20,19 +20,13 @@ def index():
     return render_template("index.html", index=True)
 
 @app.route("/initialiser", methods=["POST", "GET"])
-def initialiser():
-    # experiment_id = getExperminetId()
-    
+def initialiser():    
     samples = []
 
     # Have to take this input from user
     maxLen = 30
     minLen = 1
 
-    # Creating directory for the experiment
-    # Create directory
-
-    # experiment_id_date = time.strftime("%Y%m%d")+str(experiment_id)
     taskId = getTaskId()
     dirName = os.path.join('data', taskId)
     try:

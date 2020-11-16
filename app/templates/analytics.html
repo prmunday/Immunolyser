@@ -1,26 +1,40 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+<br>
+
+    <h3>Peptide Length Distribution</h3>
     
-    <div class="custom-control custom-switch">
-    <input type="checkbox" class="custom-control-input" id="customSwitch1" onclick="myfunction()">
-    <label class="custom-control-label" for="customSwitch1">Percent/Density</label>
-  </div>
-    <div id="chart" class="chart">
+    <div id="chart" class="chart"></div>
+
+    <div class="custom-control custom-switch" style="text-align:right;">
+        <input type="checkbox" class="custom-control-input" id="customSwitch1" onclick="myfunction()">
+        <label class="custom-control-label" for="customSwitch1">Percent/Density</label>
     </div>
+
+<br>
+
     <p class="text-justify">The above histpgram is the peptide length distribution of the the sample(s) uploded.
                             Contaminations and peptides with post translational modifications have been removed.
                             Finally, peptides with the length range from 1 to 30 have been selected. The error bars in case of replicates
                             represents the standard deviation of the number of specifc n-mers across replicates. The swith button at 
                             the top can be used to switch between percent or absolute distribution. The tool icons at the top right corner
                             can be used for more operations. 
-    </p>    <!-- D3.js -->
+    </p> 
+
+<br>
+
+    <h3>Peptide consensus binding motif analysis</h3>
+
+<br>
 
     <div class="seqlogo">
-    {% for key, value in seqlogos.items() %}
+    {% for sample, replicates in seqlogos.items() %}
+        <h5>{{sample}}</h5>
         <div class="your-class">
-        {% for replicate in value %}
-            <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,key,replicate), width=10)}}" alt="">                
+        {% for replicate in replicates %}
+            <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate), width=10)}}" alt="">                
         {%endfor%}
         </div>
     {% endfor %}
