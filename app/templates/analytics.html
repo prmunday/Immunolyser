@@ -31,7 +31,7 @@
 
     <div class="seqlogo">
     {% for sample, replicates in seqlogos.items() %}
-        <h5>{{sample}}</h5>
+        <h4>{{sample}}</h4>
         <div class="your-class">
         {% for replicate in replicates %}
             <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate), width=10)}}" alt="">                
@@ -45,6 +45,39 @@
     <p class="text-justify">Above are the sequence logos for each replicate(if any) of all samples given. For generating these sequence logos, the local
         version Seq2Logo has been used. Kullback-Leibler method has been used to generate the logos.
     </p> 
+
+<br>
+
+    <h3>Peptide sequence analysis</h3>
+
+<br>
+
+    <div class="seqlogo">
+        {% for sample, replicates in gibbsImages.items() %}
+            <h4>{{sample}}</h4>
+            {% for replicate, gibbs in replicates.items() %}
+                <h5>{{replicate}}</h5>
+                {% for bar_plot,clusters  in gibbs.items() %}
+                    <div class="your-class">
+                    <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/images/{3}'.format(taskId,sample,replicate,bar_plot), width=10)}}" alt="">                
+                    {% for cluster  in clusters %}
+                        <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/logos/{3}'.format(taskId,sample,replicate,cluster), width=10)}}" alt="">                
+                    {%endfor%}
+                    </div>
+                {%endfor%}
+            {%endfor%}
+        {% endfor %}
+    </div>
+
+<br>
+
+    <p class="text-justify">Above are the sequence logos for each replicate(if any) of all samples given. For generating these sequence logos, the local
+        version Seq2Logo has been used. Kullback-Leibler method has been used to generate the logos.
+    </p> 
+
+<br>
+
+
 
     <!-- <iframe frameborder='0' noresize='noresize' style='position: absolute; background: transparent; width: 100%; height:100%;' src="{{ iframe }}" frameborder="0"></iframe>
     <h3 ><a href="/">Stumble</a></h3> -->

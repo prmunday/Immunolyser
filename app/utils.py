@@ -5,6 +5,7 @@ import re
 import pandas as pd
 from numpy import std
 import os
+import glob
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples, hist="percent"):
@@ -105,7 +106,37 @@ def getSeqLogosImages(samples_data):
 
     seqlogos = {}
 
+    # This approach has to be modified as the names of logos are derived from the data input,
+    # not from the seq2logo results.
     for sample,replicates in samples_data.items():
         seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
 
     return seqlogos
+
+def getGibbsImages(taskId, samples_data):
+
+    gibbsImages = {}
+
+    # This approach has to be modified as the cluster are picked from the files(JPG) present in results.
+    # It should be linked with gibbscluster directly to get the results.
+    for sample,replicates in samples_data.items():
+        # seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
+
+        gibbsImages[sample] = dict()
+
+        for replicate in replicates.keys():
+            bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.jpg')]
+            clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
+            gibbsImages[sample][replicate[:-4]] = dict()
+            gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
+            print(gibbsImages)
+
+            # gibbsImages[sample][replicate][bar_plot] = clusters
+
+    return gibbsImages
+
+def setUpWsl():
+    print('Setting up the WSL(Windows ) for windows system.')
+    
+    # Following script is to set up a WSL in windows system to linux platform dependent tools.
+    # This is not automated yet.

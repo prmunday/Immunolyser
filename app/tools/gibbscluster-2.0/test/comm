@@ -1,0 +1,2 @@
+../gibbscluster -f test.pep -P gibbs > test.pep.out
+../gibbscluster -f small.pep -P gibbs -I 1 -D 5 -g1-4 -S3 > small.pep.out

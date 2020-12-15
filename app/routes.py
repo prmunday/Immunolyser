@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, setUpWsl
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -17,6 +17,10 @@ TASK_COUNTER = 0
 @app.route("/index")
 @app.route("/home")
 def index():
+    
+    # Checking to platform, if it is windows, wsl will be initialised
+    if request.user_agent.platform =='windows':
+        setUpWsl()
     return render_template("index.html", index=True)
 
 @app.route("/initialiser", methods=["POST", "GET"])
@@ -111,7 +115,13 @@ def initialiser():
     
     seqlogos = getSeqLogosImages(sample_data)
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, analytics=True)
+    # Calling script to generate gibbsclusters
+    subprocess.call('python app\\gibbscluster.py {}'.format(taskId), shell=True)
+
+    # Getting names of the gibbscluster
+    gibbsImages = getGibbsImages(taskId, sample_data)
+
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True)
     # return render_template("initialiser.html", form=form, initialiser=True)
 
 @app.route("/analytics")

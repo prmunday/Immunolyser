@@ -1,0 +1,104 @@
+GibbsCluster 2.0            INSTALLATION INSTRUCTIONS
+
+
+   More information about the method can be found at:
+   
+    http://www.cbs.dtu.dk/services/GibbsCluster
+
+############################################################################
+   DOWNLOAD
+
+   The GibbsCluster 2.0 package  is a property  of Center for Biological Sequence
+   Analysis.  It may be downloaded  only  by special agreement.  
+
+   Other users are requested to contact software@cbs.dtu.dk.
+
+############################################################################
+   PRE-INSTALLATION
+
+   GibbsCluster 2.0 is compiled for Linux_x86_64 and Darwin_x86_64 (Mac). The package consists of two files:
+  
+      gibbscluster-2.0.readme         this file
+      gibbscluster-2.0e.tar.gz       compressed archive
+
+############################################################################
+   INSTALLATION
+
+   1. Uncompress the package:
+
+          tar -xvf gibbscluster-2.0e.tar.gz 
+
+      This will create the directory gibbscluster-2.0 (it should be approximately 500KB)
+
+   2. In the script 'gibbscluster' locate the section starting with "GENERAL SETTINGS: CUSTOMIZE TO YOUR SITE".
+      
+      Modify the statement:
+      
+          setenv  GIBBS	... 
+      
+      with the full path to the 'gibbscluster-2.0' directory on your system.
+      The setting of the variables  UNIX and AR  should not be changed unless the 'uname' program on your system is not standard.
+
+    3. (Optional) Set the path of your local installations of R and/or Seq2Logo. These programs are used to generate graphics and motif logos of your clusters.
+       If you don't have Seq2Logo installed, you can obtain your copy at:  
+
+         http://www.cbs.dtu.dk/cgi-bin/sw_request?seq2logo
+ 
+    4. Move in the 'gibbscluster-2.0/test' directory and test the software:
+
+      ../gibbscluster -f test.pep -P gibbs > test.pep.myout
+      ../gibbscluster -f small.pep -P gibbs -C -I 1 -D 5 -g1-4 -S3 > small.pep.myout
+
+      The resulting files must be identical (except for the lines describing the system and user) to the files 'test.pep.out' and 'small.pep.out' in the 'test' directory.
+
+      Each run creates a folder called gibbs_{N} (or any other name specified with the -P option) where your results files are located. You may inspect the html report using: 
+
+         open gibbs_{N}_report.html
+
+    5. Copy or link the 'gibbscluster' script to a directory in the user path.
+
+
+    6. Have fun.
+
+############################################################################   
+   NOTES
+   
+   *1* For a list of available options, run the program as:
+   
+   gibbscluster -h
+
+############################################################################
+   CITATION	
+
+   To cite results please refer to:
+   
+   "Simultaneous alignment and clustering of peptide data using a Gibbs sampling approach.", Massimo Andreatta, Ole Lund, and Morten Nielsen.
+   Bioinformatics. 2013 Jan 1;29(1):8-14. doi: 10.1093/bioinformatics/bts621	
+
+############################################################################
+   CHANGE LOG
+
+    * Apr 2017:
+    - Changed default parameters for consistency between webserver and stand-alone version
+	- Fixed some minor bugs
+
+    * Nov 2016 (version 2.0):
+	- insertions and deletions implemented in the sequence alignment.
+	- added final deterministic iteration to refine the clustering solution
+	- "slow" mode is discontinued from version 2.0.
+
+    * Sep 2016:
+        - the stand-alone version now includes the same functionalities of the server, including graphics, logos, and scanning of different numbers of clusters and random seeds
+        - results are displayed in html format
+        
+    * Dec 2015:
+       - fast clustering algorithm is implemented. Activate it using the -F switch. 
+        
+############################################################################
+   PROBLEMS
+   
+   Questions on the scientific aspects of the GibbsCluster method  should be sent
+   to Morten Nielsen, mniel@cbs.dtu.dk.
+
+   Last update: 22 May 2017
+   M. Nielsen / M. Andreatta

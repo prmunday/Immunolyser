@@ -84,6 +84,8 @@ class SeqParse:
       ''' This function determines the type of the input file and parses the sequence data to sequnce data class. '''
       # DETERMINE INPUT TYPE
       inputType = ""
+      # print("Input fi",inputfile)
+      # print(os.path.dirname(os.path.realpath(__file__)))
       with open(inputfile, 'r') if inputfile != '' else sys.stdin as fobj:
          f = readstream(fobj)
          for lc, l in enumerate(f,1): #lc = line count

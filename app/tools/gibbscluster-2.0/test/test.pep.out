@@ -1,0 +1,32 @@
+#Call: /Users/massimo/Applications/gibbscluster-2.0_DB/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl -f test.pep -P gibbs
+#Mon Apr  3 09:34:42 2017
+#Session ID: 4486
+#Run name: gibbs_4486
+#Read 200 unique sequences
+##### Settings: #####
+#Shift moves and cluster moves are activated
+#Number of clusters: 2
+#Motif length: 9
+#Initial MC temperture: 0.8
+#Number of temperature steps: 20
+#Number of iterations x Sequence x Tstep: 100
+#Max insertion length: 0
+#Max deletion length: 0
+#Interval between Single Peptide moves: 20
+#Interval between Phase Shift moves: 100
+#Number of initial seeds: 1
+#Penalty lambda: 0.8
+#Weight on small clusters: 5
+#Preference for hydrophobic P1: 0
+#Sequence weighting type: 0
+#Use trash cluster to remove outliers: 0
+#### Running Gibbs clustering...
+#Clustering with 2 groups, seed number 1
+#Clustering complete!
+### Determining seeds with highest KLD...
+#Best 2 groups, seed 1
+###Parsing result files...
+#RESULTS for 2 CLUSTERS
+#2 Final Average KLD: 7.403822
+#2	1	96	7.100
+#2	2	104	7.685

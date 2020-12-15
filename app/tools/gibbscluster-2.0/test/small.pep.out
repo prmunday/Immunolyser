@@ -1,0 +1,61 @@
+#Call: /Users/massimo/Applications/gibbscluster-2.0_DB/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl -f small.pep -P gibbs -I 1 -D 5 -g1-4 -S3
+#Mon Apr  3 09:37:01 2017
+#Session ID: 4516
+#Run name: gibbs_4516
+#Read 200 unique sequences
+##### Settings: #####
+#Shift moves and cluster moves are activated
+#Number of clusters: 1 - 4
+#Motif length: 9
+#Initial MC temperture: 0.8
+#Number of temperature steps: 20
+#Number of iterations x Sequence x Tstep: 100
+#Max insertion length: 1
+#Max deletion length: 5
+#Interval between Indel moves: 10
+#Interval between Single Peptide moves: 20
+#Interval between Phase Shift moves: 100
+#Number of initial seeds: 3
+#Penalty lambda: 0.8
+#Weight on small clusters: 5
+#Preference for hydrophobic P1: 0
+#Sequence weighting type: 0
+#Use trash cluster to remove outliers: 0
+#### Running Gibbs clustering...
+#Clustering with 1 groups, seed number 1
+#Clustering with 1 groups, seed number 2
+#Clustering with 1 groups, seed number 3
+#Clustering with 2 groups, seed number 1
+#Clustering with 2 groups, seed number 2
+#Clustering with 2 groups, seed number 3
+#Clustering with 3 groups, seed number 1
+#Clustering with 3 groups, seed number 2
+#Clustering with 3 groups, seed number 3
+#Clustering with 4 groups, seed number 1
+#Clustering with 4 groups, seed number 2
+#Clustering with 4 groups, seed number 3
+#Clustering complete!
+### Determining seeds with highest KLD...
+#Best 1 groups, seed 1
+#Best 2 groups, seed 2
+#Best 3 groups, seed 1
+#Best 4 groups, seed 3
+###Parsing result files...
+#RESULTS for 1 CLUSTERS
+#1 Final Average KLD: 9.653264
+#1	1	200	9.653
+#RESULTS for 2 CLUSTERS
+#2 Final Average KLD: 11.669350
+#2	1	99	13.450
+#2	2	101	9.924
+#RESULTS for 3 CLUSTERS
+#3 Final Average KLD: 11.469785
+#3	1	100	13.248
+#3	2	6	8.072
+#3	3	94	9.795
+#RESULTS for 4 CLUSTERS
+#4 Final Average KLD: 10.694555
+#4	1	100	13.109
+#4	2	3	3.146
+#4	3	19	6.817
+#4	4	78	8.834

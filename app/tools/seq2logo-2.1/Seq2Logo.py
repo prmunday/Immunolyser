@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 '''
 NAME:        Seq2Logo - Sequence Logo Generator
 AUTHOR:      Martin Thomsen
@@ -54,8 +54,22 @@ import sys
 
 # EXTERNAL APPLICATION PATHS AND ENVIRONMENT VARIABLES
 import os
+import json
+import platform
+
+# project root path
+project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, '..', '..','..')))
+
 # app\tools\gs9.53.3\bin\gswin64c.exe
-gsPath= os.path.join('app','tools','gs9.53.3','bin','gswin64c')
+
+if platform.system() == 'Windows':
+   gsPath= os.path.join(project_root,'app','tools','gs9.53.3','bin','gswin64c')
+elif platform.system() == 'Linux':
+   gsPath= os.path.join(project_root,'app','tools','ghostscript-9.53.3-linux-x86_64','gs-9533-linux-x86_64')
+else:
+   pass
+
+# gsPath= os.path.join('app', 'tools', 'ghostscript-9.53.3-linux-x86_64', 'ghostscript-9.53.3-linux-x86_64','gs-9533-linux-x86_64')
 dirbin = "%s/etc/"%(sys.path[0])
 sys.path.append(dirbin)
 

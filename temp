@@ -1,0 +1,2 @@
+# This script is written down to generate gibbsclustering report using a wsl
+tcsh ./app/tools/gibbscluster-2.0/gibbscluster -f ./data/202011236/VMM/VMM1_1st_nil_DT9_peptide.txt;
