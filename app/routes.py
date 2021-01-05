@@ -107,7 +107,7 @@ def initialiser():
     saveNmerData(dirName, sample_data, peptideLength=9)
 
     # Calling script to generate sequence logos
-    subprocess.call('python app\\seqlogo.py {}'.format(taskId), shell=True)
+    subprocess.call('python {} {}'.format(taskId, os.path.join('app','seqlogo.py')), shell=True)
 
     # Method to return names of png files of seqlogos
     # This value is supposed to be returned from saveNmerDate method but for now writting
@@ -116,7 +116,7 @@ def initialiser():
     seqlogos = getSeqLogosImages(sample_data)
 
     # Calling script to generate gibbsclusters
-    subprocess.call('python app\\gibbscluster.py {}'.format(taskId), shell=True)
+    subprocess.call('python {} {}'.format(taskId, os.path.join('app', 'gibbscluster.py')), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
