@@ -108,8 +108,8 @@ def getSeqLogosImages(samples_data):
 
     # This approach has to be modified as the names of logos are derived from the data input,
     # not from the seq2logo results.
-    for sample,replicates in samples_data.items():
-        seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
+    # for sample,replicates in samples_data.items():
+    #     seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
 
     return seqlogos
 
@@ -124,12 +124,12 @@ def getGibbsImages(taskId, samples_data):
 
         gibbsImages[sample] = dict()
 
-        for replicate in replicates.keys():
-            bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.jpg')]
-            clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
-            gibbsImages[sample][replicate[:-4]] = dict()
-            gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
-            print(gibbsImages)
+        # for replicate in replicates.keys():
+        #     bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.jpg')]
+        #     clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
+        #     gibbsImages[sample][replicate[:-4]] = dict()
+        #     gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
+        #     print(gibbsImages)
 
             # gibbsImages[sample][replicate][bar_plot] = clusters
 
