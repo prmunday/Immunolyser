@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, setUpWsl
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -19,8 +19,8 @@ TASK_COUNTER = 0
 def index():
     
     # Checking to platform, if it is windows, wsl will be initialised
-    if request.user_agent.platform =='windows':
-        setUpWsl()
+    #if request.user_agent.platform =='windows':
+        #setUpWsl()
     return render_template("index.html", index=True)
 
 @app.route("/initialiser", methods=["POST", "GET"])
@@ -107,7 +107,7 @@ def initialiser():
     saveNmerData(dirName, sample_data, peptideLength=9)
 
     # Calling script to generate sequence logos
-    subprocess.call('python {} {}'.format(taskId, os.path.join('app','seqlogo.py')), shell=True)
+    subprocess.call('python {} {}'.format(os.path.join('app','seqlogo.py'), taskId), shell=True)
 
     # Method to return names of png files of seqlogos
     # This value is supposed to be returned from saveNmerDate method but for now writting
@@ -116,7 +116,7 @@ def initialiser():
     seqlogos = getSeqLogosImages(sample_data)
 
     # Calling script to generate gibbsclusters
-    subprocess.call('python {} {}'.format(taskId, os.path.join('app', 'gibbscluster.py')), shell=True)
+    subprocess.call('python {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)

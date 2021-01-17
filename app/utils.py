@@ -135,8 +135,8 @@ def getGibbsImages(taskId, samples_data):
 
     return gibbsImages
 
-def setUpWsl():
-    print('Setting up the WSL(Windows ) for windows system.')
+#def setUpWsl():
+    #print('Setting up the WSL(Windows ) for windows system.')
     
     # Following script is to set up a WSL in windows system to linux platform dependent tools.
     # This is not automated yet.
