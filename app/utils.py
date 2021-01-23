@@ -108,8 +108,8 @@ def getSeqLogosImages(samples_data):
 
     # This approach has to be modified as the names of logos are derived from the data input,
     # not from the seq2logo results.
-    # for sample,replicates in samples_data.items():
-    #     seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
+    for sample,replicates in samples_data.items():
+        seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
 
     return seqlogos
 
