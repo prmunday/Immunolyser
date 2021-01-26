@@ -1,4 +1,4 @@
-#Seq2Logo.py -f data/202101267/VMM/VMM1_1st_nil_DT9_peptide.txt -o app/static/images/202101267/VMM/seqlogos/VMM1_1st_nil_DT9_peptide --format [JPEG] -t VMM1_1st_nil_DT9_peptide -S 2 -I 2
+#Seq2Logo.py -f /immunolyser-data/data/202101267/VMM/VMM1_1st_nil_DT9_peptide.txt -o app/static/images/202101267/VMM/seqlogos/VMM1_1st_nil_DT9_peptide --format [JPEG] -t VMM1_1st_nil_DT9_peptide -S 2 -I 2
 Last position-specific scoring matrix computed, values are in halfbits
 A R N D C Q E G H I L K M F P S T W Y V
 1 A 2.12 -1.154 -1.1 -0.072 -3.296 0.342 -0.363 -1.015 2.003 -1.174 -1.879 0.883 -3.103 -0.783 -5.401 1.722 0.192 -5.384 1.428 -0.033

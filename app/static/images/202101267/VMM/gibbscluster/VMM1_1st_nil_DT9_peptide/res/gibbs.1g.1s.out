@@ -1,5 +1,5 @@
 # /var/www/firstdemo/app/tools/gibbscluster-2.0/bin/gibbs_cluster_1.2.2_DB.Linux_x86_64 -l 9 -g 1 -ts 1.5 -blf /var/www/firstdemo/app/tools/gibbscluster-2.0/data/blosum%i.freq_rownorm -blm 62 -base 0 -bg 1 -i 10 -s 1 -nt 20 -fr 20 -fs 100 -wlc 200 -swt 0 -lambda 0.8 -dlen 0 -ilen 0 -findels 10 -sigma 5 /var/www//firstdemo/app/static/images/202101267/VMM/gibbscluster/VMM1_1st_nil_DT9_peptide/data/pepdata.txt
-# Tue Jan 26 13:45:31 2021
+# Tue Jan 26 15:40:05 2021
 # User: root
 # PWD : /var/www/firstdemo
 # Host: Linux immunolyser 5.4.0-64-generic x86_64

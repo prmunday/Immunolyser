@@ -32,7 +32,7 @@ def initialiser():
     minLen = 1
 
     taskId = getTaskId()
-    dirName = os.path.join('data', taskId)
+    dirName = os.path.join('/immunolyser-data/data', taskId)
     try:
         # Create target Directory
         os.makedirs(dirName)

@@ -6,12 +6,12 @@ task_id = sys.argv[1]
 
 # project root path
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, '..')))
-for sample in os.listdir('data/{}'.format(task_id)):
-    for replicate in os.listdir('data/{}/{}'.format(task_id,sample)):
+for sample in os.listdir('/immunolyser-data/data/{}'.format(task_id)):
+    for replicate in os.listdir('/immunolyser-data/data/{}/{}'.format(task_id,sample)):
        
         if replicate[-3:] == 'txt':
             print(os.popen('perl ./app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl \
-                    -f ./data/{}/{}/{} \
+                    -f /immunolyser-data/data/{}/{}/{} \
                     -H R \
                     -G ./../../../../../../../../app/tools/seq2logo-2.1/Seq2Logo.py \
                     -g 1-5 \
