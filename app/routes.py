@@ -117,7 +117,7 @@ def initialiser():
     print(seqlogos)
 
     # Calling script to generate gibbsclusters
-    subprocess.call('python {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
+    subprocess.call('sudo python {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)

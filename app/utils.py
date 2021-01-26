@@ -124,12 +124,13 @@ def getGibbsImages(taskId, samples_data):
 
         gibbsImages[sample] = dict()
 
-        # for replicate in replicates.keys():
-        #     bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.jpg')]
-        #     clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
-        #     gibbsImages[sample][replicate[:-4]] = dict()
-        #     gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
-        #     print(gibbsImages)
+        for replicate in replicates.keys():
+            bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')]
+            clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
+            
+            gibbsImages[sample][replicate[:-4]] = dict()
+            gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
+            print(gibbsImages)
 
             # gibbsImages[sample][replicate][bar_plot] = clusters
 

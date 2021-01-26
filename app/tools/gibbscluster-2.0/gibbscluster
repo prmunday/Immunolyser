@@ -24,8 +24,8 @@ set Rpath = ""
 ###############################################################################
 
 # main ========================================================================
-
-set gibbs = app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
+echo `pwd`
+set gibbs = /var/www/firstdemo/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
 
 if ( -x $gibbs ) then
     if ("$Seq2Logo" != "" && "$Rpath" != "") then
