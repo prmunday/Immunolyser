@@ -1,0 +1,23 @@
+Wednesday April 16 2014 22:00
+
+
+NetMHC version 3.4. 9mer predictions using Artificial Neural Networks - Direct. Allele HLA-A02:01. 
+Strong binder threshold  50 nM. Weak binder threshold score 500 nM
+
+
+
+----------------------------------------------------------------------------------------------------
+ pos    peptide      logscore affinity(nM) Bind Level    Protein Name     Allele
+----------------------------------------------------------------------------------------------------
+   0  AAAWYLWEV         0.823            6         SB        Peptides HLA-A02:01
+   1  AAGLQDCTM         0.072        23033                   Peptides HLA-A02:01
+   2  AARNIVRRA         0.066        24592                   Peptides HLA-A02:01
+   3  AARPDDPTL         0.086        19689                   Peptides HLA-A02:01
+   4  AASCGGAVF         0.075        22290                   Peptides HLA-A02:01
+   5  AASKQQMLM         0.102        16505                   Peptides HLA-A02:01
+   6  AASSTHRKV         0.086        19725                   Peptides HLA-A02:01
+   7  AEALLADGL         0.079        21323                   Peptides HLA-A02:01
+   8  AEESLSLEA         0.069        23715                   Peptides HLA-A02:01
+   9  AEFGPWQTV         0.116        14306                   Peptides HLA-A02:01
+--------------------------------------------------------------------------------------------------
+

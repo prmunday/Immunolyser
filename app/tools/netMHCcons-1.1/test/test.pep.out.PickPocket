@@ -1,0 +1,31 @@
+# Method: PickPocket
+
+# Input is in PEPTIDE format
+
+# Peptide length 9
+
+# Threshold for Strong binding peptides (IC50)	50.000 nM
+# Threshold for Weak binding peptides (IC50)	500.000 nM
+
+# Threshold for Strong binding peptides (%Rank)	0.5%
+# Threshold for Weak binding peptides (%Rank)	2%
+
+# Allele: HLA-A02:01
+
+# Distance to the nearest neighbour ( HLA-A02:01 ) in the training set: 0.000
+---------------------------------------------------------------------------------------
+   pos       Allele         peptide         Identity 1-log50k(aff) Affinity(nM)  %Rank Exp_Binding  BindingLevel
+---------------------------------------------------------------------------------------
+     0   HLA-A02:01       AAAWYLWEV          PEPLIST         0.583        91.09   3.00        0.743 <=WB
+     0   HLA-A02:01       AAGLQDCTM          PEPLIST         0.114     14564.23  50.00        0.000 
+     0   HLA-A02:01       AARNIVRRA          PEPLIST         0.066     24481.50  50.00        0.000 
+     0   HLA-A02:01       AARPDDPTL          PEPLIST         0.163      8571.13  50.00        0.149 
+     0   HLA-A02:01       AASCGGAVF          PEPLIST         0.017     41599.44  50.00        0.149 
+     0   HLA-A02:01       AASKQQMLM          PEPLIST         0.118     13947.35  50.00        0.000 
+     0   HLA-A02:01       AASSTHRKV          PEPLIST         0.237      3848.70  32.00        0.272 
+     0   HLA-A02:01       AEALLADGL          PEPLIST         0.202      5620.54  50.00        0.085 
+     0   HLA-A02:01       AEESLSLEA          PEPLIST         0.110     15208.39  50.00        0.000 
+     0   HLA-A02:01       AEFGPWQTV          PEPLIST         0.374       874.09  15.00        0.316 
+---------------------------------------------------------------------------------------
+Number of strong binders: 0 Number of weak binders: 1
+---------------------------------------------------------------------------------------

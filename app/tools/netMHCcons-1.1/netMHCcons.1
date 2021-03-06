@@ -1,0 +1,143 @@
+.de Id
+.ds Rv \\$3
+.ds Dt \\$4
+..
+.Id $Header: example.1,v 1.2 94/02/15 13:28:25 rapacki Exp $
+.TH NetMHCcons 1 \" -*- nroff -*-
+.SH NAME
+NetMHCcons \- Consensus method for predicting peptide binding to any known MHC class I molecule.
+.SH SYNOPSIS
+.B NetMHCcons
+[\fB\-a\fP \fIval\fP]
+[\fB\-affF\fP \fIfloat\fP]
+[\fB\-affS\fP \fIfloat\fP]
+[\fB\-affW\fP \fIfloat\fP]
+[\fB\-dirty\fP]
+[\fB\-dist\fP \fIfloat\fP]
+[\fB\-f\fP \fIfilename\fP]
+[\fB\-filter\fP \fIint\fP]
+[\fB\-h\fP]
+[\fB\-hlaseq\fP \fIfilename\fP]
+[\fB\-inptype\fP \fIint\fP]
+[\fB\-length\fP \fIint_array\fP]
+[\fB\-mhc\fP \fIfilename\fP]
+[\fB\-method\fP \fIname\fP]
+[\fB\-nb\fP \fIint\fP]
+[\fB\-np\fP \fIint\fP]
+[\fB\-pan\fP \fIfilename\fP]
+[\fB\-pick\fP \fIfilename\fP]
+[\fB\-rankF \fP \fIfloat\fP]
+[\fB\-rankS \fP \fIfloat\fP]
+[\fB\-rankW \fP \fIfloat\fP]
+[\fB\-rdir\fP \fIdirname\fP]
+[\fB\-s\fP]
+[\fB\-tdir\fP \fIdirname\fP]
+[\fB\-trMHC\fP \fIdirname\fP]
+[\fB\-trPanPick\fP \fIdirname\fP]
+[\fB\-xls\fP]
+[\fB\-xlsfile\fP \fIfilename\fP]
+
+.SH DESCRIPTION
+.B NetMHCcons 1.1
+server predicts binding of peptides to any known MHC class I molecule. This is a consensus method for MHC class I predictions integrating three state-of-the-art methods NetMHC, NetMHCpan and PickPocket to give the most accurate predictions. The server also allows to use each of these methods separately. 
+
+The input is taken from \fIfile\fP(s). The output is plain text; it will go to \fIstdout\fP.
+The required input format is \fBFASTA\fP or \fBPEPTIDE\fP.
+
+.SH OPTIONS
+.TP
+.B "\-a value"
+MHC allele name (use comma separate names without spaces for multiple allele).
+.TP
+.B "\-affF float"
+Threshold for filtering output (IC50). Used only when filter is 1. Default 500.
+.TP
+.B "\-affS float"
+Threshold for strong binders (IC50). Default 50.000.
+.TP
+.B "\-affW float"
+Threshold for weak binders (IC50). Default 500.000.
+.TP
+.B "\-dirty"
+Dirty mode. Keeps all temporary files.
+.TP
+.B "\-dist float"
+Threshold for the distance to the nearest neighbour at which different methods are chosen. Default is 0.1.
+.TP
+.B "\-f filename"
+Take the input from \fIfile\fP. 
+.TP
+.B "\-filter int"
+Filter output [1]. Default [0].
+.TP
+.B "-h"
+Help.
+.TP
+.B "\-hlaseq filename"
+File with full length HLA sequence.
+.TP
+.B "\-inptype int"
+Input type [0] FASTA [1] Peptide. Default is FASTA.
+.TP
+.B "\-length int_array"
+Peptide length from a range [8-15] (use comma separate numbers without spaces for multiple lengths). Default is 9.
+.TP
+.B "\-mhc filename"
+Full path to NetMHC program.
+.TP
+.B "\-method name"
+Specify which method to use: NetMHCcons, NetMHCpan, NetMHC, PickPocket. Default is NetMHCcons.
+.TP
+.B "-nb int"
+Threshold for the number of binders in the training set at which different methods are chosen. Default is 10.
+.TP
+.B "-np int"
+Threshold for the number of peptides in the training set at which different methods are chosen. Default is 50.
+.TP
+.B "-pan filename"
+Full path to NetMHCpan program.
+.TP
+.B "-pick filename"
+Full path to PickPocket program.
+.TP
+.B "\-rankF float"
+Threshold for filtering output (\%Rank). Used only when filter is 1. Ignored if -hlaseq option was used. Default is 2.
+.TP
+.B "\-rankS float"
+Threshold for strong binders (\%Rank). Default 0.5.
+.TP
+.B "\-rankW float"
+Threshold for weak binders (\%Rank). Default 2. 
+.TP
+.B "-rdir dirname"
+NetMHCcons directory.
+.TP
+.B "\-s"
+Sort output in descending affinity. Default is no sorting.
+.TP
+.B "\-tdir dirname"
+Temporary directory.
+.TP
+.B "\-trMHC filename"
+File with the training data for NetMHC method.
+.TP
+.B "\-trPanPick filename"
+File with the training data for NetMHCpan and PickPocket methods.
+.TP
+.B "\-xls"
+Save output to xls file.
+.TP
+.B "\-xlsfile filename"
+File name for xls output. Default is NetMHCcons_out.xls.
+
+.SH AUTHOR
+
+Edita Karosiene, edita@cbs.dtu.dk, September 2014.
+.br
+Last updated in September 2014 (v. 1.1).
+.SH FILES
+\fB/usr/cbs/bio/bin/NetMHCcons\fP           executable
+.br
+\fB/usr/cbs/bio/src/NetMHCcons-1.1\fP       software home
+.SH SEE ALSO
+fasta (1),

@@ -1,0 +1,9 @@
+#!/usr/bin/tcsh -f
+
+set thresh_dir = "/home/projects/massimo/nnalign_gap/ranks_2013_cv/res"
+
+set allele_list = "/home/projects/massimo/nnalign_gap/ranks_2013_cv/allele.list"
+
+foreach a (`cat $allele_list`)
+	cat $thresh_dir/$a.allmers.thr | args 1,2,6 | perl -pe 's/(\S+)\s+(\S+)\s+(\S+)/\1 \2 Peptide \3/' > $a.thr
+end

@@ -1,0 +1,106 @@
+.de Id
+.ds Rv \\$3
+.ds Dt \\$4
+..
+.Id $Header: example.1,v 1.2 94/02/15 13:28:25 rapacki Exp $
+.TH netMHC 3.4 \" -*- nroff -*-
+.SH NAME
+netMHC \- predict petide-MHC binding affinity .
+.SH SYNOPSIS
+.B netMHC
+[\fB\-a\fP \fIstring\fP] [\fB\-h\fP] [\fB\-b\fP] [\fB\-s\fP]
+[\fB\-l\fP \fI#\fP] [\fB\-p\fP] [\fB\-n\fP] [\fB\-x\fP \fIfile\fP]
+       [\fB\-A\fP \fIstring\fP] [\fB\--version\fP] \fIfile\fP
+
+.SH DESCRIPTION
+.B netMHC
+predicts binding of peptides to a number of different HLA alleles
+using artificial neural networks (ANNs).
+
+Predictions can be obtained for 12 human supertypes including more than 100
+individual human alleles using ANNs. Furthermore,
+animal (Monkey, Cattle, Pig and Mouse) allele predictions are available. 
+ANNs have been
+trained for 78 different Human MHC (HLA) alleles representing all 12 HLA A and
+B Supertypes as defined by Lund et al. (2004), 8 Patr, 18 Mamu, 3 SLA, 6 BoLA, and 6 H-2 molecules. 
+
+Prediction values are given in nM IC50 values.
+
+.B Predictions of lengths 8-11
+
+Predictions can be made for lengths between 8 and 11 for all alleles using an
+novel approximation algorithm using ANNs trained on 9mer peptides. Probably
+because of the limited amount of available 10mer data this method has a better
+predictive value than ANNs trained on 10mer data. However, caution should be
+taken for 8mer predictions as some alleles might not bind 8mers to any
+significant extent.
+
+.B Output
+
+Strong and weak binding peptides are
+indicated in the output. In the selection window for HLA alleles, the
+recommended allele for each HLA supertype is indicated. 
+
+.SH OPTIONS
+.TP
+.BI "\-a " string" "| " \fB\--mhc\fP=\fIstring\fP
+Allele names ( ',' -separated).
+.TP
+.B "\-h" | "\fB--help\fP
+Show the allowed command line syntax and exit.
+.TP
+.BI "\-l " num" "| " \fB--peplen\fP=\fInum\fP
+Length of subpeptides to predict.
+.TP
+.B "\-p" | "\fB--peptide\fP
+Input file is in peptide format.
+.TP
+.B "\-s" | "\fB--sort\fP
+Sort output on descending affinity.
+.TP
+.BI "\-x " file"  "| " \fB--xls\fP=\fIfile\fP
+Name of TAB separated output file.
+.TP
+.B "\-A" | "\fB--Alleles\fP
+List available alleles and exit.
+.TP
+.B "\--version"
+Show the version number and exit.
+.TP
+.I file
+Input file name.
+
+.SH VERSION
+This manpage describes \fBnetMHC\fP 3.4.
+
+.SH AUTHOR
+Morten Nielsen, mniel@cbs.dtu.dk, July 2013
+
+.SH REFERENCES
+For publication of results, please cite:
+
+"Sensitive quantitative predictions of peptide-MHC binding
+by a 'Query by Committee' artificial neural network approach"
+.br
+Buus S, Lauemoller SL, Worning P, Kesmir C, Frimurer T,
+Corbet S, Fomsgaard A, Hilden J,Holm A, Brunak S.
+.br
+\fBTissue Antigens.\fP, 62:378-84, \fB2003\fP.
+
+"Reliable prediction of T-cell epitopes using neural networks
+with novel sequence representations"
+.br
+Nielsen M, Lundegaard C, Worning P, Lauemoller SL, Lamberth K,
+Buus S, Brunak S, Lund O.
+.br
+\fBProtein Sci.\fP, 12:1007-17, \fB2003\fP.
+
+The method is also available on-line at:
+
+.B     http://www.cbs.dtu.dk/services/NetMHC/
+.SH FILES
+\fB/usr/cbs/bio/bin/netMHC\fP           executable
+.br
+\fB/usr/cbs/bio/src/netMHC-3.4\fP       software home
+.SH SEE ALSO
+fasta (1)

@@ -1,0 +1,47 @@
+#! /bin/tcsh -f
+
+# This the main NetMHC-3.4 script. It only acts as the frontend to the
+# software proper, a compiled binary.
+# 
+# VERSION:	2013 July 2	launch
+# 
+
+###############################################################################
+#               GENERAL SETTINGS: CUSTOMIZE TO YOUR SITE
+###############################################################################
+
+# full path to the NetMHC-3.4 directory (mandatory)
+setenv	NMHOME	/mnt/c/Users/ASUS/Documents/sem3/thesis/firstdemo/app/tools/netMHC-3.4
+
+# determine where to store temporary files (must be writable to all users)
+setenv	TMPDIR	/scratch
+#setenv TMPDIR  /tmp
+
+# determine platform (do not change this unless you don't have 'uname'!)
+setenv	UNIX	`uname -s`
+setenv	AR	`uname -m`
+
+# SET PYTHON LIBRARY PATH
+
+set PLATFORM = `echo $UNIX $AR | awk '{print $1"_"$2}'`
+
+if ( $PLATFORM == "Linux_x86_64" ) then
+	set PYTHON = /usr/local/bin/python2.5
+else
+	set PYTHON = `which python`
+endif
+
+###############################################################################
+#               NOTHING SHOULD NEED CHANGING BELOW THIS LINE!
+###############################################################################
+
+# other settings
+
+# main ========================================================================
+if ( -x $NMHOME/netMHC.py ) then
+   sudo $PYTHON $NMHOME/netMHC.py $*
+else
+   echo netMHC: no binaries found for $PLATFORM $NMHOME/netMHC.py
+endif
+
+# end of script ===============================================================

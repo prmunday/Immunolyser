@@ -1,0 +1,147 @@
+.de Id
+.ds Rv \\$3
+.ds Dt \\$4
+..
+.Id $Header: example.1,v 1.2 94/02/15 13:28:25 rapacki Exp $
+.TH netMHC 4.0 \" -*- nroff -*-
+.SH NAME
+NetMHC \- Prediction of peptide-MHC binding affinity.
+.SH SYNOPSIS
+.B netMHC
+[\fB\-h\fP]
+[\fB\-a\fP \fIstring\fP]
+[\fB\-f\fP \fIfilename\fP]
+[\fB\-p\fP]
+[\fB\-inptype\fP \fIint\fP]
+[\fB\-l\fP \fIstring\fP]
+[\fB\-s\fP]
+[\fB\-rth\fP \fIfloat\fP]
+[\fB\-rlt\fP \fIfloat\fP]
+[\fB\-listMHC\fP]
+[\fB\-xls\fP]
+[\fB\-xlsfile\fP \fIfilename\fP]
+[\fB\-t\fP \fIfloat\fP]
+[\fB\-rdir\fP \fIfilename\fP]
+[\fB\-tdir\fP \fIfilename\fP]
+[\fB\-syn\fP \fIfilename\fP]
+[\fB\-thrfmt\fP \fIfilename\fP]
+[\fB\-hlalist\fP \fIfilename\fP]
+[\fB\-v\fP]
+[\fB\-dirty\fP]
+[\fB\-version\fP \fIfilename\fP]
+\fIFasta/Peptide_file\fP       
+
+.SH DESCRIPTION
+.B netMHC
+predicts binding of peptides to MHC class I molecules
+using artificial neural networks (ANNs).
+
+ANNs have been trained for 81 different Human MHC alleles including HLA-A, -B, -C and -E. Furthermore, predictions for 41 animal (Monkey, Cattle, Pig, and Mouse) alleles are available. If your molecule of interest is not found in the list below, you may want to use NetMHCpan (http://www.cbs.dtu.dk/services/NetMHCpan) which can predict peptide-MHC class I binding for any allele of known sequence.
+
+.B Peptide length:
+predictions can be obtained for peptides of any length larger than 8.
+
+Note that most HLA molecules have a strong preference for binding 9mers. Predictions for peptides longer than 11 amino acids should be taken with caution. 
+
+.B Output:
+prediction values are expressed in nM IC50 units, and as a %Rank calculated on the background scores of random peptides for each allele in the NetMHC library. As different MHC molecules bind peptides in different ranges of affinity, we recommend selecting potential epitopes based on Rank scores rather than on predicted affinity, 
+
+Follows a short description of the options. For more information, sample data and output examples visit: http://www.cbs.dtu.dk/services/NetMHC-4.0
+
+.SH OPTIONS
+.TP
+.B "\-h "
+Show command line syntax and exit.
+.TP
+.BI "\-a " string
+MHC allele name (use comma-separated names without spaces for multiple allele).
+.TP
+.BI "\-l " string/int
+Peptide length (for FASTA input). Protein sequences will be digested into peptides with the specified length. Use comma-separated numbers without spaces for multiple lengths.
+.TP
+.BI "\-f " filename
+Input file in FASTA or Peptide format (see option -p).
+.TP
+.B "\-p " 
+Switch on if input file is in peptide format (default is FASTA).
+.TP
+.B "\-s "
+Sort output by predicted affinity.
+.TP
+.BI "\-rlt " float
+Threshold for weak binders (\%Rank). Default 2.0.
+.TP
+.BI "\-rth " float
+Threshold for strong binders (\%Rank). Default 0.5.
+.TP
+.B "\-listMHC " 
+Show a list of MHC alleles in the NetMHC library and exit.
+.TP
+.B "\-xls " 
+Save output to a XLS file (spreadsheet).
+.TP
+.BI "\-xlsfile " filename
+File name for XLS output. Default is NetMHC_out.xls.
+.TP
+.BI "\-t " float
+Threshold on affinity to filter output. It can be useful for large jobs to reduce the size of your output file.
+.TP
+.BI "\-rdir " filename
+NetMHC directory.
+.TP
+.BI "\-tdir " filename
+Directory for temporary files (it must have writing permissions)
+.TP
+.BI "\-thrfmt " filename
+Location of the threshold files used to calculate the %Rank scores
+.TP
+.BI "\-syn " filename
+Location of the synapse files in the NetMHC neural network ensemble
+.TP
+.B "\-dirty "
+Dirty mode. Keeps all temporary files.
+
+.TP
+.I Fasta/Peptide_file
+Input file name (can also be specified with the -f option).
+
+.SH VERSION
+This manpage describes \fBnetMHC\fP version 4.0.
+
+.SH AUTHOR
+Morten Nielsen, mniel@cbs.dtu.dk, October 2015
+
+.SH REFERENCES
+For publication of results, please cite:
+
+"Gapped sequence alignment using artificial neural networks: application to the MHC class I system"
+.br
+Andreatta M and Nielsen M
+.br
+\fBBioinformatics\fP, btv639, \fB2015\fP.
+
+"Sensitive quantitative predictions of peptide-MHC binding
+by a 'Query by Committee' artificial neural network approach"
+.br
+Buus S, Lauemoller SL, Worning P, Kesmir C, Frimurer T,
+Corbet S, Fomsgaard A, Hilden J,Holm A, Brunak S.
+.br
+\fBTissue Antigens.\fP, 62:378-84, \fB2003\fP.
+
+"Reliable prediction of T-cell epitopes using neural networks
+with novel sequence representations"
+.br
+Nielsen M, Lundegaard C, Worning P, Lauemoller SL, Lamberth K,
+Buus S, Brunak S, Lund O.
+.br
+\fBProtein Sci.\fP, 12:1007-17, \fB2003\fP.
+
+The method is also available on-line at:
+
+.B     http://www.cbs.dtu.dk/services/NetMHC/
+.SH FILES
+\fB/usr/cbs/bio/bin/netMHC\fP           executable
+.br
+\fB/usr/cbs/bio/src/netMHC-4.0\fP       software home
+.SH SEE ALSO
+fasta (1)

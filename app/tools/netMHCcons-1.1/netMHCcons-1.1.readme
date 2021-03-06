@@ -1,0 +1,153 @@
+
+
+   NetMHCcons 1.1	    INSTALLATION INSTRUCTIONS
+
+
+   DESCRIPTION
+
+   NetMHCcons ver. 1.1  predicts binding of peptides to any known MHC class I
+   molecule. It is a consensus method for MHC class I predictions integrating
+   three state-of-the-art methods  NetMHC,  NetMHCpan and  PickPocket to give
+   the most accurate predictions. It also allows to use each of these methods
+   separately, as follows.
+ 
+      NetMHC  is  an artificial neural network-based  (ANN)  allele-specific
+      method which has been trained using 94 MHC class I alleles. Version 3.4
+      is used as part of NetMHCcons-1.1.
+ 
+      NetMHCpan  is a pan-specific ANN method trained on more than 115,000
+      quantitative  binding  data  covering  more  than  120 different  MHC
+      molecules. Version 2.8 is used as part of NetMHCcons-1.1.
+ 
+      PickPocket is matrix-based and relies  on  receptor-pocket similarities
+      between MHC molecules. It has been trained on 94 different MHC alleles.
+      In the PickPocket v. 1.1,  the matrices of pocket-library are generated
+      using the SMMPMBEC method.
+ 
+   The NetMHCcons method is described in detail in the following article:
+
+   NetMHCcons: a consensus method for the major histocompatibility complex
+   class I predictions
+   Edita Karosiene, Claus Lundegaard, Ole Lund and Morten Nielsen.
+   Immunogenetics; 64(3):177-86m Mar, 2012.
+
+   The NetMHC, NetMHCpan and PickPocket methods are described separately in the articles:
+
+   NetMHC-3.0: accurate web accessible predictions of human, mouse and monkey
+   MHC class I affinities for peptides of length 8-11.
+   Lundegaard C, Lamberth K, Harndahl M, Buus S, Lund O, Nielsen M.
+   Nucleic Acids Res. 1;36(Web Server issue):W509-12, 2008.
+
+   NetMHCpan, a Method for Quantitative Predictions of Peptide Binding to Any
+   HLA-A and -B Locus Protein of Known Sequence.
+   Nielsen M, et al.
+   PLoS ONE 2(8): e796. doi:10.1371/journal.pone.0000796, 2007.
+
+   The PickPocket method for predicting binding specificities for receptors 
+   based on receptor pocket similarities: application to MHC-peptide binding
+   Zhang H, Lund O, Nielsen M.
+   Bioinformatics; 25(10):1293-9, May 15, 2009.
+
+   More information about the NetMHCcons method can be found at:
+   
+      http://www.cbs.dtu.dk/services/NetMHCcons-1.1/
+
+
+   DOWNLOAD
+
+   The NetMHCcons 1.1 software package is a property of Center for Biological
+   Sequence Analysis.  It may be downloaded  only  by special agreement.  For
+   academic users there is a download site at:
+
+        http://www.cbs.dtu.dk/cgi-bin/nph-sw_request?netMHCcons
+
+   Other users are requested to contact software@cbs.dtu.dk.
+
+
+   PRE-INSTALLATION
+
+   NetMHCcons 1.1 currently runs under Linux and Darwin (MacOSX). The package
+   consists of two files:
+  
+      netMHCcons-1.1.readme	this file
+      netMHCcons-1.1.tar.gz	gzip'ed TAR archive
+
+   After installation the software will occupy less than 20 MB of diskspace.
+
+   In addition,  NetMHCcons 1.1 depends on the NetMHC 3.4,  NetMHCpan 2.8 and
+   PickPocket 1.1 softwares. If those softwares are not on the system already
+   they will have to be installed before installing NetMHCcons.  For academic
+   users the download points are:
+
+      http://www.cbs.dtu.dk/cgi-bin/sw_request?netMHC+3.4
+      http://www.cbs.dtu.dk/cgi-bin/sw_request?netMHCpan
+      http://www.cbs.dtu.dk/cgi-bin/sw_request?pickpocket
+
+   Other users can obtain the softwares by writing to software@cbs.dtu.dk.
+
+
+   INSTALLATION
+
+   1. Uncompress and untar the package:
+
+      gunzip -c netMHCcons-1.1.tar.gz | tar xvf -
+
+      This should produce a directory 'netMHCcons-1.1'.
+
+   2. From the CBS WWW site download the file:
+
+      http://www.cbs.dtu.dk/services/NetMHCcons-1.1/data.tar.gz
+
+      It should be 1,720,227 bytes.  Put it in the 'netMHCcons-1.1' directory
+      and then gunzip and untar it:
+      
+      gunzip -c data.tar.gz | tar xvf -
+
+      This will produce a directory 'data' (~20MB).  It is necessary  for the
+      NetMHCcons 1.1 software to operate;  once it has been installed you may
+      delete the 'data.tar.gz' file; it will not be needed.
+
+   3. In the 'netMHCcons-1.1' directory edit the script 'netMHCcons':
+   
+      a. At the top of the file  locate the part labelled  "GENERAL SETTINGS:
+         CUSTOMIZE TO YOUR SITE"  and set  the 'NMHOME' variable  to the full
+	 path to the 'netMHCcons-1.1' directory on your system;
+
+      b. Set the variables  NETMHC_env,  NETMHCpan_env and  PICKPOCKET_env to
+         the full paths on your system to the  NetMHC 3.4,  NetMHCpan 2.8 and
+	 PickPocket 1.1 executables, respectively (see PRE-INSTALLATION above
+	 for details).
+
+      c. If the variable TMPDIR is not set by default on your system you need
+         to set it to the full path to the tmp directory of your choice (must
+         be user writable with the sticky bit set, typically '/var/tmp');
+
+   4. In the 'netMHCcons-1.1/test' directory  test the software  by executing
+      the commands  listed in the file  'comm'.  The resulting ".myout" files
+      should not differ  from the corresponding ".out" files  provided in the
+      package  other than in the directory names and rounding errors.
+
+   5. Finish the installation:
+
+      a. Copy or link the 'netMHCcons' script  to any directory in the users'
+         path on your syste.
+
+      b. Copy the 'netMHCcons.1' file to a location in your manual system. If
+         you need a compiled version try running:
+
+         man -d netMHCcons.1 | compress >netMHCcons.Z
+
+         or:
+
+         neqn netMHCcons.1 | tbl | nroff -man | col | compress >netMHCcons.Z
+
+
+   PROBLEMS
+
+   Contact packages@cbs.dtu.dk in case of problems.
+   
+   Questions on the scientific aspects of the NetMHCcons 1.1 method should be
+   sent to dr Morten Nielsen, mniel@cbs.dtu.dk.
+
+   CBS, 20 May 2015
+   K. Rapacki

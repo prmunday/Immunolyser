@@ -1,0 +1,31 @@
+# Method: NetMHC
+
+# Input is in PEPTIDE format
+
+# Peptide length 9
+
+# Threshold for Strong binding peptides (IC50)	50.000 nM
+# Threshold for Weak binding peptides (IC50)	500.000 nM
+
+# Threshold for Strong binding peptides (%Rank)	0.5%
+# Threshold for Weak binding peptides (%Rank)	2%
+
+# Allele: HLA-A02:01
+
+# Distance to the nearest neighbour ( HLA-A02:01 ) in the training set: 0.000
+---------------------------------------------------------------------------------------
+   pos       Allele         peptide         Identity 1-log50k(aff) Affinity(nM)  %Rank Exp_Binding  BindingLevel
+---------------------------------------------------------------------------------------
+     0   HLA-A02:01       AAAWYLWEV         Peptides         0.823         6.00   0.20        0.743 <=SB
+     1   HLA-A02:01       AAGLQDCTM         Peptides         0.072     23033.00  50.00        0.000 
+     2   HLA-A02:01       AARNIVRRA         Peptides         0.066     24592.00  50.00        0.000 
+     3   HLA-A02:01       AARPDDPTL         Peptides         0.086     19689.00  32.00        0.149 
+     4   HLA-A02:01       AASCGGAVF         Peptides         0.075     22290.00  50.00        0.149 
+     5   HLA-A02:01       AASKQQMLM         Peptides         0.102     16505.00  32.00        0.000 
+     6   HLA-A02:01       AASSTHRKV         Peptides         0.086     19725.00  32.00        0.272 
+     7   HLA-A02:01       AEALLADGL         Peptides         0.079     21323.00  50.00        0.085 
+     8   HLA-A02:01       AEESLSLEA         Peptides         0.069     23715.00  50.00        0.000 
+     9   HLA-A02:01       AEFGPWQTV         Peptides         0.116     14306.00  32.00        0.316 
+---------------------------------------------------------------------------------------
+Number of strong binders: 1 Number of weak binders: 0
+---------------------------------------------------------------------------------------

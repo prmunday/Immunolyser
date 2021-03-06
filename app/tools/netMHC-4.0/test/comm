@@ -1,0 +1,2 @@
+../netMHC -p test.pep > test.pep.out
+../netMHC test.fsa > test.fsa.out

@@ -1,0 +1,125 @@
+
+
+   NetMHC 4.0              INSTALLATION INSTRUCTIONS
+
+
+   DESCRIPTION
+
+   NetMHC 4.0 software  predicts binding of peptides to a number of different
+   HLA alleles  using artificial neural networks (ANN).  The NetMHC method is
+   described in detail in the following four articles:
+   
+   1) Reliable prediction of T-cell epitopes using neural networks with 
+novel
+   sequence representations.
+   Nielsen M, Lundegaard C, Worning P, Lauemoller SL, Lamberth K, Buus S,
+   Brunak S, Lund O.
+   Protein Sci., 12:1007-17, 2003.
+
+   2) NetMHC-3.0: accurate web accessible predictions of human, mouse and 
+monkey
+   MHC class I affinities for peptides of length 8-11.
+   Lundegaard C, Lamberth K, Harndahl M, Buus S, Lund O, Nielsen M.
+   Nucleic Acids Res. 1;36(Web Server issue):W509-12, 2008.
+
+   3) Accurate approximation method for prediction of class I MHC 
+affinities for
+   peptides of length 8, 10 and 11 using prediction tools trained on 9mers.
+   Lundegaard C, Lund O, Nielsen M.
+   Bioinformatics, 24(11):1397-98, 2008.
+
+   4) Gapped sequence alignment using artificial neural networks: 
+application to 
+   the MHC class I system.
+   Andreatta M, Nielsen M.
+   Bioinformatics, 2015 Oct 29 (pii: btv639), 2015.
+
+   More information about the method can be found at:
+   
+      http://www.cbs.dtu.dk/services/NetMHC/
+
+
+   DOWNLOAD
+
+   The NetMHC 4.0 package  is a  property  of  Center for Biological Sequence
+   Analysis.  It may be downloaded  only  by special agreement.  For academic
+   users there is a download site at:
+
+        http://www.cbs.dtu.dk/cgi-bin/nph-sw_request?netMHC
+
+   Other users are requested to contact software@cbs.dtu.dk.
+
+
+   PRE-INSTALLATION
+
+   The current version will run under Linux and Darwin (Mac). The package consists of
+   two files:
+  
+      netMHC-4.0.readme         this file
+      netMHC-4.0.<unix>.tar.gz   compressed TAR archive
+
+   where 'unix' is the UNIX platform on which you are about to install. After
+   installation the software will occupy less than 200 Mb of diskspace.
+
+
+   INSTALLATION
+
+   1. Uncompress and untar the package:
+
+      tar -xvf netMHC-4.0.<unix>.tar.gz
+
+      This will produce a directory 'netMHC-4.0'.
+
+   2. In the 'netMHC-4.0' directory  edit the script 'netMHC':
+         
+      a. At the top of the file locate the part labelled  "GENERAL SETTINGS:
+         CUSTOMIZE TO YOUR SITE" and  set the 'NMHOME' variable  to the full
+         path to the 'netMHC-4.0' directory on your system.
+      b. Set 'TMPDIR' to a suitable temporary directory, and given permissions to be user writable.
+
+   3. From the CBS WWW site download the file:
+
+      http://www.cbs.dtu.dk/services/NetMHC-4.0/data.tar.gz
+
+      It should be 63384960 bytes. Put it in the 'netMHC-4.0' directory;
+      then gunzip and untar it:
+      
+      gunzip -c data.tar.gz | tar xvf -
+
+      This will produce a directory 'data' (~210MB).  It is necessary for the
+      NetMHC 4.0 software to operate; once it is installed you may delete the
+      'data.tar.gz' file; it will not be needed.
+
+   4. In the 'netMHC-4.0/test' directory test the software:
+
+      > ../netMHC test.fsa > test.fsa.myout
+      > ../netMHC -p test.pep > test.pep.myout
+
+      The output should be nearly identical to the corresponding '.out' files
+      (except the lines with the local information).
+
+   5. Finish the installation:
+
+      a. Copy or link the 'netMHC' script to a directory in the users path.
+
+      b. Copy the  'netMHC-4.0/netMHC.1'  file to  a location  in your manual
+         system. If you need a compiled version try running:
+
+         man -d netMHC.1 | compress >netMHC.Z
+
+         or:
+
+         neqn netMHC.1 | tbl | nroff -man | col | compress >netMHC.Z
+
+   6. Enjoy ...
+
+
+   PROBLEMS
+
+   Contact packages@cbs.dtu.dk in case of problems.
+   
+   Questions on the scientific aspects of the NetMHC method should be sent to
+   Morten Nielsen mniel@cbs.dtu.dk.
+
+   CBS, 16 Dec 2015
+   Morten Nielsen 

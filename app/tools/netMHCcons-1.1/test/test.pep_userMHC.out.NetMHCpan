@@ -1,0 +1,31 @@
+# Method: NetMHCpan
+
+# Input is in PEPTIDE format
+
+# Peptide length 9
+
+# Threshold for Strong binding peptides (IC50)	50.000 nM
+# Threshold for Weak binding peptides (IC50)	500.000 nM
+
+# Thresholds for %Rank are ignored
+
+
+# MHC sequence from FASTA file
+
+# Distance to the nearest neighbour ( HLA-B07:02 ) in the training set: 0.000
+-------------------------------------------------------------------------------
+   pos       Allele         peptide         Identity 1-log50k(aff) Affinity(nM) Exp_Binding  BindingLevel
+-------------------------------------------------------------------------------
+     0     USER_DEF       AAAWYLWEV          PEPLIST         0.127     12711.67        0.743 
+     0     USER_DEF       AAGLQDCTM          PEPLIST         0.100     16956.31        0.000 
+     0     USER_DEF       AARNIVRRA          PEPLIST         0.183      6897.06        0.000 
+     0     USER_DEF       AARPDDPTL          PEPLIST         0.293      2102.45        0.149 
+     0     USER_DEF       AASCGGAVF          PEPLIST         0.312      1707.52        0.149 
+     0     USER_DEF       AASKQQMLM          PEPLIST         0.183      6880.36        0.000 
+     0     USER_DEF       AASSTHRKV          PEPLIST         0.155      9340.32        0.272 
+     0     USER_DEF       AEALLADGL          PEPLIST         0.028     36902.90        0.085 
+     0     USER_DEF       AEESLSLEA          PEPLIST         0.017     41633.65        0.000 
+     0     USER_DEF       AEFGPWQTV          PEPLIST         0.043     31457.37        0.316 
+-------------------------------------------------------------------------------
+Number of strong binders: 0 Number of weak binders: 0
+-------------------------------------------------------------------------------

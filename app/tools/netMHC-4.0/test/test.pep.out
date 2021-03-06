@@ -1,0 +1,52 @@
+# /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64/bin/netMHC -p test.pep
+# Thu Dec 17 23:16:10 2015
+# User: mniel
+# PWD : /usr/cbs/packages/netMHC/4.0/netMHC-4.0/test
+# Host: Linux padawan 2.6.37.6-0.11-desktop x86_64
+# -p       1                    Switch on if input is a list of peptides (Peptide format)
+# Command line parameters set to:
+#	[-a line]            HLA-A0201            HLA allele name
+#	[-f filename]                             Input file (by default in FASTA format)
+#	[-p]                 1                    Switch on if input is a list of peptides (Peptide format)
+#	[-l string]          9                    Peptide length (multiple lengths separated by comma e.g. 8,9,10)
+#	[-s]                 0                    Sort output on decreasing affinity
+#	[-rth float]         0.500000             Threshold for high binding peptides (%Rank)
+#	[-rlt float]         2.000000             Threshold for low binding peptides (%Rank)
+#	[-listMHC]           0                    Print list of alleles included in netMHC
+#	[-xls]               0                    Save output to xls file
+#	[-xlsfile filename]  NetMHC_out.xls       File name for xls output
+#	[-t float]           -99.900002           Threshold for output
+#	[-thrfmt filename]   /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64/data/threshold/%s.thr Format for threshold filenames
+#	[-hlalist filename]  /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64/data/allelelist File with covered HLA names
+#	[-rdir filename]     /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64 Home directory for NetMHC
+#	[-tdir filename]     /scratch             Temporary directory (Default $$)
+#	[-syn filename]      /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64/data/synlists/%s.synlist Format of synlist file
+#	[-v]                 0                    Verbose mode
+#	[-dirty]             0                    Dirty mode, leave tmp dir+files
+#	[-inptype int]       0                    Input type [0] FASTA [1] Peptide
+#	[-version filename]  /usr/cbs/packages/netMHC/4.0/netMHC-4.0/Linux_x86_64/data/version File with version information
+#	[-w]                 0                    w option for webface
+
+# NetMHC version 4.0
+
+# Input is in PEPTIDE format
+# Rank Threshold for Strong binding peptides   0.500
+# Rank Threshold for Weak binding peptides   2.000
+-----------------------------------------------------------------------------------
+  pos          HLA      peptide         Core Offset  I_pos  I_len  D_pos  D_len        iCore        Identity 1-log50k(aff) Affinity(nM)    %Rank  BindLevel
+-----------------------------------------------------------------------------------
+    0    HLA-A0201  AAAAAWYLWEV    AAAWYLWEV      0      0      0      1      2  AAAAAWYLWEV         PEPLIST         0.349      1147.39     4.50
+    0    HLA-A0201    AAGLQDCTM    AAGLQDCTM      0      0      0      0      0    AAGLQDCTM         PEPLIST         0.071     23293.36    33.00
+    0    HLA-A0201    AARNIVRRA    AARNIVRRA      0      0      0      0      0    AARNIVRRA         PEPLIST         0.056     27406.76    41.00
+    0    HLA-A0201    AARPDDPTL    AARPDDPTL      0      0      0      0      0    AARPDDPTL         PEPLIST         0.089     19069.48    26.00
+    0    HLA-A0201    AASCGGAVF    AASCGGAVF      0      0      0      0      0    AASCGGAVF         PEPLIST         0.056     27330.36    40.00
+    0    HLA-A0201    AASKQQMLM    AASKQQMLM      0      0      0      0      0    AASKQQMLM         PEPLIST         0.086     19809.54    27.00
+    0    HLA-A0201    AASSTHRKV    AASSTHRKV      0      0      0      0      0    AASSTHRKV         PEPLIST         0.062     25533.06    37.00
+    0    HLA-A0201    AEALLADGL    AEALLADGL      0      0      0      0      0    AEALLADGL         PEPLIST         0.070     23381.48    33.00
+    0    HLA-A0201    AEESLSLEA    AEESLSLEA      0      0      0      0      0    AEESLSLEA         PEPLIST         0.052     28438.97    43.00
+    0    HLA-A0201    AEFGPWQTV    AEFGPWQTV      0      0      0      0      0    AEFGPWQTV         PEPLIST         0.129     12361.73    18.00
+-----------------------------------------------------------------------------------
+
+Protein PEPLIST. Allele HLA-A0201. Number of high binders 0. Number of weak binders 0. Number of peptides 10
+
+-----------------------------------------------------------------------------------

@@ -1,0 +1,15 @@
+../netMHCcons -inptype 1 -f test.pep > test.pep.myout
+../netMHCcons -f test.fsa > test.fsa.myout
+../netMHCcons -hlaseq B0702.fsa -inptype 1 -f test.pep > test.pep_userMHC.myout
+
+../netMHCcons -method NetMHC -inptype 1 -f test.pep > test.pep.myout.NetMHC
+../netMHCcons -method NetMHC -f test.fsa > test.fsa.myout.NetMHC
+../netMHCcons -method NetMHC -hlaseq B0702.fsa -inptype 1 -f test.pep > test.pep_userMHC.myout.NetMHC
+
+../netMHCcons -method NetMHCpan -inptype 1 -f test.pep > test.pep.myout.NetMHCpan
+../netMHCcons -method NetMHCpan -f test.fsa > test.fsa.myout.NetMHCpan
+../netMHCcons -method NetMHCpan -hlaseq B0702.fsa -inptype 1 -f test.pep > test.pep_userMHC.myout.NetMHCpan
+
+../netMHCcons -method PickPocket -inptype 1 -f test.pep > test.pep.myout.PickPocket
+../netMHCcons -method PickPocket -f test.fsa > test.fsa.myout.PickPocket
+../netMHCcons -method PickPocket -hlaseq B0702.fsa -inptype 1 -f test.pep > test.pep_userMHC.myout.PickPocket

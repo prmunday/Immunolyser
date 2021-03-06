@@ -1,0 +1,258 @@
+# Method: PickPocket
+
+# Input is in FASTA format
+
+# Peptide length 9
+
+# Threshold for Strong binding peptides (IC50)	50.000 nM
+# Threshold for Weak binding peptides (IC50)	500.000 nM
+
+# Threshold for Strong binding peptides (%Rank)	0.5%
+# Threshold for Weak binding peptides (%Rank)	2%
+
+# Allele: HLA-A02:01
+
+# Distance to the nearest neighbour ( HLA-A02:01 ) in the training set: 0.000
+---------------------------------------------------------------------------------------
+   pos       Allele         peptide         Identity 1-log50k(aff) Affinity(nM)  %Rank   BindingLevel
+---------------------------------------------------------------------------------------
+     0   HLA-A02:01       TMDKSELVQ  143B_BOVIN_P293         0.230      4151.52  32.00  
+     0   HLA-A02:01       MDKSELVQK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DKSELVQKA  143B_BOVIN_P293         0.045     30726.73  50.00  
+     0   HLA-A02:01       KSELVQKAK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SELVQKAKL  143B_BOVIN_P293         0.152      9654.43  50.00  
+     0   HLA-A02:01       ELVQKAKLA  143B_BOVIN_P293         0.331      1391.91  32.00  
+     0   HLA-A02:01       LVQKAKLAE  143B_BOVIN_P293         0.063     25289.19  50.00  
+     0   HLA-A02:01       VQKAKLAEQ  143B_BOVIN_P293         0.070     23444.56  50.00  
+     0   HLA-A02:01       QKAKLAEQA  143B_BOVIN_P293         0.075     22209.93  50.00  
+     0   HLA-A02:01       KAKLAEQAE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AKLAEQAER  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KLAEQAERY  143B_BOVIN_P293         0.280      2416.90  32.00  
+     0   HLA-A02:01       LAEQAERYD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AEQAERYDD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EQAERYDDM  143B_BOVIN_P293         0.170      7945.94  50.00  
+     0   HLA-A02:01       QAERYDDMA  143B_BOVIN_P293         0.058     26694.99  50.00  
+     0   HLA-A02:01       AERYDDMAA  143B_BOVIN_P293         0.020     40270.83  50.00  
+     0   HLA-A02:01       ERYDDMAAA  143B_BOVIN_P293         0.130     12249.09  50.00  
+     0   HLA-A02:01       RYDDMAAAM  143B_BOVIN_P293         0.189      6469.41  50.00  
+     0   HLA-A02:01       YDDMAAAMK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DDMAAAMKA  143B_BOVIN_P293         0.068     23957.42  50.00  
+     0   HLA-A02:01       DMAAAMKAV  143B_BOVIN_P293         0.508       205.07   6.00  <=WB
+     0   HLA-A02:01       MAAAMKAVT  143B_BOVIN_P293         0.124     13070.67  50.00  
+     0   HLA-A02:01       AAAMKAVTE  143B_BOVIN_P293         0.039     32787.64  50.00  
+     0   HLA-A02:01       AAMKAVTEQ  143B_BOVIN_P293         0.114     14564.23  50.00  
+     0   HLA-A02:01       AMKAVTEQG  143B_BOVIN_P293         0.238      3807.28  32.00  
+     0   HLA-A02:01       MKAVTEQGH  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KAVTEQGHE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AVTEQGHEL  143B_BOVIN_P293         0.416       554.88  15.00  
+     0   HLA-A02:01       VTEQGHELS  143B_BOVIN_P293         0.011     44389.61  50.00  
+     0   HLA-A02:01       TEQGHELSN  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EQGHELSNE  143B_BOVIN_P293         0.041     32085.75  50.00  
+     0   HLA-A02:01       QGHELSNEE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       GHELSNEER  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       HELSNEERN  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ELSNEERNL  143B_BOVIN_P293         0.336      1318.61  32.00  
+     0   HLA-A02:01       LSNEERNLL  143B_BOVIN_P293         0.208      5267.25  50.00  
+     0   HLA-A02:01       SNEERNLLS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NEERNLLSV  143B_BOVIN_P293         0.234      3975.68  32.00  
+     0   HLA-A02:01       EERNLLSVA  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ERNLLSVAY  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       RNLLSVAYK  143B_BOVIN_P293         0.039     32787.64  50.00  
+     0   HLA-A02:01       NLLSVAYKN  143B_BOVIN_P293         0.454       367.82   8.00  <=WB
+     0   HLA-A02:01       LLSVAYKNV  143B_BOVIN_P293         0.545       137.41   4.00  <=WB
+     0   HLA-A02:01       LSVAYKNVV  143B_BOVIN_P293         0.327      1453.47  32.00  
+     0   HLA-A02:01       SVAYKNVVG  143B_BOVIN_P293         0.167      8208.09  50.00  
+     0   HLA-A02:01       VAYKNVVGA  143B_BOVIN_P293         0.363       984.56  15.00  
+     0   HLA-A02:01       AYKNVVGAR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YKNVVGARR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KNVVGARRS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NVVGARRSS  143B_BOVIN_P293         0.010     44872.50  50.00  
+     0   HLA-A02:01       VVGARRSSW  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       VGARRSSWR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       GARRSSWRV  143B_BOVIN_P293         0.272      2635.42  32.00  
+     0   HLA-A02:01       ARRSSWRVI  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       RRSSWRVIS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       RSSWRVISS  143B_BOVIN_P293         0.109     15373.84  50.00  
+     0   HLA-A02:01       SSWRVISSI  143B_BOVIN_P293         0.417       548.91  15.00  
+     0   HLA-A02:01       SWRVISSIE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       WRVISSIEQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       RVISSIEQK  143B_BOVIN_P293         0.160      8853.90  50.00  
+     0   HLA-A02:01       VISSIEQKT  143B_BOVIN_P293         0.254      3202.08  32.00  
+     0   HLA-A02:01       ISSIEQKTE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SSIEQKTER  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SIEQKTERN  143B_BOVIN_P293         0.091     18679.43  50.00  
+     0   HLA-A02:01       IEQKTERNE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EQKTERNEK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       QKTERNEKK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KTERNEKKQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       TERNEKKQQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ERNEKKQQM  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       RNEKKQQMG  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NEKKQQMGK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EKKQQMGKE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KKQQMGKEY  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KQQMGKEYR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       QQMGKEYRE  143B_BOVIN_P293         0.230      4151.52  32.00  
+     0   HLA-A02:01       QMGKEYREK  143B_BOVIN_P293         0.061     25842.40  50.00  
+     0   HLA-A02:01       MGKEYREKI  143B_BOVIN_P293         0.073     22695.78  50.00  
+     0   HLA-A02:01       GKEYREKIE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KEYREKIEA  143B_BOVIN_P293         0.186      6682.85  50.00  
+     0   HLA-A02:01       EYREKIEAE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YREKIEAEL  143B_BOVIN_P293         0.123     13212.86  50.00  
+     0   HLA-A02:01       REKIEAELQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EKIEAELQD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KIEAELQDI  143B_BOVIN_P293         0.391       727.23  15.00  
+     0   HLA-A02:01       IEAELQDIC  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EAELQDICN  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AELQDICND  143B_BOVIN_P293         0.117     14099.07  50.00  
+     0   HLA-A02:01       ELQDICNDV  143B_BOVIN_P293         0.534       154.78   5.00  <=WB
+     0   HLA-A02:01       LQDICNDVL  143B_BOVIN_P293         0.361      1006.10  15.00  
+     0   HLA-A02:01       QDICNDVLQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DICNDVLQL  143B_BOVIN_P293         0.377       846.17  15.00  
+     0   HLA-A02:01       ICNDVLQLL  143B_BOVIN_P293         0.316      1637.18  32.00  
+     0   HLA-A02:01       CNDVLQLLD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NDVLQLLDK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DVLQLLDKY  143B_BOVIN_P293         0.042     31740.46  50.00  
+     0   HLA-A02:01       VLQLLDKYL  143B_BOVIN_P293         0.492       243.82   6.00  <=WB
+     0   HLA-A02:01       LQLLDKYLI  143B_BOVIN_P293         0.465       326.55   8.00  <=WB
+     0   HLA-A02:01       QLLDKYLIP  143B_BOVIN_P293         0.398       674.19  15.00  
+     0   HLA-A02:01       LLDKYLIPN  143B_BOVIN_P293         0.498       228.50   6.00  <=WB
+     0   HLA-A02:01       LDKYLIPNA  143B_BOVIN_P293         0.093     18279.56  50.00  
+     0   HLA-A02:01       DKYLIPNAT  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KYLIPNATQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YLIPNATQP  143B_BOVIN_P293         0.543       140.42   4.00  <=WB
+     0   HLA-A02:01       LIPNATQPE  143B_BOVIN_P293         0.238      3807.28  32.00  
+     0   HLA-A02:01       IPNATQPES  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       PNATQPESK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NATQPESKV  143B_BOVIN_P293         0.196      5997.52  50.00  
+     0   HLA-A02:01       ATQPESKVF  143B_BOVIN_P293         0.025     38150.11  50.00  
+     0   HLA-A02:01       TQPESKVFY  143B_BOVIN_P293         0.025     38150.11  50.00  
+     0   HLA-A02:01       QPESKVFYL  143B_BOVIN_P293         0.179      7208.66  50.00  
+     0   HLA-A02:01       PESKVFYLK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ESKVFYLKM  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SKVFYLKMK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KVFYLKMKG  143B_BOVIN_P293         0.218      4727.10  32.00  
+     0   HLA-A02:01       VFYLKMKGD  143B_BOVIN_P293         0.056     27278.95  50.00  
+     0   HLA-A02:01       FYLKMKGDY  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YLKMKGDYF  143B_BOVIN_P293         0.288      2216.49  32.00  
+     0   HLA-A02:01       LKMKGDYFR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KMKGDYFRY  143B_BOVIN_P293         0.224      4429.97  32.00  
+     0   HLA-A02:01       MKGDYFRYL  143B_BOVIN_P293         0.316      1637.18  32.00  
+     0   HLA-A02:01       KGDYFRYLS  143B_BOVIN_P293         0.062     25564.30  50.00  
+     0   HLA-A02:01       GDYFRYLSE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DYFRYLSEV  143B_BOVIN_P293         0.331      1391.91  32.00  
+     0   HLA-A02:01       YFRYLSEVA  143B_BOVIN_P293         0.191      6330.92  50.00  
+     0   HLA-A02:01       FRYLSEVAS  143B_BOVIN_P293         0.073     22695.78  50.00  
+     0   HLA-A02:01       RYLSEVASG  143B_BOVIN_P293         0.120     13648.77  50.00  
+     0   HLA-A02:01       YLSEVASGD  143B_BOVIN_P293         0.436       446.91   9.00  <=WB
+     0   HLA-A02:01       LSEVASGDN  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SEVASGDNK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EVASGDNKQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       VASGDNKQT  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ASGDNKQTT  143B_BOVIN_P293         0.053     28178.94  50.00  
+     0   HLA-A02:01       SGDNKQTTV  143B_BOVIN_P293         0.298      1989.19  32.00  
+     0   HLA-A02:01       GDNKQTTVS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DNKQTTVSN  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NKQTTVSNS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KQTTVSNSQ  143B_BOVIN_P293         0.121     13501.89  50.00  
+     0   HLA-A02:01       QTTVSNSQQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       TTVSNSQQA  143B_BOVIN_P293         0.285      2289.62  32.00  
+     0   HLA-A02:01       TVSNSQQAY  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       VSNSQQAYQ  143B_BOVIN_P293         0.043     31398.89  50.00  
+     0   HLA-A02:01       SNSQQAYQE  143B_BOVIN_P293         0.031     35752.13  50.00  
+     0   HLA-A02:01       NSQQAYQEA  143B_BOVIN_P293         0.167      8208.09  50.00  
+     0   HLA-A02:01       SQQAYQEAF  143B_BOVIN_P293         0.167      8208.09  50.00  
+     0   HLA-A02:01       QQAYQEAFE  143B_BOVIN_P293         0.133     11857.88  50.00  
+     0   HLA-A02:01       QAYQEAFEI  143B_BOVIN_P293         0.368       932.72  15.00  
+     0   HLA-A02:01       AYQEAFEIS  143B_BOVIN_P293         0.020     40270.83  50.00  
+     0   HLA-A02:01       YQEAFEISK  143B_BOVIN_P293         0.078     21500.59  50.00  
+     0   HLA-A02:01       QEAFEISKK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EAFEISKKE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AFEISKKEM  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       FEISKKEMQ  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EISKKEMQP  143B_BOVIN_P293         0.086     19717.81  50.00  
+     0   HLA-A02:01       ISKKEMQPT  143B_BOVIN_P293         0.018     41151.77  50.00  
+     0   HLA-A02:01       SKKEMQPTH  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KKEMQPTHP  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       KEMQPTHPI  143B_BOVIN_P293         0.383       792.98  15.00  
+     0   HLA-A02:01       EMQPTHPIR  143B_BOVIN_P293         0.087     19505.61  50.00  
+     0   HLA-A02:01       MQPTHPIRL  143B_BOVIN_P293         0.425       503.39  10.00  
+     0   HLA-A02:01       QPTHPIRLG  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       PTHPIRLGL  143B_BOVIN_P293         0.106     15881.05  50.00  
+     0   HLA-A02:01       THPIRLGLA  143B_BOVIN_P293         0.040     32434.80  50.00  
+     0   HLA-A02:01       HPIRLGLAL  143B_BOVIN_P293         0.115     14407.49  50.00  
+     0   HLA-A02:01       PIRLGLALN  143B_BOVIN_P293         0.004     47882.20  50.00  
+     0   HLA-A02:01       IRLGLALNF  143B_BOVIN_P293         0.043     31398.89  50.00  
+     0   HLA-A02:01       RLGLALNFS  143B_BOVIN_P293         0.407       611.63  15.00  
+     0   HLA-A02:01       LGLALNFSV  143B_BOVIN_P293         0.510       200.68   6.00  <=WB
+     0   HLA-A02:01       GLALNFSVF  143B_BOVIN_P293         0.378       837.07  15.00  
+     0   HLA-A02:01       LALNFSVFY  143B_BOVIN_P293         0.098     17316.93  50.00  
+     0   HLA-A02:01       ALNFSVFYY  143B_BOVIN_P293         0.435       451.77   9.00  <=WB
+     0   HLA-A02:01       LNFSVFYYE  143B_BOVIN_P293         0.270      2693.07  32.00  
+     0   HLA-A02:01       NFSVFYYEI  143B_BOVIN_P293         0.332      1376.93  32.00  
+     0   HLA-A02:01       FSVFYYEIL  143B_BOVIN_P293         0.368       932.72  15.00  
+     0   HLA-A02:01       SVFYYEILN  143B_BOVIN_P293         0.285      2289.62  32.00  
+     0   HLA-A02:01       VFYYEILNS  143B_BOVIN_P293         0.230      4151.52  32.00  
+     0   HLA-A02:01       FYYEILNSP  143B_BOVIN_P293         0.308      1785.20  32.00  
+     0   HLA-A02:01       YYEILNSPE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YEILNSPEK  143B_BOVIN_P293         0.025     38150.11  50.00  
+     0   HLA-A02:01       EILNSPEKA  143B_BOVIN_P293         0.288      2216.49  32.00  
+     0   HLA-A02:01       ILNSPEKAC  143B_BOVIN_P293         0.264      2873.70  32.00  
+     0   HLA-A02:01       LNSPEKACS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NSPEKACSL  143B_BOVIN_P293         0.285      2289.62  32.00  
+     0   HLA-A02:01       SPEKACSLA  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       PEKACSLAK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EKACSLAKT  143B_BOVIN_P293         0.014     42971.89  50.00  
+     0   HLA-A02:01       KACSLAKTA  143B_BOVIN_P293         0.156      9245.51  50.00  
+     0   HLA-A02:01       ACSLAKTAF  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       CSLAKTAFD  143B_BOVIN_P293         0.142     10757.62  50.00  
+     0   HLA-A02:01       SLAKTAFDE  143B_BOVIN_P293         0.400       659.75  15.00  
+     0   HLA-A02:01       LAKTAFDEA  143B_BOVIN_P293         0.109     15373.84  50.00  
+     0   HLA-A02:01       AKTAFDEAI  143B_BOVIN_P293         0.129     12382.34  50.00  
+     0   HLA-A02:01       KTAFDEAIA  143B_BOVIN_P293         0.283      2339.71  32.00  
+     0   HLA-A02:01       TAFDEAIAE  143B_BOVIN_P293         0.115     14407.49  50.00  
+     0   HLA-A02:01       AFDEAIAEL  143B_BOVIN_P293         0.455       363.86   8.00  <=WB
+     0   HLA-A02:01       FDEAIAELD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DEAIAELDT  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EAIAELDTL  143B_BOVIN_P293         0.215      4883.05  32.00  
+     0   HLA-A02:01       AIAELDTLN  143B_BOVIN_P293         0.271      2664.09  32.00  
+     0   HLA-A02:01       IAELDTLNE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       AELDTLNEE  143B_BOVIN_P293         0.119     13797.25  50.00  
+     0   HLA-A02:01       ELDTLNEES  143B_BOVIN_P293         0.218      4727.10  32.00  
+     0   HLA-A02:01       LDTLNEESY  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DTLNEESYK  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       TLNEESYKD  143B_BOVIN_P293         0.403       638.68  15.00  
+     0   HLA-A02:01       LNEESYKDS  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NEESYKDST  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EESYKDSTL  143B_BOVIN_P293         0.003     48403.09  50.00  
+     0   HLA-A02:01       ESYKDSTLI  143B_BOVIN_P293         0.225      4382.30  32.00  
+     0   HLA-A02:01       SYKDSTLIM  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       YKDSTLIMQ  143B_BOVIN_P293         0.118     13947.35  50.00  
+     0   HLA-A02:01       KDSTLIMQL  143B_BOVIN_P293         0.252      3272.12  32.00  
+     0   HLA-A02:01       DSTLIMQLL  143B_BOVIN_P293         0.108     15541.08  50.00  
+     0   HLA-A02:01       STLIMQLLR  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       TLIMQLLRD  143B_BOVIN_P293         0.376       855.38  15.00  
+     0   HLA-A02:01       LIMQLLRDN  143B_BOVIN_P293         0.275      2551.25  32.00  
+     0   HLA-A02:01       IMQLLRDNL  143B_BOVIN_P293         0.466       323.04   8.00  <=WB
+     0   HLA-A02:01       MQLLRDNLT  143B_BOVIN_P293         0.323      1517.76  32.00  
+     0   HLA-A02:01       QLLRDNLTL  143B_BOVIN_P293         0.560       116.83   4.00  <=WB
+     0   HLA-A02:01       LLRDNLTLW  143B_BOVIN_P293         0.299      1967.79  32.00  
+     0   HLA-A02:01       LRDNLTLWT  143B_BOVIN_P293         0.060     26123.53  50.00  
+     0   HLA-A02:01       RDNLTLWTS  143B_BOVIN_P293         0.079     21269.21  50.00  
+     0   HLA-A02:01       DNLTLWTSE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NLTLWTSEN  143B_BOVIN_P293         0.288      2216.49  32.00  
+     0   HLA-A02:01       LTLWTSENQ  143B_BOVIN_P293         0.159      8950.22  50.00  
+     0   HLA-A02:01       TLWTSENQG  143B_BOVIN_P293         0.370       912.75  15.00  
+     0   HLA-A02:01       LWTSENQGD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       WTSENQGDE  143B_BOVIN_P293         0.030     36141.06  50.00  
+     0   HLA-A02:01       TSENQGDEG  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       SENQGDEGD  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       ENQGDEGDA  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       NQGDEGDAG  143B_BOVIN_P293         0.087     19505.61  50.00  
+     0   HLA-A02:01       QGDEGDAGE  143B_BOVIN_P293         0.004     47882.20  50.00  
+     0   HLA-A02:01       GDEGDAGEG  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       DEGDAGEGE  143B_BOVIN_P293         0.000     50000.00  50.00  
+     0   HLA-A02:01       EGDAGEGEN  143B_BOVIN_P293         0.000     50000.00  50.00  
+---------------------------------------------------------------------------------------
+Number of strong binders: 0 Number of weak binders: 14
+---------------------------------------------------------------------------------------
