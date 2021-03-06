@@ -198,16 +198,16 @@ def generateBindingPredictions(taskId, alleles, method):
     allelesForAnthem = ",".join(temp)
     del temp
 
-    for sample in os.listdir('data/{}'.format(taskId)):
-        for replicate in os.listdir('data/{}/{}'.format(taskId,sample)):
+    for sample in os.listdir('/immunolyser-data/data/{}'.format(taskId)):
+        for replicate in os.listdir('/immunolyser-data//data/{}/{}'.format(taskId,sample)):
         
             if replicate[-12:] == '8to14mer.txt':
                 if(method=='MixMHCpred'):
-                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', 'data/{}/{}/{}'.format(taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
+                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
                 elif(method=='NetMHCpan'):
                     f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
-                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', 'data/{}/{}/{}'.format(taskId,sample,replicate)], stdout=f)
+                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate)], stdout=f)
                     output, err = p.communicate(b"input data that is passed to subprocess' stdin")
                     f.close()     
 
@@ -238,7 +238,7 @@ def generateBindingPredictions(taskId, alleles, method):
                     current_files = os.listdir()
                     
                     if filteredAllelesForAnthem != "":
-                        call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '../../../data/{}/{}/{}'.format(taskId,sample,replicate)])
+                        call(['../../../lenv/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate)])
 
                         present_files = os.listdir()
                         data_folder = list(set(present_files)-set(current_files))
@@ -258,7 +258,7 @@ def generateBindingPredictions(taskId, alleles, method):
 
         if method=='ANTHEM' and sample!='Control':
 
-            os.chdir('app/static/images/{}/{}/ANTHEM/'.format(taskId,sample))
+            os.chdir('/var/www/firstdemo/app/static/images/{}/{}/ANTHEM/'.format(taskId,sample))
         
             for replicate in os.listdir('./'):
             #     if replicate[-4:] == '.txt':

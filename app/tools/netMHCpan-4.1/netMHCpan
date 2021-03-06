@@ -11,7 +11,7 @@
 ###############################################################################
 
 # full path to the NetMHCpan 4.0 directory (mandatory)
-setenv	NMHOME	/mnt/c/Users/ASUS/Documents/sem3/thesis/firstdemo/app/tools/netMHCpan-4.1
+setenv	NMHOME	/var/www/firstdemo/app/tools/netMHCpan-4.1
 
 # determine where to store temporary files (must be writable to all users)
 
