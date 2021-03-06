@@ -10,7 +10,7 @@
 
     <div class="custom-control custom-switch" style="text-align:right;">
         <input type="checkbox" class="custom-control-input" id="customSwitch1" onclick="myfunction()">
-        <label class="custom-control-label" for="customSwitch1">Percent/Density</label>
+        <label class="custom-control-label" for="customSwitch1">Density/Frequency</label>
     </div>
 
 <br>
@@ -77,6 +77,22 @@
 
 <br>
 
+    <h3>Peptide-HLA binding affinity prediction</h3>
+
+    <div>
+        {% for predictionTool  in predictionTools %}
+            {{predictionTool}}
+            <br>
+            {% for sample, replicates in data.items() %}
+                {% for replicate in replicates %}
+                    {{sample, replicate}}
+                {%endfor%}
+            {%endfor%}
+        {%endfor%}
+    </div>
+<br>
+
+    
 
 
     <!-- <iframe frameborder='0' noresize='noresize' style='position: absolute; background: transparent; width: 100%; height:100%;' src="{{ iframe }}" frameborder="0"></iframe>

@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, getPredictionResuslts
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -32,7 +32,7 @@ def initialiser():
     minLen = 1
 
     taskId = getTaskId()
-    dirName = os.path.join('/immunolyser-data/data', taskId)
+    dirName = os.path.join('data', taskId)
     try:
         # Create target Directory
         os.makedirs(dirName)
@@ -42,11 +42,16 @@ def initialiser():
 
 
     data = {}
+    control = list()
 
     # Creating folders to store images
     for key, value  in request.files.items():
         sample_name = request.form[key]
-    
+
+        # Skipping Control Data
+        if sample_name == "Control":
+            continue
+
         # Creating sub directories to store sample data
         try:
             # for seqlogos
@@ -61,7 +66,7 @@ def initialiser():
     # Saving the data and loading into the dictionary
     for key, value  in request.files.items():
         sample_name = request.form[key]
-    
+
         # Creating sub directories to store sample data
         try:
             os.mkdir(os.path.join(dirName, sample_name))
@@ -69,13 +74,24 @@ def initialiser():
         except FileExistsError:
             print("Directory already exists")    
 
-        data[sample_name] = list()
+        # Not including the control group in data dict 
+        if sample_name != "Control":
+            data[sample_name] = list()
+
         replicates = request.files.getlist(key)
         print("replics name : {}".format(replicates))
         for replicate in replicates:
             file_filename = secure_filename(replicate.filename)
-            replicate.save(os.path.join(dirName, sample_name, file_filename))
-            data[sample_name].append(file_filename)
+
+            # If there is no control file uploaded then there is no point to save it.
+            if file_filename != "":
+                replicate.save(os.path.join(dirName, sample_name, file_filename))
+
+            # Not including the control group in sample data dict
+            if sample_name != "Control":
+                data[sample_name].append(file_filename)
+            elif file_filename !="":
+                control.append(file_filename)
 
     if len(data) == 0:
         return render_template("initialiser.html", initialiser=True)
@@ -88,41 +104,90 @@ def initialiser():
 #     sample1 = {}
 #     sample2 = {}
 
-    sample_data = {}
+    alleles = request.form.get('alleles')
+    # Converting alleles from A0203 format to HLA-A02:03
+    if alleles != "":
+        temp = list()
+        for allele in alleles.split(','):
+            temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
+            
+        alleles = ",".join(temp)
+        del temp
 
+    # Prediction tools selected by the user
+    predictionTools = request.form.getlist('predictionTools')
+    print("Prediction tools selected: {}".format(predictionTools))
+
+    # Creating directories to store binding prediction results
+    pathsToBeCreated = list()
+    for sample, replicates in data.items():
+        for predictionTool in predictionTools:
+            for replicate in replicates:
+                try:
+                    # for seqlogos
+                    path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4])
+                    if not os.path.exists(path):
+                        # os.makedirs(directory)
+                        Path(path).mkdir(parents=True, exist_ok=True)
+                        print("Directory Created") 
+                except FileExistsError:
+                    print("Directory already exists")
+                
+
+    sample_data = {}
+    control_data = {}
+    print(data)
+
+    # Loading sample data in pandas frames
     for sample_name, file_names in data.items():
         sample_data[sample_name] = dict()
         for replicate in file_names:
             sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
 
+    # Loading control data in pandas frames
+    for control_replicate in control:
+        control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
+
     # Have to later add the user input for length
     for sample_name, sample in sample_data.items():
-        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
+        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen, control_data= control_data)
 
 
     bar_percent = plot_lenght_distribution(sample_data, hist='percent')
     bar_density = plot_lenght_distribution(sample_data, hist='density')
 
-    # Saving 9 mers data for sequence logos
-    saveNmerData(dirName, sample_data, peptideLength=9)
+    # Saving 8 to 14 nmers for mhc1 predictions
+    saveNmerData(dirName, sample_data, peptideLength=[8,14])
+
+    for i in range(8,14):
+        saveNmerData(dirName, sample_data, peptideLength=i)
+
 
     # Calling script to generate sequence logos
-    subprocess.call('sudo python {} {}'.format(os.path.join('app','seqlogo.py'), taskId), shell=True)
+    subprocess.call('sudo python3 {} {}'.format(os.path.join('app','seqlogo.py'), taskId), shell=True)
 
     # Method to return names of png files of seqlogos
     # This value is supposed to be returned from saveNmerDate method but for now writting
     # temporary script to return names of seqlogos pngs files in a dictionary.
     
     seqlogos = getSeqLogosImages(sample_data)
-    print(seqlogos)
 
     # Calling script to generate gibbsclusters
-    subprocess.call('sudo python {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
+    subprocess.call('sudo python3 {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True)
+    # Method to generate binding predictions
+    if alleles!="":    
+        for predictionTool in predictionTools:
+            generateBindingPredictions(taskId, alleles, predictionTool)
+
+    # Method to get the prediction results
+    # print(getPredictionResuslts(taskId,data,predictionTools))
+    
+
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predictionTools=predictionTools,data=data)
     # return render_template("initialiser.html", form=form, initialiser=True)
 
 @app.route("/analytics")
@@ -133,6 +198,6 @@ def analytics():
 def getTaskId():
     global TASK_COUNTER
     TASK_COUNTER = TASK_COUNTER+1
-    task_Id = time.strftime("%Y%m%d")+str(TASK_COUNTER)
+    task_Id = time.strftime("%Y%m%d%H%M%S")+str(TASK_COUNTER)
 
     return task_Id

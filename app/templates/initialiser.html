@@ -5,35 +5,260 @@
 <br>
 
 <div class="container">
-	<form name="login" action="" method="post" enctype="multipart/form-data" novalidate>
+	<form onSubmit="return checkAlleles();" id="login" action="" method="post" enctype="multipart/form-data" novalidate>
 		
-		<div class="form-row">
-			<div class="col-md-3 mb-3">Sample Name</div>
-			<div class="col-md-6 mb-3">Sample Files</div>
+		<div>
+			<h4>Data Input</h4>
+			<div class="form-row">
+				<div class="col-md-6 mb-3">Sample Name</div>
+				<div class="col-md-6 mb-3">Sample Files</div>
+			</div>
+			<div id="samples">
+				<div id="sample" class="form-row">
+					<label for="sample_name" hidden>Sample</label> 
+					<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-6 mb-3">
+					<br>
+					<label for="sample" hidden>Peptide File</label> 
+					<input id="sample" multiple name="sample-1" required type="file" class="col-md-6 mb-3">	
+				</div>
+			</div>
+		
+			<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
+			<input id="remove_sample" name="remove_sample" type="button" value="Remove Sample" onclick="deleteSample()">
 		</div>
-		<div id="samples">
-			<div id="sample" class="form-row">
-				<label for="sample_name" hidden>Sample</label> 
-				<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-3 mb-3">
+
+		<br>
+
+		<div>
+			<div id="control" class="form-row">
+				<h4 class="col-md-6 mb-3">Control Data<span style="font-size:16px;"> (optional)</span></h4>
+				<label for="control_name" hidden>Control</label> 
+				<input id="control_name-1" name="control-1" type="text" value="Control" class="col-md-3 mb-3" hidden>
 				<br>
-				<label for="sample" hidden>Peptide File</label> 
-				<input id="sample" multiple name="sample-1" required type="file" class="col-md-6 mb-3">	
+				<label for="control" hidden>Peptide File</label> 
+				<input id="control" multiple name="control-1" type="file" class="col-md-6 mb-3">	
 			</div>
 		</div>
-		
-		
 
-	<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
-	<input id="remove_sample" name="remove_sample" type="button" value="Remove Sample" onclick="deleteSample()">
+		<br>
+		<div>
+			<h4>MHC Binding Predictions</h4>
+			
+			<br>
+			
+			<div class="form-row">
+				<h5 class="col-md-6">Select Alleles</h5>
 
-	<p> 
-	   <input id="submit" name="submit" type="submit" value="Submit">
-   </p>
+				<div class="form-row" style="padding-left: 10px;">
+					<div>
+						<div style="text-indent: 18px;">HLA-A</div>
+						<select id="HLA-A" class="form-select col" size="10" aria-label="size 3 select example" onclick="upldateAllele(this)">
+							<option value="A0101">A0101</option>
+							<option value="A0201">A0201</option>
+							<option value="A0202">A0202</option>
+							<option value="A0203">A0203</option>
+							<option value="A0204">A0204</option>
+							<option value="A0205">A0205</option>
+							<option value="A0206">A0206</option>
+							<option value="A0207">A0207</option>
+							<option value="A0211">A0211</option>
+							<option value="A0212">A0212</option>
+							<option value="A0216">A0216</option>
+							<option value="A0217">A0217</option>
+							<option value="A0219">A0219</option>
+							<option value="A0220">A0220</option>
+							<option value="A0250">A0250</option>
+							<option value="A0301">A0301</option>
+							<option value="A0319">A0319</option>
+							<option value="A1101">A1101</option>
+							<option value="A2301">A2301</option>
+							<option value="A2402">A2402</option>
+							<option value="A2403">A2403</option>
+							<option value="A2406">A2406</option>
+							<option value="A2413">A2413</option>
+							<option value="A2501">A2501</option>
+							<option value="A2601">A2601</option>
+							<option value="A2602">A2602</option>
+							<option value="A2603">A2603</option>
+							<option value="A2902">A2902</option>
+							<option value="A3001">A3001</option>
+							<option value="A3002">A3002</option>
+							<option value="A3101">A3101</option>
+							<option value="A3201">A3201</option>
+							<option value="A3207">A3207</option>
+							<option value="A3215">A3215</option>
+							<option value="A3301">A3301</option>
+							<option value="A6601">A6601</option>
+							<option value="A6801">A6801</option>
+							<option value="A6802">A6802</option>
+							<option value="A6823">A6823</option>
+							<option value="A6901">A6901</option>
+							<option value="A8001">A8001</option>  
+					</select>
+					</div>
+
+					<div>
+						<div style="text-indent: 18px;">HLA-B</div>
+						<select id="HLA-B" class="form-select col" size="10" aria-label="size 3 select example" onclick="upldateAllele(this)">
+							<option value="B0702">B0702</option>
+							<option value="B0801">B0801</option>
+							<option value="B0802">B0802</option>
+							<option value="B1301">B1301</option>
+							<option value="B1302">B1302</option>
+							<option value="B1401">B1401</option>
+							<option value="B1402">B1402</option>
+							<option value="B1501">B1501</option>
+							<option value="B1502">B1502</option>
+							<option value="B1503">B1503</option>
+							<option value="B1509">B1509</option>
+							<option value="B1510">B1510</option>
+							<option value="B1517">B1517</option>
+							<option value="B1518">B1518</option>
+							<option value="B1542">B1542</option>
+							<option value="B1801">B1801</option>
+							<option value="B1803">B1803</option>
+							<option value="B2701">B2701</option>
+							<option value="B2702">B2702</option>
+							<option value="B2703">B2703</option>
+							<option value="B2704">B2704</option>
+							<option value="B2705">B2705</option>
+							<option value="B2706">B2706</option>
+							<option value="B2707">B2707</option>
+							<option value="B2708">B2708</option>
+							<option value="B2709">B2709</option>
+							<option value="B2720">B2720</option>
+							<option value="B3501">B3501</option>
+							<option value="B3502">B3502</option>
+							<option value="B3503">B3503</option>
+							<option value="B3508">B3508</option>
+							<option value="B3701">B3701</option>
+							<option value="B3801">B3801</option>
+							<option value="B3901">B3901</option>
+							<option value="B3906">B3906</option>
+							<option value="B3924">B3924</option>
+							<option value="B4001">B4001</option>
+							<option value="B4002">B4002</option>
+							<option value="B4013">B4013</option>
+							<option value="B4101">B4101</option>
+							<option value="B4103">B4103</option>
+							<option value="B4402">B4402</option>
+							<option value="B4403">B4403</option>
+							<option value="B4408">B4408</option>
+							<option value="B4427">B4427</option>
+							<option value="B4428">B4428</option>
+							<option value="B4501">B4501</option>
+							<option value="B4506">B4506</option>
+							<option value="B4601">B4601</option>
+							<option value="B4801">B4801</option>
+							<option value="B4901">B4901</option>
+							<option value="B5001">B5001</option>
+							<option value="B5101">B5101</option>
+							<option value="B5108">B5108</option>
+							<option value="B5201">B5201</option>
+							<option value="B5301">B5301</option>
+							<option value="B5401">B5401</option>
+							<option value="B5601">B5601</option>
+							<option value="B5701">B5701</option>
+							<option value="B5801">B5801</option>
+							<option value="B7301">B7301</option>
+							<option value="B8301">B8301</option>					  
+						</select>
+					</div>
+
+					<div>
+						<div style="text-indent: 18px;">HLA-C</div>
+						<select id="HLA-C" class="form-select col" size="10" aria-label="size 3 select example" onclick="upldateAllele(this)">
+							<option value="C0102">C0102</option>
+							<option value="C0202">C0202</option>
+							<option value="C0303">C0303</option>
+							<option value="C0304">C0304</option>
+							<option value="C0401">C0401</option>
+							<option value="C0501">C0501</option>
+							<option value="C0602">C0602</option>
+							<option value="C0701">C0701</option>
+							<option value="C0702">C0702</option>
+							<option value="C0802">C0802</option>
+							<option value="C1202">C1202</option>
+							<option value="C1203">C1203</option>
+							<option value="C1204">C1204</option>
+							<option value="C1402">C1402</option>
+							<option value="C1502">C1502</option>
+							<option value="C1505">C1505</option>
+							<option value="C1601">C1601</option>
+							<option value="C1701">C1701</option>						  
+						</select>
+					</div>
+
+				</div>
+			
+			</div>	
+			<br>
+			<div class="form-row">
+				<b class="col-md-6 mb-3">or type allele names (ie A0207) separated by commas.</b>&nbsp;  <br>
+				<!-- <input class="col-md-4 mb-3" name="alleles" type="text" value=""><br> -->
+				<textarea rows="3" cols="40" name="alleles" placeholder="Enter alleles"></textarea><br>
+
+			</div>
+				
+				For list of allowed allele names, click here <a href="/static/MHC_allele_names.txt" target="_blank">List of MHC allele names</a>.
+
+			</div>
+
+			<br>
+
+			<div class="form-row">
+				<h5 class="col-md-6">Prediction Tools</h5>
+
+				<div class="col">
+					<div class="form-check">
+						<input class="form-check-input" name="predictionTools" type="checkbox" value="MixMHCpred" id="MixMHCpred2" checked>
+						<label class="form-check-label" for="flexCheckDefault">
+							MixMHCpred2.1
+						</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" name="predictionTools" type="checkbox" value="ANTHEM" id="ANTHEM" checked>
+						<label class="form-check-label" for="flexCheckChecked">
+							ANTHEM
+						</label>
+					</div>
+
+					<div class="form-check">
+						<input class="form-check-input" name="predictionTools" type="checkbox" value="NetMHCpan" id="NetMHCpan" checked>
+						<label class="form-check-label" for="flexCheckChecked">
+							NetMHCpan 4.1
+						</label>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	
+		<br>
+		<p> 
+		<input class="col-md-12 mb-3" id="submit" name="submit" type="submit" value="Submit">
+		</p>
    </form>
 </div>
 
 <script>
 	sampleId = 1;
+
+	// Setting up valied MHC alleles
+	var validAlleles = new Array();
+	hlaA = document.getElementById('HLA-A')
+	hlaB = document.getElementById('HLA-B')
+	hlaC = document.getElementById('HLA-C')
+
+	for(var i =0; i< hlaA.length; i++) {
+		validAlleles.push(hlaA[i].text)
+	}
+	for(var i =0; i< hlaB.length; i++) {
+		validAlleles.push(hlaB[i].text)
+	}
+	for(var i =0; i< hlaC.length; i++) {
+		validAlleles.push(hlaC[i].text)
+	}
 
 	function addSample(){
 		var samples = document.getElementById('samples');
@@ -61,5 +286,61 @@
 		}
 		
 	}
+
+	function upldateAllele(element){
+		alleleText = document.getElementsByName('alleles')[0];
+	
+		for (i = 0; i < element.options.length; i++) {
+			if (element.options[i].selected) {
+				alleleValue = element.options[i].value;
+				
+				if (alleleText.value == '') {
+					alleleText.value = alleleValue;
+				} 
+				else if (allelePresent(alleleValue)){
+					continue;
+				}
+				
+				else {
+					alleleText.value += "," + alleleValue;
+				}
+			}
+		}
+	}
+
+	function allelePresent(allele) {
+		alleles = document.getElementsByName('alleles')[0].value;
+		
+		return alleles.includes(allele)
+	}
+
+	function checkAlleles(){
+		
+		var alleleText = document.forms["login"]["alleles"].value;
+
+		if(alleleText ==""){
+			return true;
+		}
+
+		alleleList = alleleText.split(",");
+		var uniqueAlleles = alleleList.filter((v, i, a) => a.indexOf(v) === i);
+
+
+		// Removing repeating alleles
+		document.forms["login"]["alleles"].value = uniqueAlleles.join();
+		
+		for(var i=0; i<uniqueAlleles.length; i++){
+			//debugger;
+			//alert("i: " +i+ " -- value: " + uniqueAlleles[i] )
+			if(validAlleles.includes(uniqueAlleles[i]) == false){
+				alert(uniqueAlleles[i]+" is not a supported allele.");
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
+
 </script>
 {% endblock %}
