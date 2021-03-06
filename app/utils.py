@@ -6,6 +6,13 @@ import pandas as pd
 from numpy import std
 import os
 import glob
+from subprocess import call, Popen
+from distutils.dir_util import copy_tree
+import shutil
+from zipfile import ZipFile
+from os.path import basename
+
+project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples, hist="percent"):
@@ -75,9 +82,11 @@ def plot_lenght_distribution(samples, hist="percent"):
     
 # The following method filters the data to remove contamination.
 # This method is specific to a PEAKS output file for peptides.
-def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
+def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133, control_data={}):
     
-    for file_name,sample in samples.items():
+    control_peptides = list()
+    # Filtering the control data first
+    for file_name,sample in control_data.items():
 #       Removing rows with no accession identity
         temp = sample.dropna(subset=['Accession'])
         
@@ -91,6 +100,29 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
 #       Filtering on the basis of the peptide length
         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
     
+        control_data[file_name] = temp
+
+    # Finding the control peptides from control data
+    for control_replicate, control_replicate_data in control_data.items():
+        control_peptides.extend(control_data[control_replicate]['Peptide'].to_list())
+
+    for file_name,sample in samples.items():
+#       Removing rows with no accession identity
+        temp = sample.dropna(subset=['Accession'])
+        
+#       Dropping the peptides with Post translational modifications
+        if dropPTM:
+            temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
+
+#       Removing contamincation founf from accession number 
+        temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
+        
+#       Filtering on the basis of the peptide length
+        temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
+
+#       Filtering the control peptides out
+        temp = temp[temp.apply(lambda x : x['Peptide'] not in control_peptides,axis=1)]        
+    
         samples[file_name] = temp
 
     return samples
@@ -99,7 +131,11 @@ def saveNmerData(location, samples, peptideLength = 9):
 
     for file_name, data in samples.items():
         for replicate_name, replicate_data in data.items():
-            replicate_data[replicate_data.Length == 9]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'.txt'), header=False, index=False)
+
+            if type(peptideLength) == int:
+                replicate_data[replicate_data.Length == peptideLength]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength)+'mer.txt'), header=False, index=False)
+            else:
+                replicate_data[replicate_data['Length'].between(peptideLength[0], peptideLength[1], inclusive=True)]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength[0])+'to'+str(peptideLength[1])+'mer.txt'), header=False, index=False)
 
 
 def getSeqLogosImages(samples_data):
@@ -141,3 +177,140 @@ def getGibbsImages(taskId, samples_data):
     
     # Following script is to set up a WSL in windows system to linux platform dependent tools.
     # This is not automated yet.
+
+# This method will generate the binding predictions.
+# User can select the binding prediction to be used.
+# User can enter the names of alleles of interest.
+def generateBindingPredictions(taskId, alleles, method):
+    
+    # Reading the alleles which can be accepted by Anthem
+    if method=='ANTHEM':
+        with open('app/tools/Anthem-master/source/lenghHLA.json') as f:
+            data = json.load(f)
+
+    print('Generating Binding Predictions for task {} for {} alleles.'.format(taskId,alleles))
+
+    # Converting HLAs syntax from HLA-A02:01 to HLA-A*02:01
+    temp = list()
+    for allele in alleles.split(','):
+        temp.append('HLA-{}*{}:{}'.format(allele[4],allele[5:7],allele[8:]))
+        
+    allelesForAnthem = ",".join(temp)
+    del temp
+
+    for sample in os.listdir('data/{}'.format(taskId)):
+        for replicate in os.listdir('data/{}/{}'.format(taskId,sample)):
+        
+            if replicate[-12:] == '8to14mer.txt':
+                if(method=='MixMHCpred'):
+                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', 'data/{}/{}/{}'.format(taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
+
+                elif(method=='NetMHCpan'):
+                    f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
+                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', 'data/{}/{}/{}'.format(taskId,sample,replicate)], stdout=f)
+                    output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+                    f.close()     
+
+            elif replicate[-7:] == 'mer.txt':
+                if(method=='ANTHEM'):
+
+                    # Here, the peptides which can be accpeted by Anthem will be carry forwarded
+                    temp = list()
+                    for allele in allelesForAnthem.split(','):
+                        
+                        if replicate[-8:-7] in ['8','9']:
+                            nmer = replicate[-8:-7]
+                        else:
+                            nmer = replicate[-9:-7]
+
+                        if allele in data[nmer]:
+                            temp.append(allele)
+
+                    filteredAllelesForAnthem = ",".join(temp)
+                    del temp
+
+                    os.chdir(os.path.join(project_root,'app/tools/Anthem-master'))
+
+                    # Have to find a better way to read output of anthem.
+                    # For now reading the files in newly generated folder and deleting them.
+
+                    # Current folder
+                    current_files = os.listdir()
+                    
+                    if filteredAllelesForAnthem != "":
+                        call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '../../../data/{}/{}/{}'.format(taskId,sample,replicate)])
+
+                        present_files = os.listdir()
+                        data_folder = list(set(present_files)-set(current_files))
+
+                        # Copying the output file to the destination
+                        if replicate[-8:-7] in ['8','9']:
+                            copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-9]))
+
+                        else:
+                            copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-10]))
+    
+                        # Deleting the output file
+                        shutil.rmtree(data_folder[0])
+
+                        os.chdir(project_root)
+
+
+        if method=='ANTHEM' and sample!='Control':
+
+            os.chdir('app/static/images/{}/{}/ANTHEM/'.format(taskId,sample))
+        
+            for replicate in os.listdir('./'):
+            #     if replicate[-4:] == '.txt':
+
+                zip_file = ZipFile(replicate+'.zip', 'w')
+                for folderName, subfolders, filenames in os.walk(replicate):
+                    for filename in filenames:
+                        #create complete filepath of file in directory
+                        filePath = os.path.join(folderName, filename)
+                        # Add file to zip
+                        if filename[-3:]=='txt':
+                            zip_file.write(filePath, basename(filePath))
+                zip_file.close()
+
+            os.chdir('../../../../../../')
+
+
+
+def getPredictionResuslts(taskId,sample_data,predictionTools):
+    
+    # Output Object
+    data = {}
+
+    for predictionMethod in predictionTools:
+        data[predictionMethod] = sample_data
+
+    print(data)
+
+    # Coming at static images level
+    os.chdir(os.path.join(project_root,'app','static'))
+
+    for method, samples in data.items():
+        for sample, replicates in samples.items():
+            
+            # For ANTHEM
+            if method=='ANTHEM':
+                data[method][sample] = [i for i in os.listdir(os.path.join('images',taskId,sample,'ANTHEM')) if i[-3:]=='zip']
+                print(method,[i for i in os.listdir(os.path.join('images',taskId,sample,'ANTHEM')) if i[-3:]=='zip'])
+
+    #         if method=='MixMHCpred':
+                
+    #             # data[method][sample] = list()
+    #             temp = list()
+
+    #             for replicate in replicates:
+    #                 print('images',taskId,sample,'MixMHCpred',replicate)
+    #                 for replicate_file in os.listdir(os.path.join('images',taskId,sample,'MixMHCpred',replicate[:-4])):
+    #                     temp.append(replicate_file)
+
+    #             data[method][sample] = temp
+    #             print(method,temp)
+
+    return data
+    # for sample in data.keys():
+    #     data
