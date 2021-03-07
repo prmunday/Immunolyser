@@ -190,7 +190,7 @@ def initialiser():
     # Fetching the binders from the results
     if alleles!="":    
         for predictionTool in predictionTools:
-            saveBindersData(taskId, alleles, predictionTool)
+            saveBindersData(taskId, alleles_unformatted, predictionTool)
 
     # Method to get the prediction results
     # print(getPredictionResuslts(taskId,data,predictionTools))

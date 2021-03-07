@@ -316,14 +316,13 @@ def saveBindersData(taskId, alleles, method):
                                         # adding into the results list if a binder
                                         alleles_dict[alleles[i][0]].add(re.findall(r'[A-Z]+',peptide)[0])
 
-                # Saving the allele-binders dictionary as text files for ANTHEM case.
-                for allele, binders in alleles_dict.items():
+                    # Saving the allele-binders dictionary as text files for ANTHEM case.
+                    for allele, binders in alleles_dict.items():
 
-                    allele = allele.replace('-',"")
-                    allele = allele.replace(':',"")
-                    allele = allele.replace('*',"")
+                        allele = allele.replace('-',"")
+                        allele = allele.replace(':',"")
+                        allele = allele.replace('*',"")
 
-                    if method == 'ANTHEM':
                         allele = allele[3:]
                     
                         f = open('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.txt'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), 'w')
@@ -332,8 +331,13 @@ def saveBindersData(taskId, alleles, method):
 
                         f.close()
 
-                
-    
+                # MIxMHCpred case
+                if method == 'MixMHCpred':
+                    f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/VMM1_1st_nil_DT9_peptide_8to14mer.txt'.format(taskId,sample,replicate[:-13],replicate),skiprows=11,sep='\t')
+
+                    for allele in alleles.split(','):
+                        f[f.apply(lambda x: x['BestAllele']==allele and x['%Rank_bestAllele']<5, axis=1)]['Peptide'].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.txt'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+
 
 def getPredictionResuslts(taskId,sample_data,predictionTools):
     
