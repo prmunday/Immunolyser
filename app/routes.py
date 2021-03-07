@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, getPredictionResuslts
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -107,34 +107,35 @@ def initialiser():
 #     sample1 = {}
 #     sample2 = {}
 
-    alleles = request.form.get('alleles')
-    # Converting alleles from A0203 format to HLA-A02:03
-    if alleles != "":
-        temp = list()
-        for allele in alleles.split(','):
-            temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
-            
-        alleles = ",".join(temp)
-        del temp
+    alleles_unformatted = request.form.get('alleles')
 
     # Prediction tools selected by the user
     predictionTools = request.form.getlist('predictionTools')
     print("Prediction tools selected: {}".format(predictionTools))
 
     # Creating directories to store binding prediction results
-    pathsToBeCreated = list()
     for sample, replicates in data.items():
         for predictionTool in predictionTools:
             for replicate in replicates:
-                try:
-                    # for seqlogos
-                    path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4])
-                    if not os.path.exists(path):
-                        # os.makedirs(directory)
-                        Path(path).mkdir(parents=True, exist_ok=True)
-                        print("Directory Created") 
-                except FileExistsError:
-                    print("Directory already exists")
+                if alleles_unformatted != "":
+                    for allele in alleles_unformatted.split(','):
+                        try:
+                            path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele)
+                            if not os.path.exists(path):
+                                # os.makedirs(directory)
+                                Path(path).mkdir(parents=True, exist_ok=True)
+                                print("Directory Created : {}".format(path))
+                        except FileExistsError:
+                            print("Directory already exists {}".format(path))
+
+    # Converting alleles from A0203 format to HLA-A02:03
+    if alleles_unformatted != "":
+        temp = list()
+        for allele in alleles_unformatted.split(','):
+            temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
+            
+        alleles = ",".join(temp)
+        del temp
                 
 
     sample_data = {}
@@ -181,10 +182,15 @@ def initialiser():
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
 
-    # Method to generate binding predictions
+    # Generating binding predictions
     if alleles!="":    
         for predictionTool in predictionTools:
             generateBindingPredictions(taskId, alleles, predictionTool)
+
+    # Fetching the binders from the results
+    if alleles!="":    
+        for predictionTool in predictionTools:
+            saveBindersData(taskId, alleles, predictionTool)
 
     # Method to get the prediction results
     # print(getPredictionResuslts(taskId,data,predictionTools))

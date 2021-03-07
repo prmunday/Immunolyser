@@ -277,7 +277,63 @@ def generateBindingPredictions(taskId, alleles, method):
 
             os.chdir(project_root)
 
+def saveBindersData(taskId, alleles, method):
 
+    for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
+        for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
+            if sample != 'Control' and replicate[-12:] == '8to14mer.txt':
+
+                # Initialsing the allele and binders collection
+                alleles_dict = {}
+                
+                # ANTHEM case
+                if method == 'ANTHEM':
+                    # Looping through all the result files of one replicate in ANTHEM results
+                    for nmer_file in glob.glob('app/static/images/{}/{}/ANTHEM/{}/*.txt'.format(taskId,sample,replicate[:-13])):
+                            # reading nmer file
+                            f = open(nmer_file,'r')
+                            lines = f.read()
+                            f.close()
+                            
+                            # Using regex taking out alleles and peptides.
+                            alleles = list()
+                            alleles = re.findall(r'(?P<allele>[A-Z]{3}-[A-Z]\S\d{2}:\d{2}).*[\n] .*[\n]\S*\s*\S*\s*(?P<peptides>(?:.*\.\d*\s)*)',lines)
+                            
+                            # For each allele in one nmer file...
+                            for i in range(len(alleles)):
+                            
+                                # if coming across new allele, adding it into the result dictionary.
+                                if alleles[i][0] not in alleles_dict.keys():
+                                    alleles_dict[alleles[i][0]] = set()
+
+
+                                # for each peptide under one allele...
+                                for peptide in alleles[i][1].split('\n'):
+
+                                    # checking if it is a binder
+                                    if 'yes' in peptide:
+
+                                        # adding into the results list if a binder
+                                        alleles_dict[alleles[i][0]].add(re.findall(r'[A-Z]+',peptide)[0])
+
+                # Saving the allele-binders dictionary as text files for ANTHEM case.
+                for allele, binders in alleles_dict.items():
+
+                    allele = allele.replace('-',"")
+                    allele = allele.replace(':',"")
+                    allele = allele.replace('*',"")
+
+                    if method == 'ANTHEM':
+                        allele = allele[3:]
+                    
+                        f = open('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.txt'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), 'w')
+                        for item in binders:
+                            f.write("%s\n" % item)
+
+                        f.close()
+
+                
+    
 
 def getPredictionResuslts(taskId,sample_data,predictionTools):
     
