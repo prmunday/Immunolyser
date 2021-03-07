@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template, request, redirect, url_for, flash
+from flask import current_app
 from app.forms import InitialiserForm, ParentForm
 import pandas as pd
 import os
@@ -27,12 +28,14 @@ def index():
 def initialiser():    
     samples = []
 
+    data_mount = app.config['IMMUNOLYSER_DATA']
+
     # Have to take this input from user
     maxLen = 30
     minLen = 1
 
     taskId = getTaskId()
-    dirName = os.path.join('/immunolyser-data/data', taskId)
+    dirName = os.path.join(data_mount, taskId)
     try:
         # Create target Directory
         os.makedirs(dirName)
@@ -164,7 +167,7 @@ def initialiser():
 
 
     # Calling script to generate sequence logos
-    subprocess.call('sudo python3 {} {}'.format(os.path.join('app','seqlogo.py'), taskId), shell=True)
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
 
     # Method to return names of png files of seqlogos
     # This value is supposed to be returned from saveNmerDate method but for now writting
@@ -173,7 +176,7 @@ def initialiser():
     seqlogos = getSeqLogosImages(sample_data)
 
     # Calling script to generate gibbsclusters
-    subprocess.call('sudo python3 {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId), shell=True)
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)

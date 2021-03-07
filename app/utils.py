@@ -11,8 +11,10 @@ from distutils.dir_util import copy_tree
 import shutil
 from zipfile import ZipFile
 from os.path import basename
+from app import app
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
+data_mount = app.config['IMMUNOLYSER_DATA']
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples, hist="percent"):
@@ -198,16 +200,16 @@ def generateBindingPredictions(taskId, alleles, method):
     allelesForAnthem = ",".join(temp)
     del temp
 
-    for sample in os.listdir('/immunolyser-data/data/{}'.format(taskId)):
-        for replicate in os.listdir('/immunolyser-data//data/{}/{}'.format(taskId,sample)):
+    for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
+        for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
         
             if replicate[-12:] == '8to14mer.txt':
                 if(method=='MixMHCpred'):
-                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
+                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
                 elif(method=='NetMHCpan'):
                     f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
-                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate)], stdout=f)
+                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)], stdout=f)
                     output, err = p.communicate(b"input data that is passed to subprocess' stdin")
                     f.close()     
 
@@ -238,7 +240,7 @@ def generateBindingPredictions(taskId, alleles, method):
                     current_files = os.listdir()
                     
                     if filteredAllelesForAnthem != "":
-                        call(['../../../lenv/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '/immunolyser-data/data/{}/{}/{}'.format(taskId,sample,replicate)])
+                        call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
 
                         present_files = os.listdir()
                         data_folder = list(set(present_files)-set(current_files))
@@ -258,7 +260,7 @@ def generateBindingPredictions(taskId, alleles, method):
 
         if method=='ANTHEM' and sample!='Control':
 
-            os.chdir('/var/www/firstdemo/app/static/images/{}/{}/ANTHEM/'.format(taskId,sample))
+            os.chdir('{}/app/static/images/{}/{}/ANTHEM/'.format(project_root,taskId,sample))
         
             for replicate in os.listdir('./'):
             #     if replicate[-4:] == '.txt':
@@ -273,7 +275,7 @@ def generateBindingPredictions(taskId, alleles, method):
                             zip_file.write(filePath, basename(filePath))
                 zip_file.close()
 
-            os.chdir('../../../../../../')
+            os.chdir(project_root)
 
 
 
