@@ -209,7 +209,7 @@ def generateBindingPredictions(taskId, alleles, method):
 
                 elif(method=='NetMHCpan'):
                     f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
-                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)], stdout=f)
+                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', alleles], stdout=f)
                     output, err = p.communicate(b"input data that is passed to subprocess' stdin")
                     f.close()     
 
@@ -331,12 +331,75 @@ def saveBindersData(taskId, alleles, method):
 
                         f.close()
 
-                # MIxMHCpred case
+                # MixMHCpred case
                 if method == 'MixMHCpred':
-                    f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/VMM1_1st_nil_DT9_peptide_8to14mer.txt'.format(taskId,sample,replicate[:-13],replicate),skiprows=11,sep='\t')
+                    f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate),skiprows=11,sep='\t')
 
                     for allele in alleles.split(','):
-                        f[f.apply(lambda x: x['BestAllele']==allele and x['%Rank_bestAllele']<5, axis=1)]['Peptide'].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.txt'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+                        f[f.apply(lambda x: x['BestAllele']==allele and x['%Rank_bestAllele']<5, axis=1)]['Peptide'].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+
+                # netMHCpan case
+                if method == 'NetMHCpan':
+                    f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate),'r')
+
+                    # Storing all entries as string
+                    lines = list(f.readlines())
+                    f.close() 
+                    
+                    # Tags in output files of NetMHCpan
+                    border = '---------------------------------------------------------------------------------------------------------------------------\n'
+                    header = ' Pos         MHC        Peptide      Core Of Gp Gl Ip Il        Icore        Identity  Score_EL %Rank_EL BindLevel\n'
+
+                    allele_dict = {}
+
+                    # Reading data of each allele from output files.
+                    for i in range(len(lines)):
+                        if lines[i] == border and lines[i+1] == header:
+                            allele = lines[i+3].split()[1][4:].replace("*","").replace(":","")
+                            allele_dict[allele] = list()
+                            
+                            i = i+3
+
+                            # Adding all data of one allele till the next allele data starts.
+                            while(lines[i]!=border):
+                                allele_dict[allele].append(lines[i])
+                                i = i+1
+                        else:
+                            continue
+                    
+                    # Keeping only required fields
+                    for allele, binders in allele_dict.items():
+                        temp = list()
+                        
+                        for binder in binders:
+                            temp.append(binder.split()[:13])
+                            
+                        allele_dict[allele] = temp.copy()
+                        
+                        del temp
+
+                    # Furhter filtration of the result files.
+                    for allele,binders in allele_dict.items():
+                        
+                        # Keeping only required fields
+                        allele_dict[allele] = pd.DataFrame(binders,columns=header.split()[:13])
+                        
+                        # Making the allele name to same as user input's format
+                        allele_dict[allele]['MHC'] = allele
+                        
+                        temp = allele_dict[allele]
+                        # Keeping strong and weak binders only
+                        allele_dict[allele] = temp[temp.apply(lambda x : float(x['%Rank_EL'])<2,axis=1)]
+                        
+                        temp = allele_dict[allele]
+                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                        allele_dict[allele]['Binding Level'] = temp['%Rank_EL'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
+                        
+                        # Initialsing the column to show if peptide present in control/blank sample.
+                        allele_dict[allele]['Control'] = ""
+                        
+                        # Sorting the binders from stong to weak binding level and saving it.
+                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
 
 
 def getPredictionResuslts(taskId,sample_data,predictionTools):
