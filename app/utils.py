@@ -290,53 +290,73 @@ def saveBindersData(taskId, alleles, method):
                 if method == 'ANTHEM':
                     # Looping through all the result files of one replicate in ANTHEM results
                     for nmer_file in glob.glob('app/static/images/{}/{}/ANTHEM/{}/*.txt'.format(taskId,sample,replicate[:-13])):
-                            # reading nmer file
-                            f = open(nmer_file,'r')
-                            lines = f.read()
-                            f.close()
-                            
-                            # Using regex taking out alleles and peptides.
-                            alleles = list()
-                            alleles = re.findall(r'(?P<allele>[A-Z]{3}-[A-Z]\S\d{2}:\d{2}).*[\n] .*[\n]\S*\s*\S*\s*(?P<peptides>(?:.*\.\d*\s)*)',lines)
-                            
-                            # For each allele in one nmer file...
-                            for i in range(len(alleles)):
-                            
-                                # if coming across new allele, adding it into the result dictionary.
-                                if alleles[i][0] not in alleles_dict.keys():
-                                    alleles_dict[alleles[i][0]] = set()
-
-
-                                # for each peptide under one allele...
-                                for peptide in alleles[i][1].split('\n'):
-
-                                    # checking if it is a binder
-                                    if 'yes' in peptide:
-
-                                        # adding into the results list if a binder
-                                        alleles_dict[alleles[i][0]].add(re.findall(r'[A-Z]+',peptide)[0])
-
-                    # Saving the allele-binders dictionary as text files for ANTHEM case.
-                    for allele, binders in alleles_dict.items():
-
-                        allele = allele.replace('-',"")
-                        allele = allele.replace(':',"")
-                        allele = allele.replace('*',"")
-
-                        allele = allele[3:]
-                    
-                        f = open('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.txt'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), 'w')
-                        for item in binders:
-                            f.write("%s\n" % item)
-
+                        # reading nmer file
+                        f = open(nmer_file,'r')
+                        lines = f.read()
                         f.close()
+
+                        # Using regex taking out alleles and peptides.
+                        alleles = list()
+                        alleles = re.findall(r'(?P<allele>[A-Z]{3}-[A-Z]\S\d{2}:\d{2}).*[\n] .*[\n]\S*\s*\S*\s*(?P<peptides>(?:.*\.\d*\s)*)',lines)
+
+                        res_cols = ['Peptide', 'Binder', 'Score']
+
+
+                        # For each allele in one nmer file...
+                        for i in range(len(alleles)):
+
+                            # if coming across new allele, adding it into the result dictionary.
+                            if alleles[i][0] not in alleles_dict.keys():
+                                alleles_dict[alleles[i][0]] = list()
+
+
+                            # for each peptide under one allele...
+                            for peptide in alleles[i][1].split('\n'):
+
+                                # checking if it is a binder
+                                if 'yes' in peptide:
+
+                                    # adding into the results list if a binder
+                                    alleles_dict[alleles[i][0]].append(peptide.split())
+
+                        
+                        
+                    # Saving the allele-binders dictionary as text files for ANTHEM case.
+
+                    for allele, binders in alleles_dict.items():
+                        
+                        alleles_dict[allele] = pd.DataFrame(binders, columns=res_cols)
+                        
+                        alleles_dict[allele]['Binding Level'] = ""
+                        alleles_dict[allele]['Control'] = ""
+                        
+                        # Keeping strong and weak binders only
+                        alleles_dict[allele] = alleles_dict[allele][alleles_dict[allele].apply(lambda x : float(x['Score'])<2,axis=1)]
+
+                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                        alleles_dict[allele]['Binding Level'] = alleles_dict[allele]['Score'].apply(lambda x : 'SB' if float(x)>0.95 else 'WB')
+
+                        
+                        allele = allele[4:].replace("*","").replace(":","")
+
+                        # Sorting the binders from stong to weak binding level and saving it.
+                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
 
                 # MixMHCpred case
                 if method == 'MixMHCpred':
                     f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate),skiprows=11,sep='\t')
 
+                    f['Binding Level'] = ""
+                    f['Control'] = ""
+                        
+                    # Keeping strong and weak binders only
+                    f = f[f.apply(lambda x : float(x['%Rank_bestAllele'])<5,axis=1)]
+
+                    # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                    f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
+                        
                     for allele in alleles.split(','):
-                        f[f.apply(lambda x: x['BestAllele']==allele and x['%Rank_bestAllele']<5, axis=1)]['Peptide'].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+                        print(f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','Binding Level','Control']]).to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
