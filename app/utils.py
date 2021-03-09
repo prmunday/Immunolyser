@@ -337,10 +337,10 @@ def saveBindersData(taskId, alleles, method):
                         alleles_dict[allele]['Binding Level'] = alleles_dict[allele]['Score'].apply(lambda x : 'SB' if float(x)>0.95 else 'WB')
 
                         
-                        allele = allele[4:].replace("*","").replace(":","")
+                        allele_fromatted = allele[4:].replace("*","").replace(":","")
 
                         # Sorting the binders from stong to weak binding level and saving it.
-                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
                 # MixMHCpred case
                 if method == 'MixMHCpred':
@@ -356,7 +356,7 @@ def saveBindersData(taskId, alleles, method):
                     f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
                         
                     for allele in alleles.split(','):
-                        print(f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','Binding Level','Control']]).to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+                        f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','Binding Level','Control']].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
@@ -419,43 +419,39 @@ def saveBindersData(taskId, alleles, method):
                         allele_dict[allele]['Control'] = ""
                         
                         # Sorting the binders from stong to weak binding level and saving it.
-                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele), index=False)
+                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
 
-def getPredictionResuslts(taskId,sample_data,predictionTools):
+def getPredictionResuslts(taskId,alleles,methods,samples):
     
-    # Output Object
-    data = {}
+    alleles = alleles.split(',')
 
-    for predictionMethod in predictionTools:
-        data[predictionMethod] = sample_data
+    predicted_binders = {}
 
-    print(data)
+    for sample in samples:
+        if sample !='Control':
 
-    # Coming at static images level
-    os.chdir(os.path.join(project_root,'app','static'))
-
-    for method, samples in data.items():
-        for sample, replicates in samples.items():
+            os.chdir(project_root)
+            predicted_binders[sample] = {}
             
-            # For ANTHEM
-            if method=='ANTHEM':
-                data[method][sample] = [i for i in os.listdir(os.path.join('images',taskId,sample,'ANTHEM')) if i[-3:]=='zip']
-                print(method,[i for i in os.listdir(os.path.join('images',taskId,sample,'ANTHEM')) if i[-3:]=='zip'])
+            for allele in alleles:
+                predicted_binders[sample][allele] = {}
 
-    #         if method=='MixMHCpred':
-                
-    #             # data[method][sample] = list()
-    #             temp = list()
+                for method in methods:
+                    predicted_binders[sample][allele][method] = {}
 
-    #             for replicate in replicates:
-    #                 print('images',taskId,sample,'MixMHCpred',replicate)
-    #                 for replicate_file in os.listdir(os.path.join('images',taskId,sample,'MixMHCpred',replicate[:-4])):
-    #                     temp.append(replicate_file)
+    for sample in os.listdir(f'data/{taskId}/'):
+        
+        for method in methods:
+            
+            for replicate in os.listdir(f'data/{taskId}/{sample}/'):
+                if replicate[-12:] == '8to14mer.txt':
 
-    #             data[method][sample] = temp
-    #             print(method,temp)
-
-    return data
-    # for sample in data.keys():
-    #     data
+                    for allele in alleles:
+                        os.chdir('app/')
+                        temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-13]}/binders/{allele}/*.csv')
+                        if len(temp) != 0:
+                            predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
+                        os.chdir(project_root)
+                        
+    return predicted_binders

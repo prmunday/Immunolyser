@@ -193,15 +193,17 @@ def initialiser():
             saveBindersData(taskId, alleles_unformatted, predictionTool)
 
     # Method to get the prediction results
-    # print(getPredictionResuslts(taskId,data,predictionTools))
+    predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
     
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predictionTools=predictionTools,data=data)
-    # return render_template("initialiser.html", form=form, initialiser=True)
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools)
 
 @app.route("/analytics")
 def analytics():
-    return render_template("analytics.html", analytics=True, iframe = 'data/6-ID-2020-11-13/Inferon/seqlogos/peptide_AB190613_1106_IFN_PEAKS10_DT9-001.png')
+
+    predicted_binders = getPredictionResuslts('202103092206303','B1301,C0303,A0202',['NetMHCpan', 'ANTHEM', 'MixMHCpred'],['VMM1','Inferon','Tmpi'])
+
+    return render_template("temp.html", analytics=True,predicted_binders=predicted_binders, predictionTools = ['NetMHCpan', 'ANTHEM', 'MixMHCpred'])
 
 # Method to manage experiment ID
 def getTaskId():
