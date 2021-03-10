@@ -196,7 +196,7 @@
 			<div class="form-row">
 				<b class="col-md-6 mb-3">or type allele names (ie A0207) separated by commas.</b>&nbsp;  <br>
 				<!-- <input class="col-md-4 mb-3" name="alleles" type="text" value=""><br> -->
-				<textarea rows="3" cols="40" name="alleles" placeholder="Enter alleles"></textarea><br>
+				<textarea id='alleles'rows="3" cols="40" name="alleles" placeholder="Enter alleles"></textarea><br>
 
 			</div>
 				
@@ -272,7 +272,6 @@
 		cln.children[4].name = "sample-"+ count;
 		cln.children[4].value = "";
 		samples.appendChild(cln)
-		console.log(cln)
 	}
 
 	function deleteSample(){
@@ -287,9 +286,10 @@
 		
 	}
 
+var allele_warning = false
 	function upldateAllele(element){
 		alleleText = document.getElementsByName('alleles')[0];
-	
+		
 		for (i = 0; i < element.options.length; i++) {
 			if (element.options[i].selected) {
 				alleleValue = element.options[i].value;
@@ -315,7 +315,34 @@
 	}
 
 	function checkAlleles(){
+
+		samples = document.getElementById('samples').getElementsByTagName('div');
+		for (i=0;i<samples.length;i++){
+			sample = samples[i].getElementsByTagName('input');
+			sample_name = sample[0];
+
+			// console.log(sample_name)
+			if(checkSampleName(sample_name.value)==false){
+				return false;
+			}
+			sample_data = sample[1].value;
+			if(sample_data==''){
+				alert('Please upload the data file(csv).')
+				return false;
+			}
+
+		}
+
+		alleleText = document.getElementById('alleles');
 		
+		if(alleleText.value.length==0){
+			if(allele_warning==false){
+				alert('If the form is submitted without the allele names, no binding prediction tests will be performed');
+				allele_warning = true;
+				return false;
+			}
+		}
+
 		var alleleText = document.forms["login"]["alleles"].value;
 
 		if(alleleText ==""){
@@ -335,12 +362,30 @@
 			if(validAlleles.includes(uniqueAlleles[i]) == false){
 				alert(uniqueAlleles[i]+" is not a supported allele.");
 				return false;
-			}
+			};
 		}
 		
 		return true;
 	}
 
+	function checkSampleName(sample_name){
 
+		characters_not_dir_name = ['\\','/',':','*','?','"','<','>','|',' ']
+
+		for(i=0;i<characters_not_dir_name.length;i++){
+			
+			if (sample_name==''){
+				alert('Please enter the for the sample');
+				return false;
+			}
+
+			if (sample_name.includes(characters_not_dir_name[i])){
+				alert('Sample name should not contain special character: \n/ \\ : * ? " < > | space');
+				return false;
+			}
+		}
+
+		return true;
+	}
 </script>
 {% endblock %}

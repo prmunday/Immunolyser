@@ -47,11 +47,18 @@ def initialiser():
     data = {}
     control = list()
 
+    # characters_not_dir_name = ['\\','/',':','*','?','"','<','>','|',' ']
+
     # Creating folders to store images
     for key, value  in request.files.items():
         sample_name = request.form[key]
 
-        # Skipping Control Data
+        # sample_name = sample_name.replace('')
+
+        # for character_not_dir_name in characters_not_dir_name:
+        #     sample_name = sample_name.replace(character_not_dir_name,'_') 
+            
+        # Sk ipping Control Data
         if sample_name == "Control":
             continue
 
