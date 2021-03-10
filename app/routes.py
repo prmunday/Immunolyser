@@ -47,20 +47,13 @@ def initialiser():
     data = {}
     control = list()
 
-    # characters_not_dir_name = ['\\','/',':','*','?','"','<','>','|',' ']
-
     # Creating folders to store images
     for key, value  in request.files.items():
         sample_name = request.form[key]
 
-        # sample_name = sample_name.replace('')
-
-        # for character_not_dir_name in characters_not_dir_name:
-        #     sample_name = sample_name.replace(character_not_dir_name,'_') 
-            
-        # Sk ipping Control Data
-        if sample_name == "Control":
-            continue
+        # Skipping Control Data
+        # if sample_name == "Control":
+        #     continue
 
         # Creating sub directories to store sample data
         try:
@@ -85,8 +78,8 @@ def initialiser():
             print("Directory already exists")    
 
         # Not including the control group in data dict 
-        if sample_name != "Control":
-            data[sample_name] = list()
+        # if sample_name != "Control":
+        data[sample_name] = list()
 
         replicates = request.files.getlist(key)
         print("replics name : {}".format(replicates))
@@ -98,10 +91,16 @@ def initialiser():
                 replicate.save(os.path.join(dirName, sample_name, file_filename))
 
             # Not including the control group in sample data dict
-            if sample_name != "Control":
+            # if sample_name != "Control":
                 data[sample_name].append(file_filename)
-            elif file_filename !="":
-                control.append(file_filename)
+            # elif file_filename !="":
+                # control.append(file_filename)
+
+        # If control data is not uploaded, then deleting the sample from the data dictionary
+        temp = data.copy()
+        for sample_name, replicates in temp.items():
+            if len(replicates) == 0:
+                data.pop(sample_name)
 
     if len(data) == 0:
         return render_template("initialiser.html", initialiser=True)
@@ -127,7 +126,10 @@ def initialiser():
                 if alleles_unformatted != "":
                     for allele in alleles_unformatted.split(','):
                         try:
-                            path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele)
+                            if sample != 'Control':
+                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele)
+                            else:
+                                path = os.path.join('app', 'static', 'images', taskId, sample)
                             if not os.path.exists(path):
                                 # os.makedirs(directory)
                                 Path(path).mkdir(parents=True, exist_ok=True)
@@ -145,9 +147,8 @@ def initialiser():
         alleles = ",".join(temp)
         del temp
                 
-
     sample_data = {}
-    control_data = {}
+    # control_data = {}
 
     # Loading sample data in pandas frames
     for sample_name, file_names in data.items():
@@ -156,12 +157,12 @@ def initialiser():
             sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
 
     # Loading control data in pandas frames
-    for control_replicate in control:
-        control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
+    # for control_replicate in control:
+        # control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
 
     # Have to later add the user input for length
     for sample_name, sample in sample_data.items():
-        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen, control_data= control_data)
+        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
 
 
     bar_percent = plot_lenght_distribution(sample_data, hist='percent')

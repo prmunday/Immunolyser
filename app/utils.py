@@ -84,29 +84,29 @@ def plot_lenght_distribution(samples, hist="percent"):
     
 # The following method filters the data to remove contamination.
 # This method is specific to a PEAKS output file for peptides.
-def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133, control_data={}):
+def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
     
-    control_peptides = list()
-    # Filtering the control data first
-    for file_name,sample in control_data.items():
-#       Removing rows with no accession identity
-        temp = sample.dropna(subset=['Accession'])
+#     control_peptides = list()
+#     # Filtering the control data first
+#     for file_name,sample in control_data.items():
+# #       Removing rows with no accession identity
+#         temp = sample.dropna(subset=['Accession'])
         
-#       Dropping the peptides with Post translational modifications
-        if dropPTM:
-            temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
+# #       Dropping the peptides with Post translational modifications
+#         if dropPTM:
+#             temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
 
-#       Removing contamincation founf from accession number 
-        temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
+# #       Removing contamincation founf from accession number 
+#         temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
         
-#       Filtering on the basis of the peptide length
-        temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
+# #       Filtering on the basis of the peptide length
+#         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
     
-        control_data[file_name] = temp
+#         control_data[file_name] = temp
 
-    # Finding the control peptides from control data
-    for control_replicate, control_replicate_data in control_data.items():
-        control_peptides.extend(control_data[control_replicate]['Peptide'].to_list())
+#     # Finding the control peptides from control data
+#     for control_replicate, control_replicate_data in control_data.items():
+#         control_peptides.extend(control_data[control_replicate]['Peptide'].to_list())
 
     for file_name,sample in samples.items():
 #       Removing rows with no accession identity
@@ -123,7 +123,7 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133, control_data={}
         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
 
 #       Filtering the control peptides out
-        temp = temp[temp.apply(lambda x : x['Peptide'] not in control_peptides,axis=1)]        
+        # temp = temp[temp.apply(lambda x : x['Peptide'] not in control_peptides,axis=1)]        
     
         samples[file_name] = temp
 
@@ -194,6 +194,7 @@ def generateBindingPredictions(taskId, alleles, method):
 
     # Converting HLAs syntax from HLA-A02:01 to HLA-A*02:01
     temp = list()
+    allelesForAnthem = ""
     for allele in alleles.split(','):
         temp.append('HLA-{}*{}:{}'.format(allele[4],allele[5:7],allele[8:]))
         
@@ -202,60 +203,60 @@ def generateBindingPredictions(taskId, alleles, method):
 
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
-        
-            if replicate[-12:] == '8to14mer.txt':
-                if(method=='MixMHCpred'):
-                    call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
+            if sample != 'Control':
+                if replicate[-12:] == '8to14mer.txt':
+                    if(method=='MixMHCpred'):
+                        call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
-                elif(method=='NetMHCpan'):
-                    f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
-                    p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', alleles], stdout=f)
-                    output, err = p.communicate(b"input data that is passed to subprocess' stdin")
-                    f.close()     
+                    elif(method=='NetMHCpan'):
+                        f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
+                        p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', alleles], stdout=f)
+                        output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+                        f.close()     
 
-            elif replicate[-7:] == 'mer.txt':
-                if(method=='ANTHEM'):
+                elif replicate[-7:] == 'mer.txt':
+                    if(method=='ANTHEM'):
 
-                    # Here, the peptides which can be accpeted by Anthem will be carry forwarded
-                    temp = list()
-                    for allele in allelesForAnthem.split(','):
+                        # Here, the peptides which can be accpeted by Anthem will be carry forwarded
+                        temp = list()
+                        for allele in allelesForAnthem.split(','):
+                            
+                            if replicate[-8:-7] in ['8','9']:
+                                nmer = replicate[-8:-7]
+                            else:
+                                nmer = replicate[-9:-7]
+
+                            if allele in data[nmer]:
+                                temp.append(allele)
+
+                        filteredAllelesForAnthem = ",".join(temp)
+                        del temp
+
+                        os.chdir(os.path.join(project_root,'app/tools/Anthem-master'))
+
+                        # Have to find a better way to read output of anthem.
+                        # For now reading the files in newly generated folder and deleting them.
+
+                        # Current folder
+                        current_files = os.listdir()
                         
-                        if replicate[-8:-7] in ['8','9']:
-                            nmer = replicate[-8:-7]
-                        else:
-                            nmer = replicate[-9:-7]
+                        if filteredAllelesForAnthem != "":
+                            call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
 
-                        if allele in data[nmer]:
-                            temp.append(allele)
+                            present_files = os.listdir()
+                            data_folder = list(set(present_files)-set(current_files))
 
-                    filteredAllelesForAnthem = ",".join(temp)
-                    del temp
+                            # Copying the output file to the destination
+                            if replicate[-8:-7] in ['8','9']:
+                                copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-9]))
 
-                    os.chdir(os.path.join(project_root,'app/tools/Anthem-master'))
+                            else:
+                                copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-10]))
+        
+                            # Deleting the output file
+                            shutil.rmtree(data_folder[0])
 
-                    # Have to find a better way to read output of anthem.
-                    # For now reading the files in newly generated folder and deleting them.
-
-                    # Current folder
-                    current_files = os.listdir()
-                    
-                    if filteredAllelesForAnthem != "":
-                        call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
-
-                        present_files = os.listdir()
-                        data_folder = list(set(present_files)-set(current_files))
-
-                        # Copying the output file to the destination
-                        if replicate[-8:-7] in ['8','9']:
-                            copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-9]))
-
-                        else:
-                            copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-10]))
-    
-                        # Deleting the output file
-                        shutil.rmtree(data_folder[0])
-
-                        os.chdir(project_root)
+                            os.chdir(project_root)
 
 
         if method=='ANTHEM' and sample!='Control':
@@ -278,6 +279,19 @@ def generateBindingPredictions(taskId, alleles, method):
             os.chdir(project_root)
 
 def saveBindersData(taskId, alleles, method):
+
+    # Taking out the peptides from the uploaded control data to tag binders present in control group.
+    control_peptides = set()
+    control_replicates = glob.glob(f'data/{taskId}/Control/*8to14mer.txt')
+
+    if len(control_replicates) != 0:
+        for control_replicate in control_replicates:
+            f = open(control_replicate,'r')
+            
+            for peptide in f.readlines():
+                control_peptides.add(peptide.replace("\n",""))
+            
+            f.close()
 
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
@@ -336,6 +350,9 @@ def saveBindersData(taskId, alleles, method):
                         # Tagging each binder as SB(Strong binder) or WB(Weak binder)
                         alleles_dict[allele]['Binding Level'] = alleles_dict[allele]['Score'].apply(lambda x : 'SB' if float(x)>0.95 else 'WB')
 
+                        # Tagging binders present in control group
+                        temp = alleles_dict[allele]
+                        alleles_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
                         
                         allele_fromatted = allele[4:].replace("*","").replace(":","")
 
@@ -355,6 +372,9 @@ def saveBindersData(taskId, alleles, method):
                     # Tagging each binder as SB(Strong binder) or WB(Weak binder)
                     f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
                         
+                    # Tagging binders present in control group
+                    f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+
                     for allele in alleles.split(','):
                         f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','Binding Level','Control']].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
@@ -417,13 +437,18 @@ def saveBindersData(taskId, alleles, method):
                         
                         # Initialsing the column to show if peptide present in control/blank sample.
                         allele_dict[allele]['Control'] = ""
+
+                        
+                        # Tagging binders present in control group
+                        temp = allele_dict[allele]
+                        allele_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
                         
                         # Sorting the binders from stong to weak binding level and saving it.
                         allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
 
 def getPredictionResuslts(taskId,alleles,methods,samples):
-    
+
     alleles = alleles.split(',')
 
     predicted_binders = {}
