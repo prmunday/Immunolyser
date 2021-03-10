@@ -136,6 +136,7 @@ def initialiser():
                             print("Directory already exists {}".format(path))
 
     # Converting alleles from A0203 format to HLA-A02:03
+    alleles = ''
     if alleles_unformatted != "":
         temp = list()
         for allele in alleles_unformatted.split(','):
@@ -147,7 +148,6 @@ def initialiser():
 
     sample_data = {}
     control_data = {}
-    print(data)
 
     # Loading sample data in pandas frames
     for sample_name, file_names in data.items():
@@ -199,8 +199,11 @@ def initialiser():
         for predictionTool in predictionTools:
             saveBindersData(taskId, alleles_unformatted, predictionTool)
 
+
+    predicted_binders = None
     # Method to get the prediction results
-    predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
+    if alleles!="":    
+        predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
     
 
     return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools)
