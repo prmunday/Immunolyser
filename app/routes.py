@@ -214,7 +214,14 @@ def analytics():
 
     predicted_binders = getPredictionResuslts('202103092206303','B1301,C0303,A0202',['NetMHCpan', 'ANTHEM', 'MixMHCpred'],['VMM1','Inferon','Tmpi'])
 
-    return render_template("temp.html", analytics=True,predicted_binders=predicted_binders, predictionTools = ['NetMHCpan', 'ANTHEM', 'MixMHCpred'])
+    return render_template("analytics.html", analytics=True,predicted_binders=predicted_binders, predictionTools = ['NetMHCpan', 'ANTHEM', 'MixMHCpred'])
+
+
+@app.route("/feedback")
+def feedback():
+
+    return render_template("feedback.html", feedback=True)
+
 
 # Method to manage experiment ID
 def getTaskId():
