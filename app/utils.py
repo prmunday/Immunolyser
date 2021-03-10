@@ -282,7 +282,7 @@ def saveBindersData(taskId, alleles, method):
 
     # Taking out the peptides from the uploaded control data to tag binders present in control group.
     control_peptides = set()
-    control_replicates = glob.glob(f'data/{taskId}/Control/*8to14mer.txt')
+    control_replicates = glob.glob(f'{data_mount}/{taskId}/Control/*8to14mer.txt')
 
     if len(control_replicates) != 0:
         for control_replicate in control_replicates:
@@ -465,11 +465,11 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                 for method in methods:
                     predicted_binders[sample][allele][method] = {}
 
-    for sample in os.listdir(f'data/{taskId}/'):
+    for sample in os.listdir(f'{data_mount}/{taskId}/'):
         
         for method in methods:
             
-            for replicate in os.listdir(f'data/{taskId}/{sample}/'):
+            for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
                 if replicate[-12:] == '8to14mer.txt':
 
                     for allele in alleles:
