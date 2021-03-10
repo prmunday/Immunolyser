@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div id="message_id" hidden>Please set up the experimental conditions and parameters using the initialiser module first.</div>
+{% if msg is not none %}
+<script>
+
+        var msg_value = document.getElementById('message_id').innerHTML;
+        Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text:  msg_value  });
+    </script>
+{% endif %}
+
+{% endblock %}

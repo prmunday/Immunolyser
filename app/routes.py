@@ -212,16 +212,38 @@ def initialiser():
 @app.route("/analytics")
 def analytics():
 
-    predicted_binders = getPredictionResuslts('202103092206303','B1301,C0303,A0202',['NetMHCpan', 'ANTHEM', 'MixMHCpred'],['VMM1','Inferon','Tmpi'])
-
-    return render_template("analytics.html", analytics=True,predicted_binders=predicted_binders, predictionTools = ['NetMHCpan', 'ANTHEM', 'MixMHCpred'])
+    return render_template("error.html",analytics=True, msg = 'initialiser')
 
 
-@app.route("/feedback")
+@app.route("/feedback", methods=["POST", "GET"])
 def feedback():
 
-    return render_template("feedback.html", feedback=True)
+    if 'feedback' not in request.form.keys():
+        return render_template("feedback.html", feedback=None)
 
+    if len(request.form.get('feedback'))==0:
+        return render_template("feedback.html", feedback=None)
+        
+
+    data_mount = app.config['IMMUNOLYSER_DATA']
+
+    dirName = os.path.join(data_mount,'feedback')
+    try:
+        # Create target Directory
+        os.makedirs(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
+
+    feedback_file = open(os.path.join(dirName,'feedback.txt'), 'a')
+
+    feedback_file.write(request.form.get('feedback')+'\n\n---Feedback---\n\n')
+    # Close the file
+    feedback_file.close()
+
+   
+    
+    return render_template("feedback.html", feedback=True)
 
 # Method to manage experiment ID
 def getTaskId():

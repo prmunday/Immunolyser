@@ -70,31 +70,61 @@
     </div>
 
 <br>
-
+    
     <p class="text-justify">Above are the sequence logos for each replicate(if any) of all samples given. For generating these sequence logos, the local
         version Seq2Logo has been used. Kullback-Leibler method has been used to generate the logos.
     </p> 
 
 <br>
+    {% if predicted_binders is not none %}
+        <h3>Peptide-HLA binding affinity prediction</h3>
+        <br>
+        <div>
+            
+            {% for sample, alleles in predicted_binders.items() %}
+                <h4>{{sample}}</h4>
+                <br>
+                <table class="table">
+                    
+                    <!-- Head of the table -->
+                    <thead>
+                    <tr>
+                        <th scope="col">Alleles</th>
+                        {% for method in predictionTools%}
+                            <th scope="col">{{method}}</th>
+                        {% endfor%}
+                    </tr>
+                    </thead>
 
-    <h3>Peptide-HLA binding affinity prediction</h3>
+                    <!-- Body of the table -->
+                    <tbody>
+                    
+                    {% for allele,methods in alleles.items() %}
 
-    <div>
-        {% for predictionTool  in predictionTools %}
-            {{predictionTool}}
-            <br>
-            {% for sample, replicates in data.items() %}
-                {% for replicate in replicates %}
-                    {{sample, replicate}}
-                {%endfor%}
-            {%endfor%}
-        {%endfor%}
-    </div>
-<br>
+                        <tr>
+                            <th scope="row">{{allele}}</th>
 
-    
+                            {% for method,replicates in methods.items() %}
+                            <td>
+                                {% for replicate,binders in replicates.items() %}
+                                    <a href="{{binders}}">{{replicate}}</a><br>
+                                {% endfor %}
+                            </td>
+                            {% endfor%}
+                        </tr>
+                    {% endfor%}
+                    </tbody>
+                </table>
 
+            {% endfor %}
+        </div>
 
+        <br>
+
+        <p class="text-justify">Above table for each uploaded sample contains the binders information for each selected allele. The binders information is present for every combination of alleles selected and prediction tools available. The information about binders is stored in csv files which can be downloaded by clicking on the specific allele and predictoin tool. The csv file contains three columns named as Peptide, Binding Level and Control. Peptide column contains the binder sequence. The Binding Level column tells weather a binder is strong or weak binder. The 'Control' column specifies if binder is also present in the control group, if uploaded. The binders in the downladable csv files are sorted in decreasing level of binding level.
+        </p> 
+    {% endif %}
+    <br>
     <!-- <iframe frameborder='0' noresize='noresize' style='position: absolute; background: transparent; width: 100%; height:100%;' src="{{ iframe }}" frameborder="0"></iframe>
     <h3 ><a href="/">Stumble</a></h3> -->
 
