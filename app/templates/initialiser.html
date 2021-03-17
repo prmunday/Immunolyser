@@ -317,6 +317,7 @@ var allele_warning = false
 	function checkAlleles(){
 
 		samples = document.getElementById('samples').getElementsByTagName('div');
+
 		for (i=0;i<samples.length;i++){
 			sample = samples[i].getElementsByTagName('input');
 			sample_name = sample[0];
@@ -325,12 +326,15 @@ var allele_warning = false
 			if(checkSampleName(sample_name.value)==false){
 				return false;
 			}
-			sample_data = sample[1].value;
-			if(sample_data==''){
-				alert('Please upload the data file(csv).')
+			sample_data = sample[1];
+			if(checkSampleFiles(sample_data, true)==false){
 				return false;
 			}
+		}
 
+		control = document.getElementById('control').getElementsByTagName('input')[1];
+		if(checkSampleFiles(control)==false){
+			return false;
 		}
 
 		alleleText = document.getElementById('alleles');
@@ -375,7 +379,7 @@ var allele_warning = false
 		for(i=0;i<characters_not_dir_name.length;i++){
 			
 			if (sample_name==''){
-				alert('Please enter the for the sample');
+				alert('Please enter a name each of the sample.');
 				return false;
 			}
 
@@ -386,6 +390,28 @@ var allele_warning = false
 		}
 
 		return true;
+	}
+
+	function checkSampleFiles(sample_files, required = false){
+
+		if(sample_files.value=='' && required == true){
+			alert('Please upload the data file(csv).');
+			return false;
+		}
+
+		for(i=0;i<sample_files.files.length;i++){
+
+			name = sample_files.files[i].name;
+
+			if(name.substr(-4)!='.csv'){
+				alert('Cannot accept ' + name + ' file as it is not a csv file.');
+				return false;
+			} 
+			
+		}
+
+		return true;
+		
 	}
 </script>
 {% endblock %}
