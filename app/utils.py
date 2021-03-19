@@ -241,7 +241,7 @@ def generateBindingPredictions(taskId, alleles, method):
                         current_files = os.listdir()
                         
                         if filteredAllelesForAnthem != "":
-                            call(['../../../env/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
+                            call(['../../../lenv/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
 
                             present_files = os.listdir()
                             data_folder = list(set(present_files)-set(current_files))
@@ -348,7 +348,8 @@ def saveBindersData(taskId, alleles, method):
                         alleles_dict[allele] = alleles_dict[allele][alleles_dict[allele].apply(lambda x : float(x['Score'])<2,axis=1)]
 
                         # Tagging each binder as SB(Strong binder) or WB(Weak binder)
-                        alleles_dict[allele]['Binding Level'] = alleles_dict[allele]['Score'].apply(lambda x : 'SB' if float(x)>0.95 else 'WB')
+                        # alleles_dict[allele]['Binding Level'] = alleles_dict[allele]['Score'].apply(lambda x : 'SB' if float(x)>0.95 else 'WB')
+                        alleles_dict[allele]['Binding Level'] = "B"
 
                         # Tagging binders present in control group
                         temp = alleles_dict[allele]
@@ -357,7 +358,7 @@ def saveBindersData(taskId, alleles, method):
                         allele_fromatted = allele[4:].replace("*","").replace(":","")
 
                         # Sorting the binders from stong to weak binding level and saving it.
-                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
+                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Score","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
                 # MixMHCpred case
                 if method == 'MixMHCpred':
@@ -367,7 +368,7 @@ def saveBindersData(taskId, alleles, method):
                     f['Control'] = ""
                         
                     # Keeping strong and weak binders only
-                    f = f[f.apply(lambda x : float(x['%Rank_bestAllele'])<5,axis=1)]
+                    f = f[f.apply(lambda x : float(x['%Rank_bestAllele'])<2,axis=1)]
 
                     # Tagging each binder as SB(Strong binder) or WB(Weak binder)
                     f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
@@ -376,7 +377,7 @@ def saveBindersData(taskId, alleles, method):
                     f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
 
                     for allele in alleles.split(','):
-                        f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','Binding Level','Control']].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+                        f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','%Rank_bestAllele','Binding Level','Control']].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
@@ -444,7 +445,7 @@ def saveBindersData(taskId, alleles, method):
                         allele_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
                         
                         # Sorting the binders from stong to weak binding level and saving it.
-                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
 
 def getPredictionResuslts(taskId,alleles,methods,samples):
