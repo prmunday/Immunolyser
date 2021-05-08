@@ -32,7 +32,7 @@ def plot_lenght_distribution(samples, hist="percent"):
         for replicateData in sample.values():
             data.append(replicateData)
         
-        len_data = pd.concat(data)['Length']
+        len_data = pd.concat(data).drop_duplicates(subset='Peptide')['Length']
 
         peptideProportion = {}
 
@@ -41,13 +41,13 @@ def plot_lenght_distribution(samples, hist="percent"):
             for replicate, data in sample.items():
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
 
-            title = 'The frequency distribution of the peptide lengths'
+            title = 'The relative frequency distribution of the peptide lengths'
             yaxis_label = '% Peptides'
         else:
             for replicate, data in sample.items():
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
 
-            title = 'The density distribution of the peptide lengths'
+            title = 'The frequency distribution of the peptide lengths'
             yaxis_label = 'Numebr of Peptides'
 
         # Combining arrays to further calculate the standard deviation
