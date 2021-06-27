@@ -190,7 +190,7 @@ def generateBindingPredictions(taskId, alleles, method):
         with open('app/tools/Anthem-master/source/lenghHLA.json') as f:
             data = json.load(f)
 
-    print('Generating Binding Predictions for task {} for {} alleles.'.format(taskId,alleles))
+    print('Generating Binding Predictions for task {} for {} alleles using {}.'.format(taskId,alleles,method))
 
     # Converting HLAs syntax from HLA-A02:01 to HLA-A*02:01
     temp = list()
@@ -295,7 +295,11 @@ def saveBindersData(taskId, alleles, method):
 
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
+
             if sample != 'Control' and replicate[-12:] == '8to14mer.txt':
+
+                # Original upload file used to derive all other columns present in the input file
+                input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
 
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
@@ -354,11 +358,16 @@ def saveBindersData(taskId, alleles, method):
                         # Tagging binders present in control group
                         temp = alleles_dict[allele]
                         alleles_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-                        
+
                         allele_fromatted = allele[4:].replace("*","").replace(":","")
 
                         # Sorting the binders from stong to weak binding level and saving it.
-                        alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Score","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
+                        alleles_dict[allele] = alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Score","Binding Level","Control"]]
+
+                        # Adding the meta-data from the original input file
+                        alleles_dict[allele] = alleles_dict[allele].merge(input_file, on='Peptide',how='left')
+
+                        alleles_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
                 # MixMHCpred case
                 if method == 'MixMHCpred':
@@ -377,7 +386,10 @@ def saveBindersData(taskId, alleles, method):
                     f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
 
                     for allele in alleles.split(','):
-                        f[f['BestAllele'] == allele].sort_values(by=['%Rank_bestAllele'])[['Peptide','%Rank_bestAllele','Binding Level','Control']].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+                        f[f['BestAllele'] == allele]\
+                            .sort_values(by=['%Rank_bestAllele'])[['Peptide','%Rank_bestAllele','Binding Level','Control']]\
+                            .merge(input_file, on='Peptide',how='left')\
+                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
@@ -445,8 +457,12 @@ def saveBindersData(taskId, alleles, method):
                         allele_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
                         
                         # Sorting the binders from stong to weak binding level and saving it.
-                        allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+                        allele_dict[allele] = allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]]
 
+                        # Adding the meta-data from the original input file
+                        allele_dict[allele] = allele_dict[allele].merge(input_file, on='Peptide',how='left')
+
+                        allele_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
 def getPredictionResuslts(taskId,alleles,methods,samples):
 
