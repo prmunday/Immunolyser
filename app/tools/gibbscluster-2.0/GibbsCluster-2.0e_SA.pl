@@ -490,16 +490,16 @@ if (defined($R)) {  ##only if R is installed
 ###################################################################
 #### put cores into individual files, for logo-generation
 
-# for (my $g=$ming; $g<=$maxg; $g++) {
-open (C,'>',"$resdir/cores/gibbs.${bestG}g.cores") or die "Cannot create core file: $!\n";
-if (exists($cores{$bestG})) {
-	my %levels = %{$cores{$bestG}};
+for (my $g=$ming; $g<=$maxg; $g++) {
+open (C,'>',"$resdir/cores/gibbs.${g}g.cores") or die "Cannot create core file: $!\n";
+if (exists($cores{$g})) {
+	my %levels = %{$cores{$g}};
 	for (my $lev=0; $lev<=$maxg; $lev++) {
 		if (exists($levels{$lev})) {
 			my @seqs = @{$levels{$lev}};
 			my $cg = $lev+1;
 			print C "## Alignment cores for group $cg\n";	
-			open (OUT,'>',"$resdir/cores/gibbs.${cg}of${bestG}.core") or die "Cannot create core file: $!\n";
+			open (OUT,'>',"$resdir/cores/gibbs.${cg}of${g}.core") or die "Cannot create core file: $!\n";
 			for (my $s=0; $s<=$#seqs; $s++) {
 				my $core = $seqs[$s];
 				print OUT "$core\n";
@@ -510,7 +510,7 @@ if (exists($cores{$bestG})) {
 	}
 }
 close C;
-# }
+}
 
 #######################################
 ## seq2logo
