@@ -1,6 +1,7 @@
 from app import app
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, send_file
 from flask import current_app
+from app import sample
 from app.forms import InitialiserForm, ParentForm
 import pandas as pd
 import os
@@ -10,9 +11,15 @@ from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, g
 from app.sample import Sample
 import time
 from pathlib import Path
+import glob
+import shutil
+
+project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
 # Experiment ID
 TASK_COUNTER = 0
+
+data_mount = app.config['IMMUNOLYSER_DATA']
 
 @app.route("/")
 @app.route("/index")
@@ -27,8 +34,6 @@ def index():
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():    
     samples = []
-
-    data_mount = app.config['IMMUNOLYSER_DATA']
 
     # Have to take this input from user
     maxLen = 30
@@ -252,3 +257,68 @@ def getTaskId():
     task_Id = time.strftime("%Y%m%d%H%M%S")+str(TASK_COUNTER)
 
     return task_Id
+
+
+@app.route("/api/generateGibbs", methods=["POST"])
+def generateGibbs():
+    
+    taskId = request.form['taskId']
+    sample = request.form['sample']
+    replicate = request.form['replicate']
+    clsuters = request.form['clusters']
+
+    try:
+        filename = os.path.join(project_root,'app','static','images',taskId,sample,'gibbscluster',replicate,'images','gibbs.KLDvsCluster.barplot.JPG')
+    
+    except Exception:
+        filename = os.path.join(project_root,'app','static','others','gibbsBarNotFound.JPG')
+
+    # return 'Hi'
+    return send_file(filename, mimetype='image/gif')
+
+
+# This method is to create the bar graphs for an input file not created already
+@app.route("/api/test", methods=["POST"])
+def createGibbsBar():
+    
+    cluster = request.form['cluster']
+    taskId = request.form['taskId']
+    replicate = request.form['replicate']
+    sample = request.form['sample']
+
+    barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
+
+    if len(barLocation) ==1:
+        barLocation = barLocation[0]
+
+    else:
+
+        # Deleting previous meta files present
+        dirpath = f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}'
+        if os.path.exists(dirpath) and os.path.isdir(dirpath):
+            shutil.rmtree(dirpath)
+
+        subprocess.call('sudo python3 {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate), shell=True)
+
+        barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
+
+        if len(barLocation) ==1:
+            barLocation = barLocation[0]
+        
+        else: 
+            barLocation = f'app/static/others/gibbsBarNotFound.JPG'
+        
+    if len(cluster) == 0:
+        bestCluster = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsClusters.tab')
+        bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
+
+        seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*.jpg')]
+
+    else:
+        seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+
+        if len(seqClusters) != int(cluster):
+            subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, int(cluster)), shell=True)
+            seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+
+    return {barLocation:seqClusters}
