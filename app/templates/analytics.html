@@ -52,22 +52,146 @@
 
 <br>
 
-    <div class="seqlogo">
-        {% for sample, replicates in gibbsImages.items() %}
-            <h4>{{sample}}</h4>
-            {% for replicate, gibbs in replicates.items() %}
-                <h5>{{replicate}}</h5>
-                {% for bar_plot,clusters  in gibbs.items() %}
-                    <div class="your-class">
-                    <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/images/{3}'.format(taskId,sample,replicate,bar_plot), width=10)}}" alt="">                
-                    {% for cluster  in clusters %}
-                        <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/logos/{3}'.format(taskId,sample,replicate,cluster), width=10)}}" alt="">                
-                    {%endfor%}
+    <div class="container" style="max-height: 100%;">
+        <div class="row">
+            <div id="gibbsScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
+
+                {% for sample, replicates in gibbsImages.items() %}
+                    <div class="row">
+                        <a data-toggle="collapse" href="#{{sample}}">{{sample}}</a>
+                        <br><br>
+                        <div id="{{sample}}" class="collapse show in">
+                            {% for replicate, gibbs in replicates.items() %}
+                                <div class="row" style="margin-left: 20px; margin-right: 10px;">
+                                    <input class="form-check-input" type="checkbox" value="" checked onchange="temp('{{taskId}}','{{sample}}','{{replicate}}',this.checked)">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        {{replicate}}
+                                    </label>
+                                </div>
+                            {%endfor%}
+                        </div>
+                        <br>
                     </div>
-                {%endfor%}
-            {%endfor%}
-        {% endfor %}
+                {% endfor %}
+
+
+            </div>
+            <div id="gibbsViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
+
+                <div class="seqlogo">
+                    {% for sample, replicates in gibbsImages.items() %}
+                        <h4>{{sample}}</h4>
+                        
+                        {% for replicate, gibbs in replicates.items() %}
+                            <div id="{{sample}}_{{replicate}}_view">
+                                <div class="row" style="margin-left: 30px;">
+                                    <h5>{{replicate}}</h5>
+                                    <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateCluster('{{taskId}}','{{sample}}','{{replicate}}',this)">
+                                        <option value="" selected>Clustering with highest KLD</option>
+                                        <option value="1">One cluster</option>
+                                        <option value="2">Two clusters</option>
+                                        <option value="3">Three clusters</option>
+                                        <option value="4">Four clusters</option>
+                                        <option value="5">Five clusters</option>
+                                    </select>
+                                    <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <br>
+
+                                {% for bar_plot,clusters  in gibbs.items() %}
+                                    <div class="your-class" id="{{sample}}_{{replicate}}">
+                                        <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/images/{3}'.format(taskId,sample,replicate,bar_plot), width=10)}}" alt="">                
+                                        {% for cluster  in clusters %}
+                                            <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/logos/{3}'.format(taskId,sample,replicate,cluster), width=10)}}" alt="">                
+                                        {%endfor%}
+                                    </div>
+                                    <br>
+                                {%endfor%}
+                            </div>
+                        {%endfor%}
+                    {% endfor %}
+                </div>                
+            </div>
+        </div>
     </div>
+
+    <script>
+        function temp(taskId,sample,replicate,checked){
+            
+            if(checked == false){
+                document.getElementById(sample.concat('_').concat(replicate).concat('_view')).hidden = true;
+            }
+            else{
+                document.getElementById(sample.concat('_').concat(replicate).concat('_view')).hidden = false;
+            }
+        }
+        
+    function updateCluster(taskId,sample,replicate,select){
+
+        select.nextElementSibling.hidden = false;
+
+        var data = new FormData();
+            data.append("taskId", taskId);
+            data.append("replicate", replicate);
+            data.append("sample", sample);
+            data.append("cluster", select.value);
+
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+                // console.log(this.responseText);
+                select.nextElementSibling.hidden = true;
+            }
+            if (this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    // we get the returned data
+
+                    bar = Object.keys(data)[0];
+                    seqLogos = data[bar];
+
+                    var div = document.createElement("div");
+
+                    barElement = document.createElement('img');
+                    barElement.setAttribute('src',bar);
+                    barElement.setAttribute('alt',"");
+                    div.appendChild(barElement);
+
+                    for (i = 0; i < seqLogos.length; i++){
+                        seqElement = document.createElement('img');
+                        seqElement.setAttribute('src',seqLogos[i]);
+                        seqElement.setAttribute('alt',"");
+                        div.appendChild(seqElement);
+                    }
+
+                    var oldGibbs = document.getElementById(sample.concat('_').concat(replicate));
+                    
+                    div.id = sample.concat('_').concat(replicate);
+                    oldGibbs.parentNode.replaceChild(div, oldGibbs);
+
+                    div.className = "your-class";
+
+                    $('#'.concat(sample).concat('_').concat(replicate)).slick({
+                    dots: true,
+                    infinite: true,
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    arrows:false
+                    });
+
+                    select.nextElementSibling.hidden = true;
+                }
+            });
+
+            xhr.open("POST", window.location.origin.concat('/api/generateGibbs'));
+
+            xhr.send(data);
+    }
+
+    </script>
 
 <br>
     
@@ -157,7 +281,8 @@
             dots: true,
             infinite: true,
             slidesToShow: 3,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            arrows:false
             });
         });
     </script>

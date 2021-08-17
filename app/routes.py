@@ -180,21 +180,24 @@ def initialiser():
         saveNmerData(dirName, sample_data, peptideLength=i)
 
 
-    # Calling script to generate sequence logos
-    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+    # # Calling script to generate sequence logos
+    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
 
-    # Method to return names of png files of seqlogos
-    # This value is supposed to be returned from saveNmerDate method but for now writting
-    # temporary script to return names of seqlogos pngs files in a dictionary.
+    # # Method to return names of png files of seqlogos
+    # # This value is supposed to be returned from saveNmerDate method but for now writting
+    # # temporary script to return names of seqlogos pngs files in a dictionary.
     
-    seqlogos = getSeqLogosImages(sample_data)
-
-    # Calling script to generate gibbsclusters
+    # seqlogos = getSeqLogosImages(sample_data)
+    seqlogos = {}
+    
+    # gibbsImages = {}
+    
+    # # Calling script to generate gibbsclusters
     subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
-    # Getting names of the gibbscluster
+    # # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
-
+# 
     # Generating binding predictions
     if alleles!="":    
         for predictionTool in predictionTools:
@@ -258,27 +261,8 @@ def getTaskId():
 
     return task_Id
 
-
-@app.route("/api/generateGibbs", methods=["POST"])
-def generateGibbs():
-    
-    taskId = request.form['taskId']
-    sample = request.form['sample']
-    replicate = request.form['replicate']
-    clsuters = request.form['clusters']
-
-    try:
-        filename = os.path.join(project_root,'app','static','images',taskId,sample,'gibbscluster',replicate,'images','gibbs.KLDvsCluster.barplot.JPG')
-    
-    except Exception:
-        filename = os.path.join(project_root,'app','static','others','gibbsBarNotFound.JPG')
-
-    # return 'Hi'
-    return send_file(filename, mimetype='image/gif')
-
-
 # This method is to create the bar graphs for an input file not created already
-@app.route("/api/test", methods=["POST"])
+@app.route("/api/generateGibbs", methods=["POST"])
 def createGibbsBar():
     
     cluster = request.form['cluster']
@@ -289,7 +273,7 @@ def createGibbsBar():
     barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
     if len(barLocation) ==1:
-        barLocation = barLocation[0]
+        barLocation = barLocation[0][4:]
 
     else:
 
@@ -303,22 +287,22 @@ def createGibbsBar():
         barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
         if len(barLocation) ==1:
-            barLocation = barLocation[0]
+            barLocation = barLocation[0][4:]
         
         else: 
-            barLocation = f'app/static/others/gibbsBarNotFound.JPG'
+            barLocation = f'/static/others/gibbsBarNotFound.JPG'
         
     if len(cluster) == 0:
         bestCluster = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsClusters.tab')
         bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
 
-        seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*.jpg')]
+        seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*.jpg')]
 
     else:
-        seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+        seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
 
         if len(seqClusters) != int(cluster):
             subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, int(cluster)), shell=True)
-            seqClusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+            seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
 
     return {barLocation:seqClusters}
