@@ -1,5 +1,6 @@
+from pandas.tseries.offsets import Second
 from app import app
-from flask import render_template, request, send_file
+from flask import json, render_template, request, jsonify
 from flask import current_app
 from app import sample
 from app.forms import InitialiserForm, ParentForm
@@ -7,7 +8,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -190,13 +191,13 @@ def initialiser():
     # seqlogos = getSeqLogosImages(sample_data)
     seqlogos = {}
     
-    # gibbsImages = {}
+    gibbsImages = {}
     
     # # Calling script to generate gibbsclusters
-    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
+    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
     # # Getting names of the gibbscluster
-    gibbsImages = getGibbsImages(taskId, sample_data)
+    # gibbsImages = getGibbsImages(taskId, sample_data)
 # 
     # Generating binding predictions
     if alleles!="":    
@@ -212,16 +213,22 @@ def initialiser():
     predicted_binders = None
     # Method to get the prediction results
     if alleles!="":    
-        predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
+        predicted_binders = getPredictionResuslts(taskId,alleles,predictionTools,sample_data.keys())
     
+    # taskIdi = '202108211925201'
+    # predictionToolsi = ['ANTHEM','netMHCpan','mixMHCpred']
+    # allelesi = 'A0201,B0802'
+    # samplesi = ['VMM','Inferon']
+    # predicted_bindersi = getPredictionResuslts(taskIdi,allelesi,predictionToolsi,samplesi)
+    
+    upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools)
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout)
 
 @app.route("/analytics")
 def analytics():
 
     return render_template("error.html",analytics=True, msg = 'initialiser')
-
 
 @app.route("/feedback", methods=["POST", "GET"])
 def feedback():
@@ -306,3 +313,94 @@ def createGibbsBar():
             seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
 
     return {barLocation:seqClusters}
+
+# This method is used to get the found binders in different combinations
+@app.route("/api/getBinders", methods=["POST"])
+def getBinders():
+
+    tool = request.form['tool']
+    taskId = request.form['taskId']
+    allele = request.form['allele']
+    listonly = request.form['list']
+    replicates = request.form['replicates']
+
+    predictionTools = ['ANTHEM','netMHCpan','mixMHCpred']
+
+    samples = {}
+
+
+    replicates = replicates.split(',')
+    
+    for i in replicates:
+        
+        entries = i.split(';')
+
+        if entries[0] == allele:
+
+            if entries[1] not in samples.keys():
+                samples[entries[1]] = []
+                samples[entries[1]].append(entries[2])
+            
+            else:
+                samples[entries[1]].append(entries[2])
+
+
+    if listonly == "":
+
+        return 'bindersFile'
+    
+    else:
+        res = []
+        for sample,replicates in samples.items():
+            if tool !="":
+                binder_files = []
+            else:
+                binder_files = {}
+                for i in predictionTools:
+                    binder_files[i] = []
+
+            for replicate in replicates:
+                
+                if tool == "":
+
+                    binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods=predictionTools,samples=[sample])
+
+                    for method in predictionTools:
+
+                        try:
+                            binder_files[method].append(binding[sample][allele][method][replicate])
+                        except KeyError:
+                            continue
+
+                else:
+                    binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods=[tool],samples=[sample])
+                    try:
+                        binder_files.append(binding[sample][allele][tool][replicate])
+                    except KeyError:
+                        continue
+
+            binders = []
+
+            if tool == "":
+                binders = {}
+
+                for i,j in binder_files.items():
+                    binders[i] = []
+
+                    for k in j:
+                        binders[i].extend(pd.read_csv(os.path.join('app',k))['Peptide'].to_list())    
+
+                first = set(binders[predictionTools[0]]).intersection(set(binders[predictionTools[1]]))
+                second = set(binders[predictionTools[1]]).intersection(set(binders[predictionTools[2]]))
+                third = set(binders[predictionTools[0]]).intersection(set(binders[predictionTools[2]]))
+
+                binders = first.union(second).union(third)
+
+            else:
+                for i in binder_files:
+                    binders.extend(pd.read_csv(os.path.join('app',i))['Peptide'].to_list())
+                binders = set(binders)
+
+            res.append({'name':sample,'elems':list(binders)})
+    
+    return jsonify(res)

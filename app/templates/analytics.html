@@ -200,6 +200,77 @@
     </p> 
 
 <br>
+
+    <h3>Peptide-HLA binding affinity prediction</h3>
+
+<br>
+    <div class="container" style="max-height: 100%;">
+        <div class="row">
+            <div id="alleleScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
+
+                {% for allele, samples in upsetLayout.items() %}
+                    <div class="col">
+
+                        <input id="{{allele}}" class="allele" type="radio" value="" onchange="alleleUpsetSelect(this,{{taskId}})">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            {{allele}}
+                        </label>
+                        
+                        
+                            {% for sample, replicates in samples.items() %}
+                                <div class="row">                                  
+                                    <a data-toggle="collapse" href="#{{allele}}_{{sample}}">{{sample}}</a>     
+
+                                    <div id="{{allele}}_{{sample}}" class="collapse in">
+                                        {% for replicate in replicates %}
+                                        <div class="row" style="margin-left: 20px; margin-right: 10px;">
+                                            <input class="replicatesForUpset" id="{{allele}};{{sample}};{{replicate}}" type="checkbox" value="" onchange="syncReplicateChange('{{taskId}}',this)" checked>
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                            {{replicate}}
+                                            </label>
+                                        </div>
+                                        {%endfor%}
+                                    </div>
+
+                                </div>
+                            {%endfor%}
+                        
+                        <br>
+                    </div>
+                {% endfor %}
+
+
+            </div>
+            <div id="upsetViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
+
+                <div>
+                    {% for allele in upsetLayout.keys() %}
+                        
+                            <div id="{{allele}}_upset" class="upsetPlot" hidden>
+                                <div class="row" style="margin-left: 30px;">
+                                    <h5>{{allele}}</h5>
+                                    <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateUpset('{{taskId}}',this)">
+                                        <option value="" selected>Majority voted binders</option>
+                                        
+                                        {% for tool in predictionTools %}
+                                        <option value="{{tool}}">{{tool}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <br>
+                                <div id="{{allele}}_render" class="upset"></div>
+
+
+                            </div>
+                    {% endfor %}
+                </div>                
+            </div>
+        </div>
+    </div>
+<br>
     {% if predicted_binders is not none %}
         <h3>Peptide-HLA binding affinity prediction</h3>
         <br>
@@ -256,9 +327,9 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <!-- Plotly.js -->
     <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+    <script src="https://unpkg.com/@upsetjs/bundle"></script>
  
     <script type="text/javascript">
-        
         
         var graphs = {{peptide_percent | safe}};
         var graphsd = {{peptide_density | safe}};
@@ -285,5 +356,126 @@
             arrows:false
             });
         });
+
+        alleles = document.getElementsByClassName('allele');
+        alleles[0].checked = true;
+
+        upsets = document.getElementsByClassName('upsetPlot');
+        // firstAllele = 
+        setUpsetPlot(document.getElementById('taskId').innerText,alleles[0].id,alleles[0].id.concat('_render'));
+        upsets[0].hidden = false;
+
+        function alleleUpsetSelect(elem,taskId){
+            
+            alleles = document.getElementsByClassName('allele');
+            selected = elem.checked;
+
+            for (i = 0;i<alleles.length;i++){
+                alleles[i].checked = false;
+            }
+
+            elem.checked = true;
+
+            upsets = document.getElementsByClassName('upsetPlot');
+
+            for (i = 0;i<upsets.length;i++){
+                upsets[i].hidden = true;
+            }
+
+            seleted_upset = document.getElementById(elem.id.concat('_upset'));
+            
+            setUpsetPlot(taskId,elem.id,elem.id.concat('_render'),);
+
+            seleted_upset.hidden = false;
+        }
+
+        function setUpsetPlot(taskId,allele,id){
+
+            injectUpsetPlot(taskId,'',allele,'yes',id);
+        }
+
+        function injectUpsetPlot(taskId,tool,allele,onlyName,id){
+
+            
+            var data = new FormData();
+            data.append("taskId", taskId);
+            data.append("tool", tool);
+            data.append("allele", allele);
+            data.append("list", onlyName);
+            data.append("replicates",getSelectedReplicates());
+
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+                // console.log(this.responseText);
+            }
+            if (this.status == 200) {
+                    const data = JSON.parse(this.responseText);
+                    // we get the returned data
+
+                    // console.log(data);
+                    // bar = Object.keys(data)[0];
+                    // console.log(data);
+                    const sets = UpSetJS.asSets(data);
+                    const props = { 
+                                    sets: sets,
+                                    width: 1200,
+                                    height: 600,
+                                    selection: null,
+                                    setName: 'Uploaded samples',
+                                    combinationName: 'Number of binders'
+                                }
+
+                    props.onHover = (set) => {
+                        props.selection = set;
+                        UpSetJS.render(document.getElementById(id),props)
+                    }
+                    props.onClick = (set) => {
+                        console.log(set);
+                    }
+
+                    UpSetJS.render(document.getElementById(id),props);
+
+            
+                }
+            });
+
+            xhr.open("POST", window.location.origin.concat('/api/getBinders'));
+
+            xhr.send(data);
+
+        }
+
+        function updateUpset(taskId,elem){
+
+            allele = elem.previousElementSibling.innerText;
+            injectUpsetPlot(taskId,elem.value,allele,'yes',allele.concat('_render'));
+
+        }
+
+        function getSelectedReplicates(){
+            replicates = document.getElementsByClassName('replicatesForUpset');
+
+            var res = []
+
+            for (i=0; i<replicates.length; i++) {
+                if (replicates[i].checked) {
+                    res.push(replicates[i].id);
+                }
+            }
+
+            return res.join();
+        }
+        
+        function syncReplicateChange(taskId,elem){
+
+
+            allele = elem.id.split(';')[0];
+            method = document.getElementById(allele.concat('_upset')).children[0].children[1].value;
+            injectUpsetPlot(taskId,method,allele,'yes',allele.concat('_render'));
+        }
+
     </script>
 {% endblock %}

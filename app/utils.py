@@ -482,8 +482,9 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                 for method in methods:
                     predicted_binders[sample][allele][method] = {}
 
-    for sample in os.listdir(f'{data_mount}/{taskId}/'):
-        
+    # for sample in os.listdir(f'{data_mount}/{taskId}/'):
+    for sample in samples:
+
         for method in methods:
             
             for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
@@ -496,4 +497,32 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                             predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
                         os.chdir(project_root)
                         
+    return predicted_binders
+
+def getPredictionResusltsForUpset(taskId,alleles,methods,samples):
+
+    alleles = alleles.split(',')
+
+    predicted_binders = {}
+
+
+    for allele in alleles:
+        os.chdir(project_root)
+
+        predicted_binders[allele] = {}
+
+        for sample in samples:
+            if sample !='Control':
+                predicted_binders[allele][sample] = []
+                
+
+                for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
+                    if replicate[-12:] == '8to14mer.txt':
+                        # os.chdir('app/')
+                        # temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-13]}/binders/{allele}/*.csv')
+                        # if len(temp) != 0:
+                        #     predicted_binders[allele][sample][method][replicate[:-13]]= temp[0]
+                        # os.chdir(project_root)
+                        predicted_binders[allele][sample].append(replicate[:-13])
+
     return predicted_binders
