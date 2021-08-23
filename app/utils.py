@@ -486,7 +486,7 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
     for sample in samples:
 
         for method in methods:
-            
+            os.chdir(project_root)
             for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
                 if replicate[-12:] == '8to14mer.txt':
 
