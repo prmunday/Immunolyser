@@ -1,6 +1,6 @@
 from pandas.tseries.offsets import Second
 from app import app
-from flask import json, render_template, request, jsonify
+from flask import json, render_template, request, jsonify, send_file
 from flask import current_app
 from app import sample
 from app.forms import InitialiserForm, ParentForm
@@ -182,23 +182,23 @@ def initialiser():
 
 
     # # Calling script to generate sequence logos
-    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
 
     # # Method to return names of png files of seqlogos
     # # This value is supposed to be returned from saveNmerDate method but for now writting
     # # temporary script to return names of seqlogos pngs files in a dictionary.
     
-    # seqlogos = getSeqLogosImages(sample_data)
-    seqlogos = {}
+    seqlogos = getSeqLogosImages(sample_data)
+    # seqlogos = {}
     
-    gibbsImages = {}
+    # gibbsImages = {}
     
     # # Calling script to generate gibbsclusters
-    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
     # # Getting names of the gibbscluster
-    # gibbsImages = getGibbsImages(taskId, sample_data)
-# 
+    gibbsImages = getGibbsImages(taskId, sample_data)
+
     # Generating binding predictions
     if alleles!="":    
         for predictionTool in predictionTools:
@@ -213,13 +213,7 @@ def initialiser():
     predicted_binders = None
     # Method to get the prediction results
     if alleles!="":    
-        predicted_binders = getPredictionResuslts(taskId,alleles,predictionTools,sample_data.keys())
-    
-    # taskIdi = '202108211925201'
-    # predictionToolsi = ['ANTHEM','netMHCpan','mixMHCpred']
-    # allelesi = 'A0201,B0802'
-    # samplesi = ['VMM','Inferon']
-    # predicted_bindersi = getPredictionResuslts(taskIdi,allelesi,predictionToolsi,samplesi)
+        predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
     
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
@@ -404,3 +398,32 @@ def getBinders():
             res.append({'name':sample,'elems':list(binders)})
     
     return jsonify(res)
+
+@app.route("/api/getSeqLogo", methods=["POST"])
+def getSeqLogo():
+
+    name = request.form['name']
+    taskId = request.form['taskId']    
+    elems = request.form['elems']
+
+    # print(type(elems))
+    # peptides = json.loads(elems)
+    peptides = elems.split(',')
+    peptides_location = os.path.join(project_root,'app','static','images',taskId,'selected-binders.txt')
+
+    peptides = pd.DataFrame(peptides)
+    peptides.columns = ['peptide']
+
+    total_peptides = peptides.shape[0]
+
+    peptides =  peptides[peptides.peptide.apply(lambda x: True if len(x)==9 else False)]
+
+    nine_mers = peptides.shape[0]
+
+    peptides.to_csv(peptides_location,index=False,header=False)
+
+    seqLogoLocation = os.path.join(project_root,'app','static','images',taskId,'seqLogoApi')
+
+    subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
+
+    return os.path.join('static','images',taskId,'seqLogoApi-001.jpg')

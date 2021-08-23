@@ -200,81 +200,82 @@
     </p> 
 
 <br>
-
-    <h3>Peptide-HLA binding affinity prediction</h3>
-
-<br>
-    <div class="container" style="max-height: 100%;">
-        <div class="row">
-            <div id="alleleScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
-
-                {% for allele, samples in upsetLayout.items() %}
-                    <div class="col">
-
-                        <input id="{{allele}}" class="allele" type="radio" value="" onchange="alleleUpsetSelect(this,{{taskId}})">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            {{allele}}
-                        </label>
-                        
-                        
-                            {% for sample, replicates in samples.items() %}
-                                <div class="row">                                  
-                                    <a data-toggle="collapse" href="#{{allele}}_{{sample}}">{{sample}}</a>     
-
-                                    <div id="{{allele}}_{{sample}}" class="collapse in">
-                                        {% for replicate in replicates %}
-                                        <div class="row" style="margin-left: 20px; margin-right: 10px;">
-                                            <input class="replicatesForUpset" id="{{allele}};{{sample}};{{replicate}}" type="checkbox" value="" onchange="syncReplicateChange('{{taskId}}',this)" checked>
-                                            <label class="form-check-label" for="flexCheckDefault">
-                                            {{replicate}}
-                                            </label>
-                                        </div>
-                                        {%endfor%}
-                                    </div>
-
-                                </div>
-                            {%endfor%}
-                        
-                        <br>
-                    </div>
-                {% endfor %}
-
-
-            </div>
-            <div id="upsetViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
-
-                <div>
-                    {% for allele in upsetLayout.keys() %}
-                        
-                            <div id="{{allele}}_upset" class="upsetPlot" hidden>
-                                <div class="row" style="margin-left: 30px;">
-                                    <h5>{{allele}}</h5>
-                                    <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateUpset('{{taskId}}',this)">
-                                        <option value="" selected>Majority voted binders</option>
-                                        
-                                        {% for tool in predictionTools %}
-                                        <option value="{{tool}}">{{tool}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                                <br>
-                                <div id="{{allele}}_render" class="upset"></div>
-
-
-                            </div>
-                    {% endfor %}
-                </div>                
-            </div>
-        </div>
-    </div>
-<br>
     {% if predicted_binders is not none %}
-        <h3>Peptide-HLA binding affinity prediction</h3>
+
+            <h3>Peptide-HLA binding affinity prediction</h3>
+
         <br>
-        <div>
+            <div class="container" style="max-height: 100%; padding: 0px;">
+                <div class="row">
+                    <div id="alleleScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
+
+                        {% for allele, samples in upsetLayout.items() %}
+                            <div class="col">
+
+                                <input id="{{allele}}" class="allele" type="radio" value="" style="margin-left: -20px;" onchange='alleleUpsetSelect(this,"{{taskId}}")'>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    {{allele}}
+                                </label>
+                                
+                                
+                                    {% for sample, replicates in samples.items() %}
+                                        <div class="row">                                  
+                                            <a data-toggle="collapse" href="#{{allele}}_{{sample}}">{{sample}}</a>     
+
+                                            <div id="{{allele}}_{{sample}}" class="collapse in">
+                                                {% for replicate in replicates %}
+                                                <div class="row" style="margin-left: 20px; margin-right: 10px;">
+                                                    <input class="replicatesForUpset" id="{{allele}};{{sample}};{{replicate}}" type="checkbox" value="" onchange="syncReplicateChange('{{taskId}}',this)" checked>
+                                                    <label class="form-check-label" for="flexCheckDefault">
+                                                    {{replicate}}
+                                                    </label>
+                                                </div>
+                                                {%endfor%}
+                                            </div>
+
+                                        </div>
+                                    {%endfor%}
+                                
+                                <br>
+                            </div>
+                        {% endfor %}
+
+
+                    </div>
+                    <div id="upsetViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
+
+                        <div>
+                            {% for allele in upsetLayout.keys() %}
+                                
+                                    <div id="{{allele}}_upset" class="upsetPlot" hidden>
+                                        <div class="row" style="margin-left: 30px;">
+                                            <h5>{{allele}}</h5>
+                                            <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateUpset('{{taskId}}',this)">
+                                                <option value="" selected>Majority voted binders</option>
+                                                
+                                                {% for tool in predictionTools %}
+                                                <option value="{{tool}}">{{tool}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div id="{{allele}}_render" class="upset"></div>
+
+
+                                    </div>
+                            {% endfor %}
+                        </div>                
+                    </div>
+                </div>
+            </div>
+        
+        
+        
+        <a data-toggle="collapse" href="#binderReports" style="text-align: right; float: right;" data-toggle="tooltip" data-placement="top" title="These files contains the predicted binders along&#013with the all the colummns present in the uploaded files.">Download binders </a>     
+        <div id="binderReports" class="collapse in">
             
             {% for sample, alleles in predicted_binders.items() %}
                 <h4>{{sample}}</h4>
@@ -312,12 +313,44 @@
                 </table>
 
             {% endfor %}
+
+            <p class="text-justify">Above table for each uploaded sample contains the binders information for each selected allele. The binders information is present for every combination of alleles selected and prediction tools available. The information about binders is stored in csv files which can be downloaded by clicking on the specific allele and predictoin tool. The csv file contains three columns named as Peptide, Binding Level and Control. Peptide column contains the binder sequence. The Binding Level column tells weather a binder is strong or weak binder. The 'Control' column specifies if binder is also present in the control group, if uploaded. The binders in the downladable csv files are sorted in decreasing level of binding level.
+            </p> 
         </div>
 
         <br>
 
-        <p class="text-justify">Above table for each uploaded sample contains the binders information for each selected allele. The binders information is present for every combination of alleles selected and prediction tools available. The information about binders is stored in csv files which can be downloaded by clicking on the specific allele and predictoin tool. The csv file contains three columns named as Peptide, Binding Level and Control. Peptide column contains the binder sequence. The Binding Level column tells weather a binder is strong or weak binder. The 'Control' column specifies if binder is also present in the control group, if uploaded. The binders in the downladable csv files are sorted in decreasing level of binding level.
-        </p> 
+        <!-- Button to Open the Modal -->
+        <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            Open modal
+        </button> -->
+
+        <!-- The Modal -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+            <div class="modal-content">
+        
+                <!-- Modal Header -->
+                <div class="modal-header">
+                <h4 id="modalHeading" class="modal-title">Binding motif</h4>
+                <a style="margin-top: 7px; margin-left: 5px;" id="modalHedingHref" href="/static/images/{{taskId}}/selected-binders.txt" target="_blank">download</a>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+        
+                <!-- Modal body -->
+                <div class="modal-body">
+                <img id="modalBinder" style="max-height:100%; max-width:100%; margin-left: -10px;" src="static/images/{{taskId}}/seqLogoApi-001.jpg" alt="">
+                </div>
+        
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+        
+            </div>
+            </div>
+        </div>
+
     {% endif %}
     <br>
     <!-- <iframe frameborder='0' noresize='noresize' style='position: absolute; background: transparent; width: 100%; height:100%;' src="{{ iframe }}" frameborder="0"></iframe>
@@ -433,12 +466,39 @@
                         UpSetJS.render(document.getElementById(id),props)
                     }
                     props.onClick = (set) => {
-                        console.log(set);
+                        // console.log(set);
+
+                        var data = new FormData();
+                        data.append("name", set.name);
+                        data.append("elems",set.elems);
+                        data.append("taskId",document.getElementById('taskId').innerText);
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.withCredentials = true;
+
+                        xhr.addEventListener("readystatechange", function() {
+                        if(this.readyState === 4) {
+                            // console.log(this.responseText);
+                        }
+                        if (this.status == 200) {
+                            // const data1 = JSON.parse(this.responseText);
+                            // console.log(data1);
+                            
+                            document.getElementById('modalHeading').innerHTML = "Binding motif";
+                            document.getElementById('modalHedingHref').href = "/static/images/{{taskId}}/selected-binders.txt?t=" + new Date().getTime();
+                            document.getElementById('modalBinder').src = "static/images/{{taskId}}/seqLogoApi-001.jpg?t=" + new Date().getTime();
+                            $('#myModal').modal('show'); 
+                        }
+                        });
+
+                        xhr.open("POST", "http://127.0.0.1:5000/api/getSeqLogo");
+
+                        xhr.send(data);
                     }
 
                     UpSetJS.render(document.getElementById(id),props);
 
-            
+                    
                 }
             });
 

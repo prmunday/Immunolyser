@@ -496,7 +496,8 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                         if len(temp) != 0:
                             predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
                         os.chdir(project_root)
-                        
+
+    print(predicted_binders)      
     return predicted_binders
 
 def getPredictionResusltsForUpset(taskId,alleles,methods,samples):
