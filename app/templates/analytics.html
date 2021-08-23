@@ -491,7 +491,7 @@
                         }
                         });
 
-                        xhr.open("POST", "http://127.0.0.1:5000/api/getSeqLogo");
+                        xhr.open("POST", window.location.origin.concat('api/getSeqLogo'));
 
                         xhr.send(data);
                     }
