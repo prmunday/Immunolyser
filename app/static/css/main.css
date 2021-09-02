@@ -63,7 +63,7 @@ input[type=text]:focus, input[type=password]:focus {
     background: #333;
     padding:5px;
     border-top:2px solid #0f0f0f;
-    position:absolute;
+    /* position:absolute; */
     bottom:0;
 }
 
