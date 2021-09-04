@@ -240,6 +240,7 @@
 		<input class="col-md-12 mb-3" id="submit" name="submit" type="submit" value="Submit">
 		</p>
    </form>
+
 </div>
 
 <script>
@@ -269,8 +270,10 @@
 
 		var cln = sample.cloneNode(true)
 		cln.children[1].name = "sample-"+ count;
+		cln.children[1].id = "sample_name-"+ count;
 		cln.children[1].value = "";
 		cln.children[4].name = "sample-"+ count;
+		cln.children[4].id = "sample_file-"+ count;
 		cln.children[4].value = "";
 		samples.appendChild(cln)
 	}
@@ -282,12 +285,13 @@
 			select.removeChild(select.lastChild);
 		}
 		else{
+			showSpinner(false);
 			alert('Analysis require atleast one sample')
 		}
 		
 	}
 
-var allele_warning = false
+	var allele_warning = false
 	function upldateAllele(element){
 		alleleText = document.getElementsByName('alleles')[0];
 		
@@ -317,6 +321,13 @@ var allele_warning = false
 
 	function checkAlleles(){
 
+		showSpinner();
+
+		namereplication = checkSampleReplication();
+		if(namereplication==false){
+			return false;
+		}
+
 		samples = document.getElementById('samples').getElementsByTagName('div');
 
 		for (i=0;i<samples.length;i++){
@@ -327,6 +338,7 @@ var allele_warning = false
 			if(checkSampleName(sample_name.value)==false){
 				return false;
 			}
+			
 			sample_data = sample[1];
 			if(checkSampleFiles(sample_data, true)==false){
 				return false;
@@ -342,6 +354,7 @@ var allele_warning = false
 		
 		if(alleleText.value.length==0){
 			if(allele_warning==false){
+				showSpinner(false);
 				alert('If the form is submitted without the allele names, no binding prediction tests will be performed');
 				allele_warning = true;
 				return false;
@@ -365,12 +378,35 @@ var allele_warning = false
 			//debugger;
 			//alert("i: " +i+ " -- value: " + uniqueAlleles[i] )
 			if(validAlleles.includes(uniqueAlleles[i]) == false){
+				showSpinner(false);
 				alert(uniqueAlleles[i]+" is not a supported allele.");
 				return false;
 			};
 		}
 		
 		return true;
+	}
+
+	function showSpinner(flag=true){
+		var nodes = document.getElementById("main-content").getElementsByTagName('*');
+		
+		if(flag){
+			// for(var i = 0; i < nodes.length; i++){
+			// 	nodes[i].disabled = true;
+			// }
+
+			document.getElementById("main-content").style.opacity = 0.2;
+			document.getElementById('lds-hourglass').hidden = false;
+		}
+		
+		else{
+			// for(var i = 0; i < nodes.length; i++){
+			// 	nodes[i].disabled = false;
+			// }
+
+			document.getElementById("main-content").style.opacity = 1;
+			document.getElementById('lds-hourglass').hidden = true;
+		}
 	}
 
 	function checkSampleName(sample_name){
@@ -380,11 +416,13 @@ var allele_warning = false
 		for(i=0;i<characters_not_dir_name.length;i++){
 			
 			if (sample_name==''){
+				showSpinner(false);
 				alert('Please enter a name each of the sample.');
 				return false;
 			}
 
 			if (sample_name.includes(characters_not_dir_name[i])){
+				showSpinner(false);
 				alert('Sample name should not contain special character: \n/ \\ : * ? " < > | space');
 				return false;
 			}
@@ -393,9 +431,15 @@ var allele_warning = false
 		return true;
 	}
 
+	var col_warning = false
+	cols = ['Peptide','Accession','Length'];
+	colsnotpresent = [];
+	var name = '';
+
 	function checkSampleFiles(sample_files, required = false){
 
 		if(sample_files.value=='' && required == true){
+			showSpinner(false);
 			alert('Please upload the data file(csv).');
 			return false;
 		}
@@ -405,14 +449,68 @@ var allele_warning = false
 			name = sample_files.files[i].name;
 
 			if(name.substr(-4)!='.csv'){
+				showSpinner(false);
 				alert('Cannot accept ' + name + ' file as it is not a csv file.');
 				return false;
-			} 
+			}
+			
+			let reader = new FileReader();
+			reader.readAsText(sample_files.files[i]);
+
+			reader.onload = function() {
+
+				colseread = reader.result.split('\n')[0].replace('\r','').split(',');
+
+
+
+				for (i=0;i<cols.length;i++){
+					if (!colseread.includes(cols[i])){
+						colsnotpresent.push(cols[i]);
+					}
+				}
+				if(colsnotpresent.length != 0) {
+					col_warning = true;
+				}
+			};
+
+			if (col_warning){
+				col_warning=false;
+				showSpinner(false);
+				alert(name + ' does not contains following column(s): '+ colsnotpresent.join(', '));
+				colsnotpresent = [];
+				return false;
+			}
 			
 		}
 
 		return true;
 		
 	}
+
+	function checkSampleReplication(){
+		samples = document.getElementById('samples');
+
+		sample_names = [];
+
+		for(i=1;i<=samples.children.length;i++){
+			// name = document.getElementById('sample_name-'.concat(i))
+			// console.log(name);
+			if(document.getElementById('sample_name-'.concat(i))){
+				name = document.getElementById('sample_name-'.concat(i)).value;
+
+				if(sample_names.includes(name)){
+					showSpinner(false);
+					alert('All the sample names should be different.');
+					return false;
+				}
+				else{
+					sample_names.push(name.trim());
+				}
+			}
+		}
+
+		return true;
+	}
+
 </script>
 {% endblock %}

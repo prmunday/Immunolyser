@@ -318,7 +318,7 @@ def getBinders():
     listonly = request.form['list']
     replicates = request.form['replicates']
 
-    predictionTools = ['ANTHEM','netMHCpan','mixMHCpred']
+    predictionTools = ['ANTHEM','NetMHCpan','MixMHCpred']
 
     samples = {}
 
@@ -400,6 +400,7 @@ def getBinders():
     return jsonify(res)
 
 @app.route("/api/getSeqLogo", methods=["POST"])
+
 def getSeqLogo():
 
     name = request.form['name']
