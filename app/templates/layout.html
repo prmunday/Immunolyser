@@ -16,6 +16,7 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 
     <link rel="stylesheet" href="{{ url_for('static',filename='css/main.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/earlyaccess/hanna.css">
 
 </head>
 <body class="Site">
@@ -23,7 +24,10 @@
         <div class="container-fluid text-center top-container">
             <img src="{{ url_for('static',filename='images/down.png')}}">
         </div>
-        <div class="container">
+
+        <div class="lds-hourglass" id="lds-hourglass" hidden></div>
+
+        <div class="container" id='main-content'>
             {% include "includes/nav.html" %}
 
             {% block content %}
@@ -42,5 +46,6 @@
       Swal.fire('Any fool can use a computer')
 
     }
+
   </script>
 </html>    
