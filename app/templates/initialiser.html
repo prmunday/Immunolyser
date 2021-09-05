@@ -2,6 +2,7 @@
 
 {% block content %}
 
+
 <br>
 
 <div class="container">
@@ -10,8 +11,8 @@
 		<div>
 			<h4>Data Input</h4>
 			<div class="form-row">
-				<div class="col-md-6 mb-3">Sample Name</div>
-				<div class="col-md-6 mb-3">Sample Files</div>
+				<div class="col-md-6 mb-3">Sample Name <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do contain any special characters."></i></div>
+				<div class="col-md-6 mb-3">Sample Files <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates files."></i></div>
 			</div>
 			<div id="samples">
 				<div id="sample" class="form-row">
@@ -35,7 +36,7 @@
 				<label for="control_name" hidden>Control</label> 
 				<input id="control_name-1" name="control-1" type="text" value="Control" class="col-md-3 mb-3" hidden>
 				<br>
-				<label for="control" hidden>Peptide File</label> 
+				<label for="control" hidden>Peptide File </label>
 				<input id="control" multiple name="control-1" type="file" class="col-md-6 mb-3">	
 			</div>
 		</div>

@@ -137,6 +137,13 @@ footer {
     justify-content: center;
 }
 
+.tooltip {
+  font-size: 16px;
+}
+.tooltip-inner {
+    text-align: left;
+}
+
 .lds-hourglass {
     display: inline-block;
     /* position: relative;
