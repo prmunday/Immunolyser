@@ -404,6 +404,12 @@ def getBinders():
 def getSeqLogo():
 
     name = request.form['name']
+
+    # removing '(' and ')' from name if present (causing problem for subprocess call)
+    print(name)
+    name = str(name).replace('∩','and').replace('(','').replace(')','').replace(' ','_').strip()
+
+
     taskId = request.form['taskId']    
     elems = request.form['elems']
 
@@ -425,6 +431,16 @@ def getSeqLogo():
 
     seqLogoLocation = os.path.join(project_root,'app','static','images',taskId,'seqLogoApi')
 
+    print('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location,seqLogoLocation,name,nine_mers,total_peptides))
+
     subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
 
     return os.path.join('static','images',taskId,'seqLogoApi-001.jpg')
+
+@app.route("/help")
+def help():
+    
+    # Checking to platform, if it is windows, wsl will be initialised
+    #if request.user_agent.platform =='windows':
+        #setUpWsl()
+    return render_template("help.html", help=True)
