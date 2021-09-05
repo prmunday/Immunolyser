@@ -18,11 +18,16 @@ body {
 header {
     text-align: center;
 }
-
+/* 
 li {
     display: inline;
     padding: 5px;
-}
+} */
+
+/* .homelist li {
+    display: inline;
+    padding: 5px;
+} */
 
 a {
     text-decoration: none;
