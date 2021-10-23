@@ -93,7 +93,7 @@
         form.append("peptides", peptides.value);
         
         var settings = {
-        "url": "http://127.0.0.1:5000/api/pepscanner?t=" + new Date().getTime(),
+        "url": window.location.origin.concat('/api/pepscanner?t=') + new Date().getTime(),
         "method": "POST",
         "timeout": 0,
         "processData": false,
