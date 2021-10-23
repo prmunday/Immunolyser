@@ -465,9 +465,25 @@
 
 
 				for (i=0;i<cols.length;i++){
-					if (!colseread.includes(cols[i])){
+
+					flag = false;
+
+					for (j=0;j<colseread.length;j++){
+						if(colseread[j] !== cols[i]){
+							continue;
+						}
+						else{
+							flag = true;
+						}
+					}
+
+					if(!flag){
 						colsnotpresent.push(cols[i]);
 					}
+
+					// if (!colseread.includes(cols[i])){
+					// 	colsnotpresent.push(cols[i]);
+					// }
 				}
 				if(colsnotpresent.length != 0) {
 					col_warning = true;
