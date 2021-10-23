@@ -1,10 +1,31 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
+<br>
+<h3>Pepsacanner</h3>
 <!-- <img src="{{ url_for('pepscanner') }}"> -->
-<div style="text-align: center;">
-    <img id="pepscannerimage" src="static/images/blankpepscanner.png" alt="">
+<div class="row" style="text-align: center;">
+    <img id="pepscannerimage" src="static/images/blankpepscanner.png" alt="" style="display: inline-block; margin:0 auto; width:auto;">
+
+    
+
+    <!-- <div style="  float:right; width:auto; padding-right: 20%; padding-top: 10%;"> -->
+        
+        <div class="card" style="width: 18rem; position: relative; margin-right: 40px;">
+            <div class="card-body">
+              <h5 class="card-title">File metadata</h5>
+              <h6 class="card-subtitle mb-2 text-muted">Statistics of protiens found in the Accession column</h6>
+              <br>
+              <p class="card-text" style="text-align: left;" id="uniquepeptides">Unique protiens: </p>
+              <br>
+              <p class="card-text" style="text-align: left; font-weight: 600;">Top protiens</p>
+              <div id='topprotiens'>
+
+              </div>
+            </div>
+          </div>
+    <!-- </div>  -->
+
 </div>
 
 <form onSubmit="return submitPep();" id="pepscanner" action="{{ url_for('pepscanner') }}" method="post" enctype="multipart/form-data" novalidate>
@@ -23,7 +44,7 @@
 	<input id="sample" name="sample-1" required type="file" class="col-md-6 mb-3"> -->
 
     <div class="input-group mb-3" style="padding-right: 20px;">
-        <input type="text" class="form-control" placeholder="Type peptides of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0" aria-label="Peptides" aria-describedby="basic-addon2" id="peptides">
+        <input type="text" class="form-control" placeholder="Type protiens of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0 (optional)" aria-label="Peptides" aria-describedby="basic-addon2" id="peptides">
         <div class="input-group-append">
           <!-- <button class="btn btn-outline-secondary" type="button">Button</button> -->
           <input id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
@@ -33,6 +54,17 @@
     <!-- <input id="submit" name="submit" type="submit" value="Submit"> -->
 
 </form>
+
+<br>
+
+    <p class="text-justify" style="padding-right: 20px;">Pepsacanner is a tool which can be used to visualise the location of peptides present in the protiens of interest. It takes a csv (comma seprated values) file
+                                                            as an input along with the protiens of interest (optional). The uploaded file should have 'Peptide', 'Accession', 'PTM', 'Mass' and 'm/z'
+                                                            columns present in it. Pepscanner first extracts the protien sequences from a reference proteome file and then plots the location of all the peptides (from the 'Peptide' column)
+                                                            on the selected protiens. If the protiens are not selected, top five protiens present in 'Accession' column are selected automatically.
+
+    </p> 
+
+<br>
 
 <script>
 
@@ -72,7 +104,33 @@
 
         $.ajax(settings).done(function (response) {
         document.getElementById('pepscannerimage').src = "static/images/pepscanner.png?t=" + new Date().getTime();
-        console.log(response);
+
+        res = JSON.parse(response);
+
+        console.log(res);
+
+        unique_peptides = document.getElementById('uniquepeptides');
+        unique_peptides.innerHTML = "Unique protiens: ".concat(res['unique_peptides']);
+
+        top_protiens = document.getElementById('topprotiens');
+        top_protiens.innerHTML = "";
+
+        var sortable = [];
+        for (var i in res['top_protiens']) {
+            sortable.push([i, res['top_protiens'][i]]);
+        }
+
+        sortable.sort(function(a, b) {
+            return b[1] - a[1];
+        });
+        
+        for (const [key, value] of sortable) {
+            var node = document.createElement("div");
+            node.style = "text-align: left;";
+            node.innerHTML = `${key}: ${value}`;
+            top_protiens.appendChild(node);
+        }
+
         });
         return false;
         
@@ -147,12 +205,22 @@
         return true;
 	}
 
+    peptidewarning = true;
+
     function validatePeptides(){
 		var peptides = document.getElementById('peptides');
 
 		if(peptides.value == ''){
-			alert('Please enter the peptides.')
-            return false;
+
+            if (peptidewarning){
+                alert("Please enter the protiens. Otherwise, top five protiens presnt in the 'Accession' columns will be used to generate the heatmap.")
+                peptidewarning = false;
+                return false;
+            }    
+            else{
+                return true;
+            }
+                
 		}
 
         return true;

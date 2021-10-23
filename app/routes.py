@@ -15,6 +15,8 @@ from pathlib import Path
 import glob
 import shutil
 from app.Pepscan import PepScan
+import re
+from collections import Counter,OrderedDict
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -483,15 +485,52 @@ def generatePepscanner():
 
     scanner = PepScan()
 
+    accessionids = pd.read_csv(peptides_file)
+    metadata = findMostOccuringAccessionIds(accessionids['Accession'].to_list())
+
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
 
-    # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
-    peptides = peptides.replace(' ','').split(',')
-    while("" in peptides) :
-        peptides.remove("")
+    if len(peptides) != 0:
+        # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
+        peptides = peptides.replace(' ','').split(',')
+        while("" in peptides) :
+            peptides.remove("")
+    else:
+        peptides = list(metadata['top_protiens'].keys())
+
+        if len(peptides) > 5:
+            peptides = peptides[:5]
 
     print('Peptides passed for pepscanner: {}'.format(peptides))
 
     scanner.peptide_dist(peptides)
 
-    return 'Pepscanner heatmap generated.'
+    return jsonify(metadata)
+
+def findMostOccuringAccessionIds(accessions):
+
+    accessionIds = []
+    metadata = {}
+    
+    for i in accessions:
+        for j in str(i).split(':'):
+            found = re.search(r"[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}",j)
+
+            if found:
+                accessionIds.append(found[0])
+    
+
+    metadata['unique_peptides'] = len(set(accessionIds))
+    metadata['top_protiens'] = {}
+
+    if metadata['unique_peptides'] >= 10:
+        accessionIds = Counter(accessionIds).most_common(10)
+
+        metadata['top_protiens'] = OrderedDict(accessionIds)
+
+    else:
+        accessionIds = Counter(accessionIds).most_common(metadata['unique_peptides'])
+
+        metadata['top_protiens'] = OrderedDict(accessionIds)
+
+    return metadata
