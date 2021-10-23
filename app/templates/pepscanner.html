@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- <img src="{{ url_for('pepscanner') }}"> -->
+<div style="text-align: center;">
+    <img id="pepscannerimage" src="static/images/blankpepscanner.png" alt="">
+</div>
+
+<form onSubmit="return submitPep();" id="pepscanner" action="{{ url_for('pepscanner') }}" method="post" enctype="multipart/form-data" novalidate>
+    <!-- <label for="sample" hidden>Peptide File</label>  -->
+    <!-- <input id="file" name="file" required type="file" class="col-md-6 mb-3">	 -->
+
+    <div class="input-group mb-3">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required type="file">
+          <label class="custom-file-label" for="inputGroupFile01" id="filename">Select the peptide File</label>
+        </div>
+        <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide', 'Accession', 'PTM', 'Mass' and 'm/z' columns."></i>
+    </div>
+
+    <!-- <label for="sample" hidden>Peptide File</label> 
+	<input id="sample" name="sample-1" required type="file" class="col-md-6 mb-3"> -->
+
+    <div class="input-group mb-3" style="padding-right: 20px;">
+        <input type="text" class="form-control" placeholder="Type peptides of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0" aria-label="Peptides" aria-describedby="basic-addon2" id="peptides">
+        <div class="input-group-append">
+          <!-- <button class="btn btn-outline-secondary" type="button">Button</button> -->
+          <input id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
+        </div>
+    </div>
+
+    <!-- <input id="submit" name="submit" type="submit" value="Submit"> -->
+
+</form>
+
+<script>
+
+    document.getElementById('file').onchange = function () {
+        var name = document.getElementById('filename');
+        name.innerHTML = 'Selected file: ' + this.files[0].name;
+    };
+
+    function submitPep(){
+
+        filevalidation = validatePeptideFile();
+        if(filevalidation==false){
+			return false;
+		}
+
+        peptidevalidation = validatePeptides();
+        if(peptidevalidation==false){
+			return false;
+		}
+
+        var form = new FormData();
+        fileInput = document.getElementById('file')
+        peptides = document.getElementById('peptides');
+
+        form.append("file", fileInput.files[0], fileInput.value);
+        form.append("peptides", peptides.value);
+        
+        var settings = {
+        "url": "http://127.0.0.1:5000/api/pepscanner?t=" + new Date().getTime(),
+        "method": "POST",
+        "timeout": 0,
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
+        };
+
+        $.ajax(settings).done(function (response) {
+        document.getElementById('pepscannerimage').src = "static/images/pepscanner.png?t=" + new Date().getTime();
+        console.log(response);
+        });
+        return false;
+        
+    }
+
+    var col_warning = false
+	cols = ['Peptide','Accession','PTM', 'Mass', 'm/z'];
+	colsnotpresent = [];
+	var name = '';
+
+    function validatePeptideFile(){
+		var peptidefile = document.getElementById('file');
+
+		if(peptidefile.value == ''){
+			alert('Please upload the peptide file.')
+            return false;
+		}
+
+        // for(i=0;i<sample_files.files.length;i++){
+
+        name = peptidefile.files[0].name;
+
+        if(name.substr(-4)!='.csv'){
+            alert('Cannot accept ' + name + ' file as it is not a csv file.');
+            return false;
+        }
+
+        let reader = new FileReader();
+        reader.readAsText(peptidefile.files[0]);
+
+        reader.onload = function() {
+
+            colseread = reader.result.split('\n')[0].replace('\r','').split(',');
+
+
+
+            for (i=0;i<cols.length;i++){
+
+                flag = false;
+
+                for (j=0;j<colseread.length;j++){
+                    if(colseread[j] !== cols[i]){
+                        continue;
+                    }
+                    else{
+                        flag = true;
+                    }
+                }
+
+                if(!flag){
+                    colsnotpresent.push(cols[i]);
+                }
+
+                // if (!colseread.includes(cols[i])){
+                //     colsnotpresent.push(cols[i]);
+                // }
+            }
+            if(colsnotpresent.length != 0) {
+                col_warning = true;
+            }
+        };
+
+        if (col_warning){
+            col_warning=false;
+            alert(name + ' does not contains following column(s): '+ colsnotpresent.join(', '));
+            colsnotpresent = [];
+            return false;
+        }
+
+        // }
+
+        return true;
+	}
+
+    function validatePeptides(){
+		var peptides = document.getElementById('peptides');
+
+		if(peptides.value == ''){
+			alert('Please enter the peptides.')
+            return false;
+		}
+
+        return true;
+	}
+</script>
+
+{% endblock %}

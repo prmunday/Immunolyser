@@ -14,6 +14,7 @@ import time
 from pathlib import Path
 import glob
 import shutil
+from app.Pepscan import PepScan
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -444,3 +445,53 @@ def help():
     #if request.user_agent.platform =='windows':
         #setUpWsl()
     return render_template("help.html", help=True)
+
+@app.route("/pepscanner", methods=["GET"])
+def pepscanner():
+
+    return render_template("pepscanner.html", pepscanner=True,pep=False)
+
+@app.route("/api/pepscanner", methods=["POST"])
+def generatePepscanner():
+
+    # Extracing passed file and the peptides list
+    uploaded_file = request.files['file']
+    peptides = request.form['peptides']    
+
+
+    # Deleing any existing heatmap
+    myfile=os.path.join(project_root,'app/static/images/pepscanner.png')
+
+    ## If file exists, delete it ##
+    if os.path.isfile(myfile):
+        os.remove(myfile)
+    else:    ## Show an error ##
+        print("Error: %s file not found" % myfile)
+
+
+    # Attaching reference proteome file
+    ref_proteome = os.path.join(project_root,'app','references data','uniprot-proteome_UP000005640.fasta')
+
+    # Ignore this file for now
+    accessionsidfile = os.path.join(project_root,'app','references data','accessionids.csv')
+
+    # Input peptide file
+    peptides_file = os.path.join(project_root,'app','static','temp',uploaded_file.filename)
+    
+    if uploaded_file.filename != '':
+        uploaded_file.save(peptides_file)
+
+    scanner = PepScan()
+
+    scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
+
+    # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
+    peptides = peptides.replace(' ','').split(',')
+    while("" in peptides) :
+        peptides.remove("")
+
+    print('Peptides passed for pepscanner: {}'.format(peptides))
+
+    scanner.peptide_dist(peptides)
+
+    return 'Pepscanner heatmap generated.'
