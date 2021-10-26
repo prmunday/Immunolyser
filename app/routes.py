@@ -124,6 +124,11 @@ def initialiser():
 
     alleles_unformatted = request.form.get('alleles')
 
+    # saving alleles selected in a file
+    allele_file = open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt"), "w")
+    allele_file.write(alleles_unformatted)
+    allele_file.close()
+
     # Prediction tools selected by the user
     predictionTools = request.form.getlist('predictionTools')
     print("Prediction tools selected: {}".format(predictionTools))
@@ -226,6 +231,70 @@ def initialiser():
 def analytics():
 
     return render_template("error.html",analytics=True, msg = 'initialiser')
+
+@app.route('/<taskId>')
+def getExistingReport(taskId):
+
+    predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
+    
+    data = {}
+    maxLen = 30
+    minLen = 1
+    sample_data = {}
+    dirName = os.path.join(data_mount, taskId)
+    predicted_binders = None
+    with open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt")) as f:
+        alleles_unformatted = f.readline() 
+
+    samples =[ f.name for f in os.scandir(dirName) if f. is_dir()]
+
+    # Saving the data and loading into the dictionary
+    for sample_name  in samples:
+
+        # Not including the control group in data dict 
+        # if sample_name != "Control":
+        data[sample_name] = list()
+
+        filenames = os.listdir(os.path.join(dirName,sample_name))
+        replicates = [ filename for filename in filenames if filename.endswith( ".csv" ) ]
+
+        for file_filename in replicates:
+            data[sample_name].append(file_filename)
+            
+        # If control data is not uploaded, then deleting the sample from the data dictionary
+        temp = data.copy()
+        for sample_name, replicates in temp.items():
+            if len(replicates) == 0:
+                data.pop(sample_name)
+
+
+    # Loading sample data in pandas frames
+    for sample_name, file_names in data.items():
+        sample_data[sample_name] = dict()
+        for replicate in file_names:
+            sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
+
+    # Loading control data in pandas frames
+    # for control_replicate in control:
+        # control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
+
+    # Have to later add the user input for length
+    for sample_name, sample in sample_data.items():
+        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
+
+
+    bar_percent = plot_lenght_distribution(sample_data, hist='percent')
+    bar_density = plot_lenght_distribution(sample_data, hist='density')
+
+    seqlogos = getSeqLogosImages(sample_data)
+    gibbsImages = getGibbsImages(taskId, sample_data)
+
+    if alleles_unformatted != '':
+        predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
+
+    upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
+
+    return render_template('analytics.html', taskId=taskId, analytics=True, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
 
 @app.route("/feedback", methods=["POST", "GET"])
 def feedback():
@@ -490,7 +559,7 @@ def generatePepscanner():
 
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
 
-    if len(peptides) != 0:
+    if peptides != 'Type protiens of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0 (optional)':
         # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
         peptides = peptides.replace(' ','').split(',')
         while("" in peptides) :
