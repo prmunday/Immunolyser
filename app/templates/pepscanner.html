@@ -78198,7 +78198,7 @@
               </div>
             </div>
             <input style="float: right; margin-right: 20px;" id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
-
+            
 </form>
 <br>
 <br>
@@ -78221,6 +78221,8 @@
     };
 
     function submitPep(){
+
+      showSpinner();
 
         filevalidation = validatePeptideFile();
         if(filevalidation==false){
@@ -78306,6 +78308,8 @@
             
         }
 
+        showSpinner(false);
+
         });
         return false;
         
@@ -78320,6 +78324,7 @@
 		var peptidefile = document.getElementById('file');
 
 		if(peptidefile.value == ''){
+      showSpinner(false);
 			alert('Please upload the peptide file.')
             return false;
 		}
@@ -78329,6 +78334,7 @@
         name = peptidefile.files[0].name;
 
         if(name.substr(-4)!='.csv'){
+            showSpinner(false);
             alert('Cannot accept ' + name + ' file as it is not a csv file.');
             return false;
         }
@@ -78370,6 +78376,7 @@
 
         if (col_warning){
             col_warning=false;
+            showSpinner(false);
             alert(name + ' does not contains following column(s): '+ colsnotpresent.join(', '));
             colsnotpresent = [];
             return false;
@@ -78390,6 +78397,7 @@
 		if(protiens == 'Type protiens of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0 (optional)'){
 
             if (peptidewarning){
+                showSpinner(false);
                 alert("Please enter the protiens. By default, top five protiens present in the 'Accession' columns will be used to generate the heatmap.")
                 peptidewarning = false;
                 return false;
@@ -78425,6 +78433,28 @@
       else
         return '';   
     }
+
+    function showSpinner(flag=true){
+		var nodes = document.getElementById("main-content").getElementsByTagName('*');
+		
+		if(flag){
+			// for(var i = 0; i < nodes.length; i++){
+			// 	nodes[i].disabled = true;
+			// }
+
+			document.getElementById("main-content").style.opacity = 0.2;
+			document.getElementById('lds-hourglass').hidden = false;
+		}
+		
+		else{
+			// for(var i = 0; i < nodes.length; i++){
+			// 	nodes[i].disabled = false;
+			// }
+
+			document.getElementById("main-content").style.opacity = 1;
+			document.getElementById('lds-hourglass').hidden = true;
+		}
+	}
 </script>
 
 {% endblock %}
