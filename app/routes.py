@@ -235,6 +235,9 @@ def analytics():
 @app.route('/<taskId>')
 def getExistingReport(taskId):
 
+    if str(taskId).isnumeric() == False:
+        return 'No task id recieved to generate old report'
+
     predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
     
     data = {}
@@ -525,10 +528,22 @@ def pepscanner():
 @app.route("/api/pepscanner", methods=["POST"])
 def generatePepscanner():
 
+    taskId = getTaskId()
+
+    
+    dirName = os.path.join('app', 'static', 'images', taskId,'protienandepeptides')
+    try:
+        # Create target Directory
+        os.makedirs(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
+
+
     # Extracing passed file and the peptides list
     uploaded_file = request.files['file']
     peptides = request.form['peptides']    
-
+    fileName = uploaded_file.filename.replace('C:\\fakepath\\',"")
 
     # Deleing any existing heatmap
     myfile=os.path.join(project_root,'app/static/images/pepscanner.png')
@@ -547,15 +562,15 @@ def generatePepscanner():
     accessionsidfile = os.path.join(project_root,'app','references data','accessionids.csv')
 
     # Input peptide file
-    peptides_file = os.path.join(project_root,'app','static','temp',uploaded_file.filename)
+    peptides_file = os.path.join(project_root,'app','static','images',taskId,fileName)
     
     if uploaded_file.filename != '':
         uploaded_file.save(peptides_file)
 
     scanner = PepScan()
 
-    accessionids = pd.read_csv(peptides_file)
-    metadata = findMostOccuringAccessionIds(accessionids['Accession'].to_list())
+    inputFile = pd.read_csv(peptides_file)
+    metadata = findMostOccuringAccessionIds(inputFile, taskId, fileName)
 
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
 
@@ -572,12 +587,15 @@ def generatePepscanner():
 
     print('Peptides passed for pepscanner: {}'.format(peptides))
 
-    scanner.peptide_dist(peptides)
+    scanner.peptide_dist(peptides, taskId)
+
+    metadata['taskId'] = taskId
 
     return jsonify(metadata)
 
-def findMostOccuringAccessionIds(accessions):
-
+def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
+    
+    accessions = inputFile['Accession'].to_list()
     accessionIds = []
     metadata = {}
     
@@ -601,5 +619,10 @@ def findMostOccuringAccessionIds(accessions):
         accessionIds = Counter(accessionIds).most_common(metadata['unique_peptides'])
 
         metadata['top_protiens'] = OrderedDict(accessionIds)
+
+    for accessiondId in metadata['top_protiens'].keys():
+        fileName = inputFileName+ ' ' + accessiondId + '.csv'
+        subFile = inputFile[inputFile['Accession'].str.contains(accessiondId, na=False)]
+        subFile.to_csv(os.path.join(project_root,'app','static','images',taskId,'protienandepeptides',fileName))
 
     return metadata

@@ -164,7 +164,7 @@ class PepScan:
                 locations[position] += 1
         return locations
 
-    def peptide_dist(self, proteins):
+    def peptide_dist(self, proteins, taskId):
         """Displays a heatmap of peptide locations on selected peptides
 
         Keyword Arguments:
@@ -176,14 +176,16 @@ class PepScan:
         for accession in proteins:
             protein_list.append(self.protein_dist(accession))
         plt.clf()
-        sns.heatmap(protein_list, cmap = "Reds", yticklabels = proteins)
+        g = sns.heatmap(protein_list, cmap = "Reds", yticklabels = proteins, cbar_kws={'label': 'Number of unique peptides'})
+        g.set_yticklabels(g.get_yticklabels(), rotation=0, horizontalalignment='right')
 
         # fig,ax=plt.subplots(figsize=(6,6))
         # canvas=FigureCanvas(fig)
         # img = io.BytesIO()
         # fig.savefig(img)
         # img.seek(0)
-        plt.savefig(os.path.join(project_root,'app/static/images/pepscanner.png'))
+        plt.xlabel("Normalised protein length") 
+        plt.savefig(os.path.join(project_root,'app','static','images',taskId,'pepscanner.png'), bbox_inches='tight')
 
         # return img
 
