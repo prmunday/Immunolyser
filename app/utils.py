@@ -217,7 +217,7 @@ def generateBindingPredictions(taskId, alleles, method):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
             if sample != 'Control':
                 if replicate[-12:] == '8to14mer.txt':
-                    xif(method=='MixMHCpred'):
+                    if(method=='MixMHCpred'):
                         call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
                     elif(method=='NetMHCpan'):
