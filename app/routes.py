@@ -41,7 +41,7 @@ def initialiser():
 
     # Have to take this input from user
     maxLen = 30
-    minLen = 1
+    minLen = 5
 
     taskId = getTaskId()
     dirName = os.path.join(data_mount, taskId)
@@ -242,7 +242,7 @@ def getExistingReport(taskId):
     
     data = {}
     maxLen = 30
-    minLen = 1
+    minLen = 5
     sample_data = {}
     dirName = os.path.join(data_mount, taskId)
     predicted_binders = None

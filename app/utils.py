@@ -109,18 +109,30 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
 #         control_peptides.extend(control_data[control_replicate]['Peptide'].to_list())
 
     for file_name,sample in samples.items():
+
+        print('---Filtering {} file---'.format(file_name))
+        print('Total number of peptides : {}'.format(sample.shape[0]))
+
 #       Removing rows with no accession identity
         temp = sample.dropna(subset=['Accession'])
+
+        print('Number of peptides after removing peptides with no accession id : {}'.format(temp.shape[0]))
         
 #       Dropping the peptides with Post translational modifications
         if dropPTM:
             temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
 
+        print('Number of peptides after removing peptides with modifications (PTMs) : {}'.format(temp.shape[0]))
+
 #       Removing contamincation founf from accession number 
         temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
         
+        print('Number of peptides after removing peptides with accession marked as #CONTAM : {}'.format(temp.shape[0]))
+
 #       Filtering on the basis of the peptide length
         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
+
+        print('Number of peptides after removing peptides with lenght from {} to {} : {}'.format(minLen, maxLen, temp.shape[0]))
 
 #       Filtering the control peptides out
         # temp = temp[temp.apply(lambda x : x['Peptide'] not in control_peptides,axis=1)]        
@@ -205,7 +217,7 @@ def generateBindingPredictions(taskId, alleles, method):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
             if sample != 'Control':
                 if replicate[-12:] == '8to14mer.txt':
-                    if(method=='MixMHCpred'):
+                    xif(method=='MixMHCpred'):
                         call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
                     elif(method=='NetMHCpan'):
