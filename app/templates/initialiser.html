@@ -11,8 +11,8 @@
 		<div>
 			<h4>Data Input</h4>
 			<div class="form-row">
-				<div class="col-md-6 mb-3">Sample Name <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do contain any special characters."></i></div>
-				<div class="col-md-6 mb-3">Sample Files <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates files."></i></div>
+				<div class="col-md-6 mb-3">Sample Name <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do NOT contain any special characters."></i></div>
+				<div class="col-md-6 mb-3">Sample Files <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates are needed."></i></div>
 			</div>
 			<div id="samples">
 				<div id="sample" class="form-row">
@@ -197,13 +197,13 @@
 			<br>
 			    
 			<div class="form-row">
-				<b class="col-md-6 mb-3">or type allele names (ie A0207) separated by commas.</b>&nbsp;  <br>
+				<b class="col-md-6 mb-3">or type allele names (i.e., A0207) separated by commas.</b>&nbsp;  <br>
 				<!-- <input class="col-md-4 mb-3" name="alleles" type="text" value=""><br> -->
 				<textarea id='alleles'rows="3" cols="40" name="alleles" placeholder="Enter alleles"></textarea><br>
 
 			</div>
 				
-				For list of allowed allele names, click here <a href="/static/MHC_allele_names.txt" target="_blank">List of MHC allele names</a>.
+				For list of allowed allele names, click here <a href="/static/MHC_allele_names.txt" target="_blank"> for the list of MHC allele names</a>.
 
 			</div>
 
@@ -356,7 +356,7 @@
 		if(alleleText.value.length==0){
 			if(allele_warning==false){
 				showSpinner(false);
-				alert('If the form is submitted without the allele names, no binding prediction tests will be performed');
+				alert('If the form is submitted without the allele names, no binding prediction will be performed');
 				allele_warning = true;
 				return false;
 			}
