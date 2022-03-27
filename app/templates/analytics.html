@@ -15,11 +15,11 @@
 
 <br>
 
-    <p class="text-justify">The above histogram is the peptide length distribution of the sample(s) uploaded.
-                            Contaminations and peptides with post translational modifications have been removed.
-                            Finally, peptides with the length range from 1 to 30 have been selected. The error bars in case of replicates
-                            represents the standard deviation of the number of specifc n-mers across replicates. The switch button above can be used to switch between percent or absolute distribution. The tool icons at the top right corner
-                            can be used for more operations. 
+    <p class="text-justify">The above histogram demonstrates the peptide length distribution of the sample(s) uploaded.
+                            Contaminations and peptides with modifications have been removed.
+                            Peptides with the length between 1 to 30 residues have been selected. The error bar in case of replicates
+                            represents the standard deviation of the number of specifc n-mers across replicates. The switch button above can be used to switch between the distributions presented in percentage and absolute numbers. Click the tool icons at the top right corner
+                            for more operations. 
     </p> 
 
 <br>
@@ -41,8 +41,7 @@
 
 <br>
 
-    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples given. For generating these sequence logos, the local
-        version Seq2Logo has been used. Kullback-Leibler method has been used to generate the logos.
+    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.
     </p> 
 
 <br>
@@ -194,8 +193,7 @@
 
 <br>
     
-    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples given. For generating these sequence logos, the local
-        version Seq2Logo has been used. Kullback-Leibler method has been used to generate the logos.
+    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.
     </p> 
 
 <br>
@@ -313,7 +311,7 @@
 
             {% endfor %}
 
-            <p class="text-justify">Above table for each uploaded sample contains the information on binders for each selected allele. The information is presented for every combination of alleles vs prediction tools. The information about binders is stored in csv files which can be downloaded by clicking on the specific icon. The csv file contains three columns named as Peptide, Binding Level and Control. Peptide column contains the binder sequence. The Binding Level column tells whether a binder is a strong or weak binder. The 'Control' column specifies whether the peptide is also present in the control group, if uploaded. The binders in the downladable csv files are sorted binding affinity prediction.
+            <p class="text-justify">Above table for each uploaded sample contains the information fo predicted binders for each selected allele. The information is presented for every combination of alleles vs prediction tools. The information about binders is stored in csv files which can be downloaded by clicking the specific icon. The csv file contains three columns including 'Peptide', 'Binding Level' and 'Control'. The 'Peptide' column contains the binder sequence. The 'Binding Level' column demonstrates the binder type (i.e., a strong or weak binder). And the 'Control' column specifies whether the peptide is also present in the control group, if uploaded. The binders in the downladable csv files are sorted by the predicted binding affinity.
             </p> 
         </div>
 
