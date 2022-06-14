@@ -460,7 +460,7 @@
 
 			reader.onload = function() {
 
-				colseread = reader.result.split('\n')[0].replace('\r','').split(',');
+				colseread = reader.result.split('\n')[0].replace('\r','').replaceAll("\"",'').split(',');
 
 
 
