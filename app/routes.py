@@ -1,7 +1,6 @@
 from pandas.tseries.offsets import Second
 from app import app
-from flask import json, render_template, request, jsonify, send_file
-from flask import current_app
+from flask import render_template, request, jsonify
 from app import sample
 from app.forms import InitialiserForm, ParentForm
 import pandas as pd
@@ -24,16 +23,6 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 TASK_COUNTER = 0
 
 data_mount = app.config['IMMUNOLYSER_DATA']
-
-@app.route("/")
-@app.route("/index")
-@app.route("/home")
-def index():
-    
-    # Checking to platform, if it is windows, wsl will be initialised
-    #if request.user_agent.platform =='windows':
-        #setUpWsl()
-    return render_template("index.html", index=True)
 
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():    
