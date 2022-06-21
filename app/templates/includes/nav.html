@@ -14,6 +14,9 @@
                 <li class="nav-item {% if pepscanner %}active{% endif %}">
                   <a class="nav-link" href="{{ url_for('pepscanner') }}">Pepscanner</a>
                 </li>
+                <li class="nav-item {% if demo %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('demo') }}" target="_blank">Demo</a>
+                </li>
                 <li class="nav-item {% if feedback %}active{% endif %}">
                   <a class="nav-link" href="{{ url_for('feedback') }}" target="_blank">Feedback</a>
                 </li>

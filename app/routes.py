@@ -22,6 +22,9 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 # Experiment ID
 TASK_COUNTER = 0
 
+# DEMO Task ID
+DEMO_TASK_ID = "202206212250395"
+
 data_mount = app.config['IMMUNOLYSER_DATA']
 
 @app.route("/initialiser", methods=["POST", "GET"])
@@ -224,7 +227,12 @@ def analytics():
 @app.route('/<taskId>')
 def getExistingReport(taskId):
 
-    if str(taskId).isnumeric() == False:
+    global DEMO_TASK_ID
+
+    # Static ID for the demo
+    if str(taskId) == DEMO_TASK_ID:
+        pass
+    elif str(taskId).isnumeric() == False:
         return 'No task id recieved to generate old report'
 
     predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
@@ -285,6 +293,10 @@ def getExistingReport(taskId):
         predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
+
+    # Setting taskID as DEMO when requested for demo
+    if str(taskId) == DEMO_TASK_ID:
+        taskId = "DEMO"
 
     return render_template('analytics.html', taskId=taskId, analytics=True, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
 
@@ -615,3 +627,9 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
         subFile.to_csv(os.path.join(project_root,'app','static','images',taskId,'protienandepeptides',fileName))
 
     return metadata
+
+# Following method return the pre-run job using the specified task id.
+@app.route("/demo")
+def demo():
+    global DEMO_TASK_ID
+    return getExistingReport(DEMO_TASK_ID)
