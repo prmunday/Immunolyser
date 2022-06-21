@@ -294,10 +294,6 @@ def getExistingReport(taskId):
 
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    # Setting taskID as DEMO when requested for demo
-    if str(taskId) == DEMO_TASK_ID:
-        taskId = "DEMO"
-
     return render_template('analytics.html', taskId=taskId, analytics=True, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
 
 @app.route("/feedback", methods=["POST", "GET"])
