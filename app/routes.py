@@ -228,9 +228,10 @@ def analytics():
 def getExistingReport(taskId):
 
     global DEMO_TASK_ID
-
+    demo = False
     # Static ID for the demo
     if str(taskId) == DEMO_TASK_ID:
+        demo = True
         pass
     elif str(taskId).isnumeric() == False:
         return 'No task id recieved to generate old report'
@@ -294,11 +295,7 @@ def getExistingReport(taskId):
 
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    # Setting taskID as DEMO when requested for demo
-    if str(taskId) == DEMO_TASK_ID:
-        taskId = "DEMO"
-
-    return render_template('analytics.html', taskId=taskId, analytics=True, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
+    return render_template('analytics.html', taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
 
 @app.route("/feedback", methods=["POST", "GET"])
 def feedback():
