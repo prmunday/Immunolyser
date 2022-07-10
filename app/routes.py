@@ -175,11 +175,13 @@ def initialiser():
     bar_density = plot_lenght_distribution(sample_data, hist='density')
 
     # Saving 8 to 14 nmers for mhc1 predictions
-    saveNmerData(dirName, sample_data, peptideLength=[8,14])
+    saveNmerData(dirName, sample_data, peptideLength=[8,14], unique = True)
 
     for i in range(8,14):
-        saveNmerData(dirName, sample_data, peptideLength=i)
+        saveNmerData(dirName, sample_data, peptideLength=i, unique = True)
 
+    # Saving 9mer of each file including duplicates. This will be used for the peptide distribution graph
+    saveNmerData(dirName, sample_data, peptideLength=9, unique=False)
 
     # # Calling script to generate sequence logos
     subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)

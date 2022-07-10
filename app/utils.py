@@ -86,37 +86,13 @@ def plot_lenght_distribution(samples, hist="percent"):
 # This method is specific to a PEAKS output file for peptides.
 def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
     
-#     control_peptides = list()
-#     # Filtering the control data first
-#     for file_name,sample in control_data.items():
-# #       Removing rows with no accession identity
-#         temp = sample.dropna(subset=['Accession'])
-        
-# #       Dropping the peptides with Post translational modifications
-#         if dropPTM:
-#             temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
-
-# #       Removing contamincation founf from accession number 
-#         temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
-        
-# #       Filtering on the basis of the peptide length
-#         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
-    
-#         control_data[file_name] = temp
-
-#     # Finding the control peptides from control data
-#     for control_replicate, control_replicate_data in control_data.items():
-#         control_peptides.extend(control_data[control_replicate]['Peptide'].to_list())
-
     for file_name,sample in samples.items():
 
         print('---Filtering {} file---'.format(file_name))
         print('Total number of peptides : {}'.format(sample.shape[0]))
 
-#       Removing rows with no accession identity
-        temp = sample.dropna(subset=['Accession'])
-
-        print('Number of peptides after removing peptides with no accession id : {}'.format(temp.shape[0]))
+#       Temporary variable to store the changes done because of filtering process
+        temp = sample
         
 #       Dropping the peptides with Post translational modifications
         if dropPTM:
@@ -141,15 +117,22 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
 
     return samples
 
-def saveNmerData(location, samples, peptideLength = 9):
+def saveNmerData(location, samples, peptideLength = 9, unique = True):
 
     for file_name, data in samples.items():
         for replicate_name, replicate_data in data.items():
 
-            if type(peptideLength) == int:
-                replicate_data[replicate_data.Length == peptideLength]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength)+'mer.txt'), header=False, index=False)
+            # Keeping only unique peptides
+            if unique == True:
+                replicate_data = replicate_data.drop_duplicates('Peptide', keep='first')
+                file_extension = 'mer.txt'
             else:
-                replicate_data[replicate_data['Length'].between(peptideLength[0], peptideLength[1], inclusive=True)]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength[0])+'to'+str(peptideLength[1])+'mer.txt'), header=False, index=False)
+                file_extension = 'merwithduplicates.txt'
+
+            if type(peptideLength) == int:
+                replicate_data[replicate_data.Length == peptideLength]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength)+file_extension), header=False, index=False)
+            else:
+                replicate_data[replicate_data['Length'].between(peptideLength[0], peptideLength[1], inclusive=True)]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength[0])+'to'+str(peptideLength[1])+file_extension), header=False, index=False)
 
 
 def getSeqLogosImages(samples_data):
