@@ -15,6 +15,8 @@ from app import app
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 data_mount = app.config['IMMUNOLYSER_DATA']
+regex_find_cureved_brackets = '\(.*?\)'
+regex_find_square_brackets = '\[.*?\]'
 
 # The following method reutrns a histogram of list passed in JSON form.
 def plot_lenght_distribution(samples, hist="percent"):
@@ -84,7 +86,7 @@ def plot_lenght_distribution(samples, hist="percent"):
     
 # The following method filters the data to remove contamination.
 # This method is specific to a PEAKS output file for peptides.
-def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
+def filterPeaksFile(samples, minLen=1, maxLen=133):
     
     for file_name,sample in samples.items():
 
@@ -94,16 +96,17 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
 #       Temporary variable to store the changes done because of filtering process
         temp = sample
         
-#       Dropping the peptides with Post translational modifications
-        if dropPTM:
-            temp = temp[temp.apply(lambda x : re.search(r'[(].+[)]',x['Peptide']) == None,axis=1)]
+#       Removing contamincation founf from accession number
+        if temp.columns.__contains__('Accession'):
+            temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
+            temp = temp[temp.apply(lambda x : str(x['Accession']).find('DECOY') == -1,axis=1)]
+            print('Number of peptides after removing peptides with accession marked as #CONTAM or #DECOY : {}'.format(temp.shape[0]))
 
-        print('Number of peptides after removing peptides with modifications (PTMs) : {}'.format(temp.shape[0]))
+#       Removing PTMs in Peptide column
+        temp['Peptide'] = temp.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
 
-#       Removing contamincation founf from accession number 
-        temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
-        
-        print('Number of peptides after removing peptides with accession marked as #CONTAM : {}'.format(temp.shape[0]))
+#       Generating Length Column
+        temp['Length']= temp.apply(lambda x : len(x['Peptide']), axis=1)
 
 #       Filtering on the basis of the peptide length
         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
@@ -116,6 +119,15 @@ def filterPeaksFile(samples, dropPTM=True, minLen=1, maxLen=133):
         samples[file_name] = temp
 
     return samples
+
+def omitPTMContent(x):
+    if re.search(r'[(].+[)]',x) != None:
+        x = re.sub(regex_find_cureved_brackets,'' ,x)
+
+    if re.search(r'[[].+[]]',x) != None:
+        x = re.sub(regex_find_square_brackets,'' ,x)
+
+    return x
 
 def saveNmerData(location, samples, peptideLength = 9, unique = True):
 
@@ -162,7 +174,7 @@ def getGibbsImages(taskId, samples_data):
             clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
             
             gibbsImages[sample][replicate[:-4]] = dict()
-            gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
+            #gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
             print(gibbsImages)
 
             # gibbsImages[sample][replicate][bar_plot] = clusters
