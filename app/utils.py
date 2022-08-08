@@ -308,6 +308,9 @@ def saveBindersData(taskId, alleles, method):
                 # Original upload file used to derive all other columns present in the input file
                 input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
 
+                # Adding Colunm to represen the peptides without the PTM changes
+                input_file['PlainPeptide'] = input_file.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
+
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
                 
@@ -372,7 +375,7 @@ def saveBindersData(taskId, alleles, method):
                         alleles_dict[allele] = alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Score","Binding Level","Control"]]
 
                         # Adding the meta-data from the original input file
-                        alleles_dict[allele] = alleles_dict[allele].merge(input_file, on='Peptide',how='left')
+                        alleles_dict[allele] = alleles_dict[allele].merge(input_file, left_on='Peptide', right_on='PlainPeptide', how='left')
 
                         alleles_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
