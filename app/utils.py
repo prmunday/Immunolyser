@@ -111,7 +111,7 @@ def filterPeaksFile(samples, minLen=1, maxLen=133):
 #       Filtering on the basis of the peptide length
         temp = temp[temp.apply(lambda x : x['Length'] in range(minLen,maxLen),axis=1)]
 
-        print('Number of peptides after removing peptides with lenght from {} to {} : {}'.format(minLen, maxLen, temp.shape[0]))
+        print('Number of peptides after keeping peptides with lenght from {} to {} : {}'.format(minLen, maxLen, temp.shape[0]))
 
 #       Filtering the control peptides out
         # temp = temp[temp.apply(lambda x : x['Peptide'] not in control_peptides,axis=1)]        
