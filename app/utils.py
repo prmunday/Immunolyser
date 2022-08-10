@@ -311,6 +311,9 @@ def saveBindersData(taskId, alleles, method):
                 # Adding Colunm to represen the peptides without the PTM changes
                 input_file['PlainPeptide'] = input_file.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
 
+                # Adding PTM detected method
+                input_file['PTM detected'] = alleles_dict[allele].apply(lambda x: 'Y' if x['Peptide'] == x['PlainPeptide'] else 'N', axis=1)
+
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
                 
@@ -379,7 +382,7 @@ def saveBindersData(taskId, alleles, method):
 
                         # Adding the meta-data from the original input file
                         alleles_dict[allele] = alleles_dict[allele].merge(input_file, on='PlainPeptide',how='left')
-
+                        
                         alleles_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
                 # MixMHCpred case
@@ -398,11 +401,16 @@ def saveBindersData(taskId, alleles, method):
                     # Tagging binders present in control group
                     f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
 
+                    # Updating the name of binding results column Peptide to PlainPeptide
+                    f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
                     for allele in alleles.split(','):
                         f[f['BestAllele'] == allele]\
                             .sort_values(by=['%Rank_bestAllele'])[['Peptide','%Rank_bestAllele','Binding Level','Control']]\
-                            .merge(input_file, on='Peptide',how='left')\
+                            .merge(input_file, on='PlainPeptide',how='left')\
                             .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+
+                        
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
@@ -472,8 +480,11 @@ def saveBindersData(taskId, alleles, method):
                         # Sorting the binders from stong to weak binding level and saving it.
                         allele_dict[allele] = allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]]
 
+                        # Updating the name of binding results column Peptide to PlainPeptide
+                        alleles_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
                         # Adding the meta-data from the original input file
-                        allele_dict[allele] = allele_dict[allele].merge(input_file, on='Peptide',how='left')
+                        allele_dict[allele] = allele_dict[allele].merge(input_file, on='PlainPeptide',how='left')
 
                         allele_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
