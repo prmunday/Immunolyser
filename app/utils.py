@@ -312,7 +312,7 @@ def saveBindersData(taskId, alleles, method):
                 input_file['PlainPeptide'] = input_file.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
 
                 # Adding PTM detected method
-                input_file['PTM detected'] = input_file.apply(lambda x: 'Y' if x['Peptide'] == x['PlainPeptide'] else 'N', axis=1)
+                input_file['PTM detected'] = input_file.apply(lambda x: 'N' if x['Peptide'] == x['PlainPeptide'] else 'Y', axis=1)
 
 
                 # Initialsing the allele and binders collection
