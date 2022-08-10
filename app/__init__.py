@@ -16,4 +16,4 @@ api.init_app(app)
 
 from app import routes
 
-app.run()
+app.run(debug=True)
