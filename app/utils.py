@@ -480,7 +480,7 @@ def saveBindersData(taskId, alleles, method):
                         allele_dict[allele] = allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]]
 
                         # Updating the name of binding results column Peptide to PlainPeptide
-                        alleles_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+                        allele_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
 
                         # Adding the meta-data from the original input file
                         allele_dict[allele] = allele_dict[allele].merge(input_file, on='PlainPeptide',how='left')
