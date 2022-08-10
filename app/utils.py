@@ -314,6 +314,7 @@ def saveBindersData(taskId, alleles, method):
                 # Adding PTM detected method
                 input_file['PTM detected'] = input_file.apply(lambda x: 'Y' if x['Peptide'] == x['PlainPeptide'] else 'N', axis=1)
 
+
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
                 
@@ -406,11 +407,9 @@ def saveBindersData(taskId, alleles, method):
 
                     for allele in alleles.split(','):
                         f[f['BestAllele'] == allele]\
-                            .sort_values(by=['%Rank_bestAllele'])[['Peptide','%Rank_bestAllele','Binding Level','Control']]\
+                            .sort_values(by=['%Rank_bestAllele'])[['PlainPeptide','%Rank_bestAllele','Binding Level','Control']]\
                             .merge(input_file, on='PlainPeptide',how='left')\
-                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
-
-                        
+                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)     
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
