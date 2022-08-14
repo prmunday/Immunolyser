@@ -41,13 +41,13 @@ def plot_lenght_distribution(samples, hist="percent"):
         if hist=='percent':
             # Storing the proportions of each n-mer
             for replicate, data in sample.items():
-                peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
+                peptideProportion[replicate] = data.drop_duplicates(subset='Peptide').groupby('Length').count()['Peptide']/data.shape[0]*100
 
             title = 'The relative frequency distribution of the peptide lengths'
             yaxis_label = '% Peptides'
         else:
             for replicate, data in sample.items():
-                peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
+                peptideProportion[replicate] = data.drop_duplicates(subset='Peptide').groupby('Length').count()['Peptide']
 
             title = 'The frequency distribution of the peptide lengths'
             yaxis_label = 'Numebr of Peptides'
