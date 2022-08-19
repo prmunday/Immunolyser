@@ -11,7 +11,7 @@
             <div style="text-align:justify;">
 
                 <br>
-                <p>Immunolyser is an automated web-based tool developed for immunologists to analyse immunopeptidomics data in a seamless pipeline based on the integration of multiple computational tools for peptide analysis. The pipeline generates a comprehensive report summarising the sequence conservation, clustering of similar peptides in groups and prediction of binding affinity to various MHC allotypes based on the uploaded peptide data. The pipeline has a user-friendly interface available online, with no requirement of programming experience.
+                <p>Immunolyser is an automated web-based tool developed for immunologists to analyse immunopeptidomics data in a seamless pipeline based on the integration of multiple computational tools for peptide analysis. The pipeline generates a comprehensive report summarising the sequence conservation, clustering of similar peptides in groups, and prediction of binding affinity to various MHC allotypes based on the uploaded peptide data. The pipeline has a user-friendly interface available online, with no requirement of programming experience.
 
                 <br>
                 
@@ -19,18 +19,19 @@
                     Please refer to the <a href="{{ url_for('help') }}">help</a> page for detailed guidelines on how to use the pipeline and analyse the web-based output reports.
                 </p>
 
-                <H4>How to use?</H4>
+                <H4>How to use Immunolyser?</H4>
                 <p>
                     Use the <a href="{{ url_for('initialiser') }}">Initialiser</a> module to submit a job. Following input will be required to run the analysis.
                     
                     <ul>
-                        <li><b>Sample file(s)</b>: The sample file needed is a csv file and should have 'Peptide', 'Length' and 'Accession' columns (other additional columns can be present and will not interfere with analysis). Multiple samples can be uploaded and for every sample, multiple replicate files can be uploaded by selecting multiple files.</li>
+                        <li><b>Sample file(s)</b>: The sample file needed is a csv file and should have a 'Peptide' column. 'Length' and 'Accession' columns (optional), or other additional columns can be present but will not interfere with analysis. Multiple samples can be uploaded and for every sample, multiple replicate files can be uploaded by selecting multiple files.</li>
                         <li><b>Control file(s)</b> (optional): The control file is a csv file and should have a 'Peptide' column. Peptides present in this file are labelled as 'control' in downloadable results files. Users can also upload multiple control files in case control datasets are present across different files.</li>
                         <li><b>Alleles of interest</b> (optional): HLA-A, HLA-B or HLA-C alleles of interest can be chosen for peptide-MHC binding predictions.</li>
+                        <li><font color="red"><b>Running time</b>: Once submitted, please wait patiently as it will take 15-30 minutes to finish processing and analysing the submitted data.</font></li>
                     </ul>
                 </p>
                 
-                <H4>Demo</H4>
+                <H4>Demo and example input</H4>
 
                 <p>
                     A demo report has been generated to demonstrate the organisation and features of analysis results. It can be accessed by clicking on the <a href="{{ url_for('demo') }}">Demo</a> tab. To test the pipeline end-to-end, this file can be downloaded from <a href="/static/temp/1st_Exp_HPLC.csv" target="_blank"> here</a> and uploaded in the demo <a href="{{ url_for('initialiser') }}">initialiser</a> module to run the analysis. The dataset provided and used to generate the demo report are from the recent immunopeptidomic study by Pandey et al. 
