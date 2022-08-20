@@ -137,7 +137,7 @@ class PepScan:
         #Add peptide count column to proteome to keep track of peptides/protein
         proteome_frame["Peptides"] = 0
         #join peptide and protein dataframes
-        self.protein_frame = self.peptide_frame[["ID", "Peptide", "PTM", "Mass", "m/z"]].join(proteome_frame[["ID", "Sequence"]].set_index("ID"), on = "ID", how = "inner", lsuffix = "_pep", rsuffix = "_prot")
+        self.protein_frame = self.peptide_frame[["ID", "Peptide"]].join(proteome_frame[["ID", "Sequence"]].set_index("ID"), on = "ID", how = "inner", lsuffix = "_pep", rsuffix = "_prot")
         #retrieve locations for all peptides
         self.protein_frame.reset_index(drop = True, inplace = True)
         self.protein_frame["Location"] = self.get_locs()
@@ -186,6 +186,7 @@ class PepScan:
         # img.seek(0)
         plt.xlabel("Normalised protein length") 
         plt.savefig(os.path.join(project_root,'app','static','images',taskId,'pepscanner.png'), bbox_inches='tight')
+        print("Pepscanner Heatplot saved at :"+ os.path.join(project_root,'app','static','images',taskId,'pepscanner.png'))
 
         # return img
 
