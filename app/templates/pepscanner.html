@@ -24,6 +24,7 @@
                     <th scope="col">Protein</th>
                     <th scope="col">Peptide count</th>
                     <th scope="col">Gene name</th>
+                    <th scope="col">Species</th>
                   </tr>
                 </thead>
                 <tbody id="topprotiens" style="display: block;">
@@ -78221,8 +78222,8 @@
 
         filevalidation = validatePeptideFile();
         if(filevalidation==false){
-			return false;
-		}
+          return false;
+        }
 
         // Filling in the data for selected peptides
         t = document.getElementById('selection');
@@ -78231,8 +78232,8 @@
 
         peptidevalidation = validatePeptides();
         if(peptidevalidation==false){
-			return false;
-		}
+          return false;
+        }
 
         var form = new FormData();
         fileInput = document.getElementById('file')
@@ -78280,24 +78281,27 @@
             var row = document.createElement("tr");
             
             var cell1 = document.createElement("td");
-            cell1.style.width = "33%";
+            cell1.style.width = "25%";
             cell1.innerHTML = key;
             row.appendChild(cell1);
 
             var cell2 = document.createElement("td");
-            cell2.style.width = "33%";
+            cell2.style.width = "25%";
             // cell2.innerHTML = value;
-            cell2.innerHTML = "<a href='static/images/"+taskId+"/protienandepeptides/"+fileInput.files[0].name+ " " +key+".csv'>"+value+"</a>";
+            cell2.innerHTML = "<a href='static/images/"+taskId+"/protienandepeptides/"+fileInput.files[0].name+ " " +key+".csv'>"+value[0]+"</a>";
             row.appendChild(cell2);
 
 
             var cell3 = document.createElement("td");
-            cell3.style.width = "33%";
-            
-
-            cell3.innerHTML = getGeneName(key);
+            cell3.style.width = "25%";
+            cell3.innerHTML = value[1];
             // getGeneName(key,data => console.log("The data is:", data));
             row.appendChild(cell3);
+
+            var cell4 = document.createElement("td");
+            cell4.style.width = "25%";
+            cell4.innerHTML = value[2];
+            row.appendChild(cell4);
 
             top_protiens.append(row);
             
