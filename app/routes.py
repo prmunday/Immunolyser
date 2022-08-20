@@ -612,13 +612,26 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
 
     if metadata['unique_peptides'] >= 10:
         accessionIds = Counter(accessionIds).most_common(10)
-
-        metadata['top_protiens'] = OrderedDict(accessionIds)
-
     else:
         accessionIds = Counter(accessionIds).most_common(metadata['unique_peptides'])
 
-        metadata['top_protiens'] = OrderedDict(accessionIds)
+    # Reading mapping file
+    mapping = pd.read_csv(os.path.join(project_root,'app','references data','proteinmapping.csv'))
+        
+    odict = OrderedDict(accessionIds)
+
+    for key, value in odict.items():
+        
+        if (len (mapping[mapping['Protein'] == key])>0):
+            gn = mapping.loc[mapping['Protein'] == key, "GN"].iloc[0]
+            species = mapping.loc[mapping['Protein'] == key, "Species"].iloc[0]
+        else:
+            gn = ""
+            species = ""
+
+        odict[key]= [value, gn, species]
+
+    metadata['top_protiens'] = odict
 
     for accessiondId in metadata['top_protiens'].keys():
         fileName = inputFileName+ ' ' + accessiondId + '.csv'
