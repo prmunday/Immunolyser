@@ -574,7 +574,7 @@ def generatePepscanner():
 
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
 
-    if peptides != 'Type proteins of interest. e.g. Q96C19, P04818, F8W6I7, A0A0U1RQF0 (optional)':
+    if peptides != '(optional; human proteins only)':
         # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
         peptides = peptides.replace(' ','').split(',')
         while("" in peptides) :
