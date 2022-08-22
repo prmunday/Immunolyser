@@ -491,24 +491,28 @@ def getSeqLogo():
     # print(type(elems))
     # peptides = json.loads(elems)
     peptides = elems.split(',')
-    peptides_location = os.path.join(project_root,'app','static','images',taskId,'selected-binders.txt')
+    peptides_location_forseqlogo = os.path.join(project_root,'app','static','images',taskId,'selected-9mer-binders-for-seqlogo.txt')
+    binders_location = os.path.join(project_root,'app','static','images',taskId,'selected-binders.txt')
 
     peptides = pd.DataFrame(peptides)
     peptides.columns = ['peptide']
 
     total_peptides = peptides.shape[0]
+    # Saving all binders which can be downloaded in text files
+    peptides.to_csv(binders_location,index=False,header=False)
 
     peptides =  peptides[peptides.peptide.apply(lambda x: True if len(x)==9 else False)]
 
     nine_mers = peptides.shape[0]
 
-    peptides.to_csv(peptides_location,index=False,header=False)
+    # Saving 9mer binders to be used for seq2logo generation
+    peptides.to_csv(peptides_location_forseqlogo,index=False,header=False)
 
     seqLogoLocation = os.path.join(project_root,'app','static','images',taskId,'seqLogoApi')
 
-    print('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location,seqLogoLocation,name,nine_mers,total_peptides))
+    print('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides))
 
-    subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
+    subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
 
     return os.path.join('static','images',taskId,'seqLogoApi-001.jpg')
 
