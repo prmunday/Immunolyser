@@ -455,7 +455,13 @@
                                     height: 600,
                                     selection: null,
                                     setName: 'Uploaded samples',
-                                    combinationName: 'Number of binders'
+                                    combinationName: 'Number of binders',
+                                    combinations: {
+                                        type: 'distinctIntersection',
+                                        min: 1,
+                                        limit: 100,
+                                        order: 'cardinality',
+                                    }
                                 }
 
                     props.onHover = (set) => {
