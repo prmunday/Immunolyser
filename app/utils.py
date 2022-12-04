@@ -154,7 +154,7 @@ def getSeqLogosImages(samples_data):
     # This approach has to be modified as the names of logos are derived from the data input,
     # not from the seq2logo results.
     for sample,replicates in samples_data.items():
-        seqlogos[sample] = [(replicate[:-4]+'-001.jpg',data.shape[0]) for replicate, data in replicates.items()]
+        seqlogos[sample] = [[replicate[:-4]+'-001.jpg',data.shape[0]] for replicate, data in replicates.items()]
 
     return seqlogos
 
@@ -171,8 +171,19 @@ def getGibbsImages(taskId, samples_data):
 
         for replicate in replicates.keys():
             bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')]
-            clusters = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
+            clusters = [[os.path.basename(x), "Could not be calculated"] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
             
+            # Finding the number of records used for the cluster
+            for cluster in clusters:
+                cluster_attempt = cluster[0].split("_")[2].split("-")[0]
+
+                try :
+                    core = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/*{cluster_attempt}*')][0]
+                    cluster[1] = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/{core}', header=None).shape[0]
+                except:
+                    continue
+
+            # print(clusters)
             gibbsImages[sample][replicate[:-4]] = dict()
             gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
             # print(gibbsImages)
