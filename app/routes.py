@@ -23,7 +23,7 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 TASK_COUNTER = 0
 
 # DEMO Task ID
-DEMO_TASK_ID = "202208221407254"
+DEMO_TASK_ID = "2022120414194916840"
 
 data_mount = app.config['IMMUNOLYSER_DATA']
 
