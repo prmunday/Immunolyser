@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import subprocess
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore
 from app.sample import Sample
 import time
 from pathlib import Path
@@ -23,7 +23,7 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 TASK_COUNTER = 0
 
 # DEMO Task ID
-DEMO_TASK_ID = "2022120414194916840"
+DEMO_TASK_ID = "202208221407254"
 
 data_mount = app.config['IMMUNOLYSER_DATA']
 
@@ -372,14 +372,17 @@ def createGibbsBar():
         bestCluster = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsClusters.tab')
         bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
 
-        seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*.jpg')]
+        seqClusters = [[x[4:], "Could not be calculated"] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*.jpg')]
 
     else:
         seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
 
         if len(seqClusters) != int(cluster):
             subprocess.call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, int(cluster)), shell=True)
-            seqClusters = [x[4:] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+            seqClusters = [[x[4:], "Could not be calculated"] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg')]
+
+    # Finding the number of records used for the cluster
+    findNumberOfPeptidesInCore(seqClusters, taskId, sample, replicate)
 
     return {barLocation:seqClusters}
 

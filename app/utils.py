@@ -174,14 +174,7 @@ def getGibbsImages(taskId, samples_data):
             clusters = [[os.path.basename(x), "Could not be calculated"] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/*.jpg')]
             
             # Finding the number of records used for the cluster
-            for cluster in clusters:
-                cluster_attempt = cluster[0].split("_")[2].split("-")[0]
-
-                try :
-                    core = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/*{cluster_attempt}*')][0]
-                    cluster[1] = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/{core}', header=None).shape[0]
-                except:
-                    continue
+            findNumberOfPeptidesInCore(clusters, taskId, sample, replicate)
 
             # print(clusters)
             gibbsImages[sample][replicate[:-4]] = dict()
@@ -191,6 +184,18 @@ def getGibbsImages(taskId, samples_data):
             # gibbsImages[sample][replicate][bar_plot] = clusters
 
     return gibbsImages
+
+# Method to calculate the peptides present in cluster
+def findNumberOfPeptidesInCore(clusters, taskId, sample, replicate):
+    # Finding the number of records used for the cluster
+    for cluster in clusters:
+        cluster_attempt = cluster[0].split("_")[2].split("-")[0]
+
+        try :
+            core = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/*{cluster_attempt}*')][0]
+            cluster[1] = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/{core}', header=None).shape[0]
+        except:
+            continue
 
 #def setUpWsl():
     #print('Setting up the WSL(Windows ) for windows system.')
