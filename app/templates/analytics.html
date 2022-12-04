@@ -33,7 +33,7 @@
         <h4>{{sample}}</h4>
         <div class="your-class">
         {% for replicate in replicates %}
-            <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate), width=10)}}" alt="">                
+            <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate[0]), width=10)}}" alt="" title="Sample size : {{replicate[1]}}">                
         {%endfor%}
         </div>
     {% endfor %}

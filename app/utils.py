@@ -154,7 +154,7 @@ def getSeqLogosImages(samples_data):
     # This approach has to be modified as the names of logos are derived from the data input,
     # not from the seq2logo results.
     for sample,replicates in samples_data.items():
-        seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
+        seqlogos[sample] = [(replicate[:-4]+'-001.jpg',data.shape[0]) for replicate, data in replicates.items()]
 
     return seqlogos
 
@@ -175,7 +175,7 @@ def getGibbsImages(taskId, samples_data):
             
             gibbsImages[sample][replicate[:-4]] = dict()
             gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
-            print(gibbsImages)
+            # print(gibbsImages)
 
             # gibbsImages[sample][replicate][bar_plot] = clusters
 
@@ -520,7 +520,7 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                             predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
                         os.chdir(project_root)
 
-    print(predicted_binders)      
+    # print(predicted_binders)      
     return predicted_binders
 
 def getPredictionResusltsForUpset(taskId,alleles,methods,samples):
