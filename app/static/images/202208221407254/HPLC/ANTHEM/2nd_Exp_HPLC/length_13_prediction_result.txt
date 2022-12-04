@@ -1,0 +1,58 @@
+HLA allele	Set		Peptide		Binder?	Prediction_score
+---------------------------------------------------------------------
+HLA-A*02:01
+          	------------------------------------------------
+          	input-sequences
+          	   		REYDDVLESGLGN		 		0.561
+          	   		GLLIIAQLSLLKH		 		0.784
+          	   		GAGAFGKVVEATA		 		0.751
+          	   		FLIQGFQAVFLNV		yes		0.999
+          	   		YGLAHLVLPKGAA		 		0.545
+          	   		AADAEAEVASLNR		 		0.353
+          	   		PTVLHLSPGQSSV		 		0.444
+          	   		PLVIQQPPKPGAL		 		0.67
+          	   		KLFDDDDSGKISL		yes		0.999
+          	   		KLLDEDEIRGYKL		yes		0.999
+          	   		IDSLSAQLSQLQK		 		0.018
+          	   		MRMATPLLMQALP		 		0.101
+          	   		VLLGESAVGKSSL		yes		0.999
+          	   		DIAALVVDNGSGM		 		0.199
+          	   		IQRTPKIQVYSRH		 		0.018
+          	   		LSQPKIVKWDRDM		 		0.018
+          	   		KLYDIDVAKVNTL		yes		0.999
+          	   		SGDAAIVDMVPGK		 		0.101
+          	   		KIIPENDIKSLTV		yes		0.965
+          	   		AMIDTEFAKQTSL		yes		0.99
+          	   		YLDPALELGPRNV		yes		0.982
+          	   		VPLEGYLVTPIQR		 		0.711
+          	   		SPRLRRPKSPKLP		 		0.018
+          	   		HLYEEYVEKPLKL		yes		0.999
+          	   		VLALAPGLPTARA		 		0.868
+          	   		NAPQDTAGFCTAG		 		0.101
+          	   		PTVITPAHQYQAP		 		0.018
+          	   		GGQDGVPALCGVG		 		0.545
+          	   		SSSGLAHCSVSGG		 		0.104
+          	   		QGYADYSGQQSTY		 		0.101
+          	   		LPYPPEPGAASLY		 		0.469
+          	   		QPYPFGTGGSAMY		 		0.13
+          	   		FPFNTPKTKEGYY		 		0.762
+          	   		TVGMNFKTPRGPV		 		0.101
+          	   		DFGSLSNLQVTQP		 		0.018
+          	   		AAASIANIVKSSL		 		0.75
+          	   		HPAPLAPGAASAY		 		0.469
+          	   		QPYSGSPANLAVY		 		0.169
+          	   		NNAKAMSARAEAI		 		0.101
+          	   		PGQGPDRPQEVSY		 		0.483
+          	   		GGYGGGYGGQSSM		 		0.823
+          	   		NLYIISVKGIKGR		 		0.523
+          	   		YPRAPVFPGRGSY		 		0.13
+          	   		GGFGSYSQHQSSY		 		0.163
+          	   		LTYDGALLGDRSL		 		0.734
+          	   		YPRLEGTDPEVLY		 		0.486
+          	   		DGVASPATPGTGK		 		0.101
+          	   		HFELGGDKKRKGQ		 		0.018
+          	   		SSYGGQAAAASSL		 		0.745
+          	   		QGIPATHGKPTSY		 		0.15
+          	------------------------------------------------
+          	9 predicted binders out of 50 total input sequences from allele HLA-A*02:01 (at threshold of 100% specificity)
+

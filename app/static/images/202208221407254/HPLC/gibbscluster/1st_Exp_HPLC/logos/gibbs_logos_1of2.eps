@@ -1,0 +1,679 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title:         Seq2Logo: Group 1 of 2
+%%Creator:       Seq2Logo (Martin Thomsen)
+%%CreationDate:  2022-08-22
+%%BoundingBox:   0 0 640 480
+%%Pages:         1
+%%Orientation:   Portrait
+%%DocumentFonts: 
+%%EndComments
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                  USER DEFINED VARIABLES                    %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/page_width               640 def
+/page_height              480 def
+/title                    (Group 1 of 2) def %title
+/lines_per_page           1 def %1
+/yaxis_label              (Bits) def %Bits
+/xaxis_label              () def
+/end_type                 (p) def
+/yaxis_scale              1.3756751043479882 def %0.365078687092
+/depleted_yaxis_scale     0.21868691522834308 def %0.190242668933
+/yaxis_tic_interval       0.5 def %0.1
+/yaxis_minor_tic_interval 0.1 def %0.02
+/stacks_per_line          9 def %9
+/rotate_numbers           false def
+/show_yaxis               true def
+/show_xaxis               true def
+/fineprint                (Created by Seq2Logo) def
+/color_dict               <<
+(D) [0.9 0.0 0.0]
+(E) [0.9 0.0 0.0]
+(H) [0.0 0.0 1.0]
+(K) [0.0 0.0 1.0]
+(R) [0.0 0.0 1.0]
+(Q) [0.0 0.85 0.0]
+(S) [0.0 0.85 0.0]
+(T) [0.0 0.85 0.0]
+(Y) [0.0 0.85 0.0]
+(N) [0.0 0.85 0.0]
+(G) [0.0 0.85 0.0]
+>> def
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                    HARDCODED VARIABLES                     %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/debug                    false                 def
+%/title     title stringwidth pop 20 string cvs def
+/UseCIEColor              true                  def
+/default_color            [0.0 0.0 0.0]         def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                    CALCULATE PARAMETERS                    %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/framesize              page_height 2 exp page_width 2 exp add
+                        lines_per_page div sqrt 40 div ceiling   def % 20
+/fontsize               framesize 1.10 mul ceiling               def % 22
+/fine_fontsize          fineprint () ne
+                           { framesize 0.65 mul ceiling }
+                           { 0 }ifelse                           def % 13
+/title_fontsize         title () ne
+                           { framesize 1.20 mul ceiling }
+                           { 0 }ifelse                           def % 24
+/number_fontsize        framesize 0.85 mul ceiling               def % 17
+/SetTitleFont           { /Times-Bold findfont title_fontsize
+                           scalefont setfont } bind              def
+/SetStringFont          { /Helvetica findfont fontsize
+                           scalefont setfont } bind              def
+/SetPrimeFont           { /Symbol findfont fontsize
+                           scalefont setfont } bind              def
+/SetFineFont            { /Helvetica findfont fine_fontsize
+                           scalefont setfont } bind              def
+/SetNumberFont          { /Helvetica findfont number_fontsize
+                           scalefont setfont } bind              def
+/SetLogoFont            { tc (I) eq %Exchanging '|' from Helvetica with 'I' from Courier to optain bars
+                           { /Courier-Bold findfont char_width
+                             scalefont setfont }
+                           { /Helvetica-Bold findfont char_width
+                             scalefont setfont } ifelse } bind   def
+/logo_margin            framesize 1.2 mul                        def % 25.2
+/xaxis_label_height     framesize 0.6 mul                        def % 12.6
+/stroke_width           framesize 0.06 mul                       def % 1.26
+/tic_length             framesize 0.5 mul                        def % 10.5
+/line_width             page_width logo_margin 2 mul sub         def % 589.6    592
+/line_height            page_height logo_margin 2 mul sub
+                        title_fontsize sub fine_fontsize sub
+                        lines_per_page div                       def % 395
+/line_margin_left       framesize 2 div fontsize add
+                        SetStringFont
+                        yaxis_scale depleted_yaxis_scale gt
+                        { yaxis_scale }{ depleted_yaxis_scale neg }ifelse
+                        yaxis_minor_tic_interval div ceiling
+                        yaxis_minor_tic_interval mul
+                        20 string cvs stringwidth pop add        def % 72.45   74.8184
+/line_margin_right      framesize 1.0 mul                        def % 21      20
+/line_margin_bottom     framesize 1.5 mul                        def % 31.5    30
+/line_margin_top        framesize 0.5 mul                        def % 10.5    10
+/stack_margin           0.3                                      def
+/stack_width            line_width line_margin_left sub
+                        line_margin_right sub
+                        stacks_per_line div                      def % 55.1277777778 12.4295
+/stack_height           line_height line_margin_top sub
+                        line_margin_bottom sub                   def % 241.009723894 355
+depleted_yaxis_scale 0 gt{
+   /depleted_height     stack_height depleted_yaxis_scale mul
+                        yaxis_scale depleted_yaxis_scale add div def % 125.590276106
+   /stack_height        stack_height yaxis_scale mul
+                        yaxis_scale depleted_yaxis_scale add div def
+   /show_depleted_yaxis true                                     def
+}{
+   /depleted_height     0                                        def
+   /show_depleted_yaxis false                                    def
+}ifelse
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                         PROCEDURES                         %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/DrawBox { % <height> <width> DrawBox
+ %grafical boxes for debugging
+ /w exch def %width
+ /h exch def %height
+ gsave
+   stroke_width 0.1 mul setlinewidth
+   w 0 rlineto
+   0 h rlineto
+   w neg 0 rlineto
+   0 h neg rlineto
+   stroke
+ grestore
+} bind def
+
+/StartLogo { % StartLogo
+ %Initiation of a logo
+ gsave
+   debug {
+      logo_margin dup moveto
+      page_height logo_margin dup add sub
+      page_width logo_margin dup add sub
+      DrawBox
+   } if
+
+   title () ne { DrawTitle } if
+   xaxis_label () ne { DrawXaxisLabel } if
+   fineprint () ne { DrawFineprint } if
+   %Move to the First Line
+   logo_margin
+   page_height logo_margin sub title_fontsize sub line_height sub
+   moveto
+ } bind def
+
+/DrawTitle { % DrawTitle
+ %top middle
+ gsave
+   SetTitleFont
+   page_width title stringwidth pop sub 2 div
+   page_height title_fontsize sub logo_margin sub title_fontsize 4 div add
+   moveto
+   title show
+   debug { title_fontsize title_fontsize 4 div sub title stringwidth pop neg DrawBox } if
+ grestore
+} bind def
+
+/DrawXaxisLabel { % DrawXaxisLabel
+ %bottom left
+ gsave
+   SetStringFont
+   logo_margin logo_margin moveto
+   xaxis_label show
+   debug { fontsize xaxis_label stringwidth pop neg DrawBox } if
+ grestore
+} bind def
+
+/DrawFineprint { % DrawFineprint
+ %bottom right
+ gsave
+   SetFineFont
+   page_width logo_margin sub fineprint stringwidth pop sub
+   logo_margin
+   moveto
+   fineprint show
+   debug { fine_fontsize fineprint stringwidth pop neg DrawBox } if
+ grestore
+} bind def
+
+/EndLogo { % EndLogo
+ grestore
+ showpage
+} bind def
+
+/StartLine { % StartLine
+ %Initiating a new line
+ gsave
+   debug { line_height line_width DrawBox } if %LOGOLINE BOX
+
+   % Move to lower left corner of content area
+   line_margin_left line_margin_bottom depleted_height add rmoveto
+   show_yaxis { DrawYaxis } if
+   end_type () ne { end_type (d) eq { (5) }{ (N) } ifelse DrawEnd } if
+
+   debug { %PLOTTING BOX
+      stack_height
+      line_width line_margin_left sub line_margin_right sub
+      DrawBox
+      depleted_height neg
+      line_width line_margin_left sub line_margin_right sub
+      DrawBox
+   } if
+} bind def
+
+/EndLine { % EndLine
+ end_type () ne { end_type (d) eq { (3) }{ (C) } ifelse DrawEnd } if
+ grestore
+ 0 line_height neg rmoveto
+} bind def
+
+/DrawYaxis { % DrawYaxis
+ gsave
+   /str 10 string def % string to hold number
+   stroke_width 2 div neg 0 rmoveto
+   SetNumberFont
+   stroke_width setlinewidth
+   gsave % Draw Yaxis Bar
+      0 stack_height rlineto
+      0 stack_height neg rmoveto
+      show_depleted_yaxis { 0 depleted_height neg rlineto } if
+      stroke
+   grestore
+   % Draw the positive tics
+   stack_height yaxis_scale DrawTics
+   % Draw the negative tics
+   show_depleted_yaxis { depleted_height neg depleted_yaxis_scale DrawTics } if
+   % Draw the Label
+   yaxis_label () ne { DrawYaxisLabel } if
+ grestore
+} bind def
+
+/DrawTics { % <height> <unit_height> DrawTics
+ /unit_height exch def
+ /height exch def
+ height 0 ge {
+   /startvalue 0 def
+   /major_tic 0 def
+   /sgn 1 def
+ }{ 
+   /startvalue yaxis_minor_tic_interval def 
+   /major_tic yaxis_tic_interval def
+   /sgn -1 def
+ } ifelse
+
+ startvalue yaxis_minor_tic_interval unit_height yaxis_minor_tic_interval 0.1 mul add % <start> <increment> <end> for-loop % Added a fraction of a step, so the last Tic gets printed
+ {/loopnumber exch def
+   gsave
+      0 loopnumber unit_height div height mul rmoveto
+      loopnumber 10 add major_tic 10 add ge
+      { % Draw long tic and show number
+         tic_length neg 0 rlineto
+         /stringnumber loopnumber sgn mul 10 str cvrs def % string representing the number
+         stringnumber CharBoxSize % Computing character box height /cbh
+         stroke_width stringnumber stringwidth pop add neg cbh 2 div neg rmoveto
+         stringnumber show
+         % computing next major tic
+         /major_tic major_tic yaxis_tic_interval add def
+      }{ % Draw small tic
+         tic_length 2 div neg 0 rlineto
+      } ifelse
+      stroke
+   grestore
+ } for
+} bind def
+
+/DrawYaxisLabel { % DrawYaxisLabel
+ % Far left and vertical centered against the line
+ gsave
+   SetStringFont
+   line_margin_left fontsize 0.75 mul sub neg
+   stack_height depleted_height sub yaxis_label stringwidth pop sub 2 div
+   rmoveto
+   90 rotate
+   yaxis_label show
+ grestore
+} bind def
+
+/CharBoxSize { % (char) CharBoxSize /cbh /cbw /lly /llx
+ %Saving the height and width of a characters bounding box plus lower left corner points
+ gsave
+   newpath
+   0 0 moveto
+   true charpath %Making a path of given character using charpath
+   flattenpath
+   pathbbox % compute bounding box of 1 pt. char => <lx> <ly> <ux> <uy>
+ grestore
+ 2 index sub exch 3 index sub exch
+ /cbh exch def
+ /cbw exch def
+ /lly exch def
+ /llx exch def
+} bind def
+
+/DrawEnd { % (character) DrawEnd
+ /tc exch def
+ gsave
+   SetStringFont
+   tc (5) eq tc (N) eq or { fontsize neg 1.08 }{ fontsize 0.25 mul 1.15 } ifelse
+   fontsize mul neg depleted_height sub rmoveto
+   tc show
+   end_type (d) eq { DrawPrime } if
+   debug { fontsize tc stringwidth pop neg DrawBox } if
+ grestore
+} bind def
+
+/DrawPrime { % DrawPrime
+ gsave
+   SetPrimeFont
+   (¢) show
+ grestore
+} bind def
+
+/StartStack { % <stackNumber> startstack
+ show_xaxis { ShowNumber }{ pop } ifelse
+ gsave
+   debug { stack_height stack_width DrawBox } if
+} bind def
+
+/DepletedStack { % DepletedStack
+ grestore
+ gsave
+} bind def
+
+/EndStack { % EndStack
+ grestore
+ stack_width 0 rmoveto
+} bind def
+
+/ShowNumber { % <number> ShowNumber
+ /n exch def
+ DrawXBar
+ show_depleted_yaxis not { DrawXTic } if
+ n () ne { DrawNumber } if
+} bind def
+
+/DrawXBar { % /n DrawXBar
+ gsave
+   stroke_width setlinewidth
+   stack_width 0 rlineto
+   stroke
+ grestore
+} bind def
+
+/DrawXTic { % /n DrawXTic
+ gsave
+   stack_width 2 div 0 rmoveto
+   n () eq
+      { 0 tic_length 4 div neg rlineto }
+      { 0 tic_length 2 div neg rlineto }
+   ifelse
+   stroke
+ grestore
+} bind def
+
+/DrawNumber { % /n DrawNumber
+ gsave
+   SetNumberFont
+   stack_width 2 div tic_length 2 div neg stroke_width sub
+   show_depleted_yaxis { depleted_height sub } if
+   rmoveto
+   n stringwidth sub neg % find the length of the number
+   rotate_numbers {
+      (0) CharBoxSize % Computing character box height /cbh
+      cbh 2 div neg % adjusting position to height of number
+      90 rotate % rotating the number
+   } {
+      2 div
+      number_fontsize 0.75 mul neg
+   } ifelse
+   rmoveto
+   n show
+ grestore
+} bind def
+
+/ShowSymbol{ % <w> <h> (s) ShowSymbol
+ % Draw a character whose height is proportional to symbol bits
+ /char exch def           % Symbol
+ /interval exch def       % Height
+ /fraction_width exch def % Width
+ /char_width stack_width 2 stack_margin mul sub def
+ /bh interval abs yaxis_scale div stack_height mul def % Block height = CH + margin*2
+ bh 2.1 stack_margin mul gt {
+   /char_height bh 2 stack_margin mul sub def
+   /sm stack_margin def
+ }{
+   /char_height bh def
+   /sm 0 def
+ } ifelse
+ char_height 0.1 gt { % BUG FIX: Drawing a char with a very small height can create errors when scaling
+   interval 0.0 lt {
+      /char_height char_height neg def
+      /bh bh neg def
+      0 bh rmoveto
+   } if
+   debug { bh abs stack_width DrawBox } if
+   gsave
+      stack_margin sm rmoveto
+      debug { char_height abs char_width DrawBox } if
+      1 fraction_width sub char_width mul 2 div 0 rmoveto
+      fraction_width char_width mul char_height char DrawChar
+   grestore
+ } if
+ interval 0.0 gt { 0 bh rmoveto } if 
+} bind def
+
+/DrawChar { % <width> <height> (char) DrawChar
+ /tc exch def    % character string
+ /ysize exch abs def % character height
+ /xsize exch def % character width
+ gsave
+   % SET CHARACTER FONT AND COLOR
+   SetLogoFont
+   tc SetColor
+   % RESCALE CHARACTER
+   %ysize 0 lt { FlipChar } if
+   ScaleChar
+   % COMPUTE LLX AND LLY
+   tc CharBoxSize
+   % REPOSITION CHARACTERS
+   %llx neg lly neg translate
+   llx neg lly neg rmoveto
+   % SPECIAL ADJUSTMENT
+   % STRING SEARCH
+   %(abbc) (ab) search ==> (bc) (ab) ( ) true
+   %(abbc) (BB) search ==> (abbc) false
+   %(gpqyjQ) tc search { pop pop pop 0 lly neg rmoveto }{ pop } ifelse
+   tc show
+ grestore
+} bind def
+
+/SetColor{ % (char) SetColor
+ dup color_dict exch known {
+   color_dict exch get aload pop setrgbcolor
+ }{
+   pop
+   default_color aload pop setrgbcolor
+ } ifelse
+} bind def
+
+/ScaleChar { % ScaleChar
+ % Scaling the character to fit altered height and width
+ /xystretch { 1 1 } bind def % width height stretch factor
+ 2 { % Compute the font scaling factors
+   gsave
+      xystretch scale
+      tc CharBoxSize
+      cbh 0.0 ne cbw 0.0 ne and { /xystretch { xsize cbw div ysize cbh div } bind def } if
+   grestore
+ } repeat
+ xystretch scale % Scaling the character
+} bind def
+
+%%EndProlog
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                            DATA                            %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Page: 1 1
+
+StartLogo
+ StartLine
+   (0) StartStack
+      1.000000 0.007993 (H) ShowSymbol
+      1.000000 0.017161 (R) ShowSymbol
+      1.000000 0.017857 (Y) ShowSymbol
+      1.000000 0.019224 (I) ShowSymbol
+      1.000000 0.019307 (T) ShowSymbol
+      1.000000 0.019369 (F) ShowSymbol
+      1.000000 0.019649 (G) ShowSymbol
+      1.000000 0.021178 (V) ShowSymbol
+      1.000000 0.030921 (K) ShowSymbol
+      1.000000 0.030956 (S) ShowSymbol
+      1.000000 0.033042 (A) ShowSymbol
+   DepletedStack
+      1.000000 -0.000522 (C) ShowSymbol
+      1.000000 -0.001096 (W) ShowSymbol
+      1.000000 -0.001335 (D) ShowSymbol
+      1.000000 -0.002409 (P) ShowSymbol
+      1.000000 -0.003124 (E) ShowSymbol
+      1.000000 -0.004797 (M) ShowSymbol
+      1.000000 -0.006685 (N) ShowSymbol
+      1.000000 -0.008014 (Q) ShowSymbol
+      1.000000 -0.014110 (L) ShowSymbol
+   EndStack
+   (1) StartStack
+      1.000000 0.137420 (V) ShowSymbol
+      1.000000 0.147819 (M) ShowSymbol
+      1.000000 0.166270 (I) ShowSymbol
+      1.000000 0.918692 (L) ShowSymbol
+   DepletedStack
+      1.000000 -0.001662 (W) ShowSymbol
+      1.000000 -0.002287 (P) ShowSymbol
+      1.000000 -0.003630 (R) ShowSymbol
+      1.000000 -0.004053 (C) ShowSymbol
+      1.000000 -0.004118 (H) ShowSymbol
+      1.000000 -0.004603 (Y) ShowSymbol
+      1.000000 -0.007642 (K) ShowSymbol
+      1.000000 -0.007788 (G) ShowSymbol
+      1.000000 -0.008604 (D) ShowSymbol
+      1.000000 -0.009061 (F) ShowSymbol
+      1.000000 -0.009441 (E) ShowSymbol
+      1.000000 -0.011850 (S) ShowSymbol
+      1.000000 -0.013500 (N) ShowSymbol
+      1.000000 -0.018602 (A) ShowSymbol
+      1.000000 -0.048919 (T) ShowSymbol
+      1.000000 -0.062926 (Q) ShowSymbol
+   EndStack
+   (2) StartStack
+      1.000000 0.003963 (W) ShowSymbol
+      1.000000 0.008007 (H) ShowSymbol
+      1.000000 0.010680 (Y) ShowSymbol
+      1.000000 0.012218 (F) ShowSymbol
+      1.000000 0.014381 (M) ShowSymbol
+      1.000000 0.015539 (Q) ShowSymbol
+      1.000000 0.019809 (I) ShowSymbol
+      1.000000 0.025958 (A) ShowSymbol
+      1.000000 0.029397 (D) ShowSymbol
+      1.000000 0.037243 (L) ShowSymbol
+   DepletedStack
+      1.000000 -0.000582 (C) ShowSymbol
+      1.000000 -0.001352 (R) ShowSymbol
+      1.000000 -0.003218 (K) ShowSymbol
+      1.000000 -0.006653 (E) ShowSymbol
+      1.000000 -0.006820 (G) ShowSymbol
+      1.000000 -0.007207 (P) ShowSymbol
+      1.000000 -0.011378 (N) ShowSymbol
+      1.000000 -0.012389 (T) ShowSymbol
+      1.000000 -0.013670 (V) ShowSymbol
+      1.000000 -0.017864 (S) ShowSymbol
+   EndStack
+   (3) StartStack
+      1.000000 0.013467 (H) ShowSymbol
+      1.000000 0.026199 (Q) ShowSymbol
+      1.000000 0.026247 (N) ShowSymbol
+      1.000000 0.038518 (G) ShowSymbol
+      1.000000 0.041213 (S) ShowSymbol
+      1.000000 0.043264 (P) ShowSymbol
+      1.000000 0.090100 (D) ShowSymbol
+      1.000000 0.109807 (E) ShowSymbol
+   DepletedStack
+      1.000000 -0.000571 (W) ShowSymbol
+      1.000000 -0.001009 (C) ShowSymbol
+      1.000000 -0.002086 (M) ShowSymbol
+      1.000000 -0.003113 (Y) ShowSymbol
+      1.000000 -0.005526 (F) ShowSymbol
+      1.000000 -0.006054 (I) ShowSymbol
+      1.000000 -0.010626 (R) ShowSymbol
+      1.000000 -0.012360 (L) ShowSymbol
+      1.000000 -0.012646 (V) ShowSymbol
+      1.000000 -0.021438 (K) ShowSymbol
+      1.000000 -0.025398 (T) ShowSymbol
+      1.000000 -0.033910 (A) ShowSymbol
+   EndStack
+   (4) StartStack
+      1.000000 0.003572 (H) ShowSymbol
+      1.000000 0.004605 (N) ShowSymbol
+      1.000000 0.005058 (Q) ShowSymbol
+      1.000000 0.005078 (K) ShowSymbol
+      1.000000 0.005190 (T) ShowSymbol
+      1.000000 0.005389 (I) ShowSymbol
+      1.000000 0.007181 (E) ShowSymbol
+      1.000000 0.007762 (V) ShowSymbol
+   DepletedStack
+      1.000000 -0.000066 (C) ShowSymbol
+      1.000000 -0.000164 (W) ShowSymbol
+      1.000000 -0.001364 (M) ShowSymbol
+      1.000000 -0.002007 (P) ShowSymbol
+      1.000000 -0.002618 (Y) ShowSymbol
+      1.000000 -0.002692 (F) ShowSymbol
+      1.000000 -0.003514 (R) ShowSymbol
+      1.000000 -0.003792 (D) ShowSymbol
+      1.000000 -0.004604 (G) ShowSymbol
+      1.000000 -0.005585 (A) ShowSymbol
+      1.000000 -0.005781 (S) ShowSymbol
+      1.000000 -0.006955 (L) ShowSymbol
+   EndStack
+   (5) StartStack
+      1.000000 0.014405 (Q) ShowSymbol
+      1.000000 0.016796 (N) ShowSymbol
+      1.000000 0.022746 (P) ShowSymbol
+      1.000000 0.023077 (T) ShowSymbol
+      1.000000 0.044192 (I) ShowSymbol
+      1.000000 0.052297 (L) ShowSymbol
+      1.000000 0.057196 (V) ShowSymbol
+   DepletedStack
+      1.000000 -0.000333 (W) ShowSymbol
+      1.000000 -0.000516 (C) ShowSymbol
+      1.000000 -0.003137 (H) ShowSymbol
+      1.000000 -0.004722 (R) ShowSymbol
+      1.000000 -0.005345 (Y) ShowSymbol
+      1.000000 -0.006255 (M) ShowSymbol
+      1.000000 -0.007074 (F) ShowSymbol
+      1.000000 -0.007204 (G) ShowSymbol
+      1.000000 -0.008399 (D) ShowSymbol
+      1.000000 -0.009547 (K) ShowSymbol
+      1.000000 -0.014226 (A) ShowSymbol
+      1.000000 -0.014969 (E) ShowSymbol
+      1.000000 -0.018747 (S) ShowSymbol
+   EndStack
+   (6) StartStack
+      1.000000 0.012620 (Y) ShowSymbol
+      1.000000 0.016303 (Q) ShowSymbol
+      1.000000 0.017234 (E) ShowSymbol
+      1.000000 0.018623 (H) ShowSymbol
+      1.000000 0.019204 (I) ShowSymbol
+      1.000000 0.019845 (T) ShowSymbol
+      1.000000 0.021515 (A) ShowSymbol
+      1.000000 0.029274 (V) ShowSymbol
+      1.000000 0.032016 (P) ShowSymbol
+   DepletedStack
+      1.000000 -0.000220 (C) ShowSymbol
+      1.000000 -0.001430 (W) ShowSymbol
+      1.000000 -0.001600 (G) ShowSymbol
+      1.000000 -0.005917 (D) ShowSymbol
+      1.000000 -0.006224 (M) ShowSymbol
+      1.000000 -0.007366 (R) ShowSymbol
+      1.000000 -0.008810 (N) ShowSymbol
+      1.000000 -0.009403 (K) ShowSymbol
+      1.000000 -0.010260 (F) ShowSymbol
+      1.000000 -0.011016 (S) ShowSymbol
+      1.000000 -0.022203 (L) ShowSymbol
+   EndStack
+   (7) StartStack
+      1.000000 0.009385 (H) ShowSymbol
+      1.000000 0.012229 (Y) ShowSymbol
+      1.000000 0.012375 (N) ShowSymbol
+      1.000000 0.014967 (R) ShowSymbol
+      1.000000 0.019749 (A) ShowSymbol
+      1.000000 0.021221 (K) ShowSymbol
+      1.000000 0.024040 (Q) ShowSymbol
+      1.000000 0.026244 (T) ShowSymbol
+      1.000000 0.027162 (S) ShowSymbol
+      1.000000 0.029592 (E) ShowSymbol
+   DepletedStack
+      1.000000 -0.000111 (W) ShowSymbol
+      1.000000 -0.000444 (C) ShowSymbol
+      1.000000 -0.002762 (I) ShowSymbol
+      1.000000 -0.003609 (P) ShowSymbol
+      1.000000 -0.003806 (D) ShowSymbol
+      1.000000 -0.004909 (M) ShowSymbol
+      1.000000 -0.006634 (F) ShowSymbol
+      1.000000 -0.008244 (V) ShowSymbol
+      1.000000 -0.014098 (G) ShowSymbol
+      1.000000 -0.017773 (L) ShowSymbol
+   EndStack
+   (8) StartStack
+      1.000000 0.134217 (A) ShowSymbol
+      1.000000 0.142287 (I) ShowSymbol
+      1.000000 0.469378 (L) ShowSymbol
+      1.000000 0.629794 (V) ShowSymbol
+   DepletedStack
+      1.000000 -0.000570 (W) ShowSymbol
+      1.000000 -0.001638 (C) ShowSymbol
+      1.000000 -0.001786 (D) ShowSymbol
+      1.000000 -0.004441 (P) ShowSymbol
+      1.000000 -0.004778 (Y) ShowSymbol
+      1.000000 -0.005203 (H) ShowSymbol
+      1.000000 -0.006061 (E) ShowSymbol
+      1.000000 -0.006343 (N) ShowSymbol
+      1.000000 -0.006891 (G) ShowSymbol
+      1.000000 -0.007297 (Q) ShowSymbol
+      1.000000 -0.008042 (F) ShowSymbol
+      1.000000 -0.010430 (S) ShowSymbol
+      1.000000 -0.012432 (R) ShowSymbol
+      1.000000 -0.013729 (T) ShowSymbol
+      1.000000 -0.015368 (K) ShowSymbol
+      1.000000 -0.034016 (M) ShowSymbol
+   EndStack
+ EndLine
+EndLogo
+
+%%EOF

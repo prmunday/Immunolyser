@@ -1,0 +1,32 @@
+HLA allele	Set		Peptide		Binder?	Prediction_score
+---------------------------------------------------------------------
+HLA-A*02:01
+          	------------------------------------------------
+          	input-sequences
+          	   		KLFGLSEGTPAGI		yes		0.979
+          	   		ALFPALRPGGFQA		yes		0.998
+          	   		KLFDDDDSGKISL		yes		0.999
+          	   		KLLDEDEIRGYKL		yes		0.999
+          	   		IIPPPPAPGDSTT		 		0.664
+          	   		VLLGESAVGKSSL		yes		0.999
+          	   		AMIDTEFAKQTSL		yes		0.99
+          	   		YLDPALELGPRNV		yes		0.982
+          	   		VLMPINASNALTL		yes		0.999
+          	   		KAHILACAPSNSG		 		0.018
+          	   		VLALAPGLPTARA		 		0.868
+          	   		FVFIGTGATGATL		yes		0.979
+          	   		VQDQAVVEQDDAL		 		0.656
+          	   		CLLSFGPPILVIV		 		0.843
+          	   		LPYPPEPGAASLY		 		0.469
+          	   		AAASIANIVKSSL		 		0.75
+          	   		HPAPLAPGAASAY		 		0.469
+          	   		QPYSGSPANLAVY		 		0.169
+          	   		VPYATKGNQWVGY		 		0.105
+          	   		LSQPKIVKWDRDM		 		0.018
+          	   		LTYDGALLGDRSL		 		0.734
+          	   		QQPFVNPALPPGY		 		0.018
+          	   		VPLEGYLVTPIQR		 		0.711
+          	   		YPYSSVEPGDLTF		 		0.687
+          	------------------------------------------------
+          	9 predicted binders out of 24 total input sequences from allele HLA-A*02:01 (at threshold of 100% specificity)
+

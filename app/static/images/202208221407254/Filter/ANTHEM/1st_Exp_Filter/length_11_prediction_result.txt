@@ -1,0 +1,864 @@
+HLA allele	Set		Peptide		Binder?	Prediction_score
+---------------------------------------------------------------------
+HLA-A*02:01
+          	------------------------------------------------
+          	input-sequences
+          	   		VMQDPEFLQSV		yes		0.999
+          	   		RLAEVGQYEQV		yes		0.999
+          	   		LLVDERSVAHV		yes		0.995
+          	   		GIFSDIHLLAM		yes		0.981
+          	   		GLLDLPFRVGV		yes		0.999
+          	   		FLDPDIGGVAV		yes		0.999
+          	   		FLMKNSDLYGA		yes		0.988
+          	   		FLLGPEGQHLL		yes		0.999
+          	   		IKIPQIELTNC		 		0.029
+          	   		VVVTAVLGRLG		 		0.048
+          	   		RIFGESIMIGV		yes		0.988
+          	   		RLQEGDKILSV		yes		0.999
+          	   		TVANVVGQKTA		 		0.706
+          	   		GLLGQEGLVEI		yes		0.999
+          	   		RLIDDEVRILI		yes		0.999
+          	   		HLFGQPNSAYD		 		0.439
+          	   		GPPKADPSQPP		 		0.005
+          	   		PFSAVQAFAVA		 		0.004
+          	   		HLAEAQKSSLV		yes		0.984
+          	   		SLDAAAGMLYL		yes		0.995
+          	   		IEIEIDLLQKV		yes		0.988
+          	   		VALGAGGAVLL		yes		0.92
+          	   		IAPVHLPWTDL		 		0.029
+          	   		GLDPLGYEIQL		yes		0.999
+          	   		LQSCQAEIIEL		 		0.706
+          	   		SLMDPNKFLLL		yes		0.999
+          	   		SLPRLQSLRVP		 		0.647
+          	   		KEGSARAWKQP		 		0.027
+          	   		LLLEQREIWLL		yes		0.995
+          	   		QVPVQAIQVHQ		 		0.027
+          	   		ILLEHGADPNL		yes		0.999
+          	   		ILLDHEKEWKL		yes		0.999
+          	   		RAFSPTPGQDT		 		0.274
+          	   		KLMDEVAGIVA		yes		0.999
+          	   		ALGTDAEGQKV		yes		0.988
+          	   		VLFEHAVGYAL		yes		0.999
+          	   		SLLHLGALYGI		yes		0.984
+          	   		YLHDQNPDAAL		yes		0.995
+          	   		RMQDLDEDATL		yes		0.993
+          	   		ILLDERGQIKL		yes		0.999
+          	   		GLLAGDRLVEV		yes		0.999
+          	   		SVIDHIHLISV		yes		0.999
+          	   		GLIPIHADPRL		yes		0.995
+          	   		ILDEMSHKLRL		yes		0.995
+          	   		YLPDIIKDQKA		yes		0.988
+          	   		ALLAGSEYLKL		yes		0.999
+          	   		LMWELEKKSAV		yes		0.984
+          	   		LLDPNVKSIFV		yes		0.999
+          	   		FMLQDVIDLRL		yes		0.993
+          	   		ILENPPEEMKL		yes		0.984
+          	   		KLFPKGTIFTA		yes		0.999
+          	   		KMLDAEDIVNT		yes		0.984
+          	   		GLLQINDKIAL		yes		0.999
+          	   		ALLGGNVRMML		yes		0.995
+          	   		FYQDTFGQQWK		 		0.217
+          	   		KIWDVSVNSVV		yes		0.995
+          	   		KLLDEIESLTL		yes		0.999
+          	   		RLYHEADKTYM		yes		0.971
+          	   		SLYGGNAVVEL		yes		0.999
+          	   		ALIEAEKVAQV		yes		0.999
+          	   		SMAPGLVIQAV		yes		0.988
+          	   		YLLPKDQGITL		yes		0.999
+          	   		VLVEDSNNHHL		yes		0.999
+          	   		RLLDVDNRVVL		yes		0.999
+          	   		KIFEMGPVFTL		yes		0.993
+          	   		YAYDGKDYIAL		yes		0.986
+          	   		VLFSSPPVILL		yes		0.999
+          	   		LLIDDKGTIKL		yes		0.999
+          	   		RQISIRGIVGV		yes		0.935
+          	   		FLGDDVFLREL		yes		0.999
+          	   		FLWQEGHSAFA		yes		0.988
+          	   		SLLESNKDLLL		yes		0.999
+          	   		VHHGEEEVETF		 		0.029
+          	   		KLFPGFEIETV		yes		0.999
+          	   		KLLDFGSLSNL		yes		0.999
+          	   		YLEELPEKLKL		yes		0.999
+          	   		RLIGDAAKNQV		yes		0.999
+          	   		VLLEEGEAQRL		yes		0.999
+          	   		KMLDAEDIVGT		yes		0.984
+          	   		RQDSTPGKVFL		yes		0.935
+          	   		KMLSGVGGFVL		yes		0.993
+          	   		LLYDLADQLHA		yes		0.988
+          	   		VMAAASIANIV		 		0.877
+          	   		KIIGINGDFFA		yes		0.978
+          	   		KVLEPSETLVV		yes		0.995
+          	   		GLAEQSVLAAL		yes		0.999
+          	   		KIGDFGLVTSL		yes		0.989
+          	   		ALFDEQHREEM		yes		0.984
+          	   		SMAEVDAAMAA		yes		0.988
+          	   		IILEEGKEILV		yes		0.999
+          	   		YLFDVQRNNIA		yes		0.989
+          	   		PVPPLPEYGGK		 		0.006
+          	   		ILLPEPSIRSV		yes		0.999
+          	   		GLADNTVIAKV		yes		0.999
+          	   		LLLAAARLAAA		 		0.898
+          	   		KLGEFAKVLEL		yes		0.999
+          	   		ALGFYPAEITL		yes		0.984
+          	   		PVKAAQFEPPG		 		0.004
+          	   		RLMNETTAVAL		yes		0.999
+          	   		QQLDSKFLEQV		yes		0.92
+          	   		SLFIGEKAVLL		yes		0.995
+          	   		VLFENTDSVHL		yes		0.999
+          	   		ALFEAAREVTL		yes		0.999
+          	   		SLNQQGAHSAL		 		0.898
+          	   		ILGPPPPSFHL		yes		0.991
+          	   		KLMDYSLLVGI		yes		0.999
+          	   		GLLDPGMLVNI		yes		0.999
+          	   		ALWHVPEHAVV		yes		0.999
+          	   		FLFDGSPTYVL		yes		0.999
+          	   		HLFEDAYLLTL		yes		0.999
+          	   		ALLEQTGDMSL		yes		0.999
+          	   		SLLDIIEKVMA		yes		0.999
+          	   		TLIDLPGITKV		yes		0.999
+          	   		QHLDPPAPLPL		 		0.731
+          	   		ILLDEEGHIKL		yes		0.999
+          	   		QMLEAIKALEV		yes		0.989
+          	   		TLFGNNKLTTF		yes		0.986
+          	   		ALFPHLLQPVL		yes		0.995
+          	   		KLADDVDLEQV		yes		0.999
+          	   		SIQQSIERLLV		 		0.891
+          	   		KLLDLKKQLAV		yes		0.999
+          	   		LLAILPEAARA		 		0.857
+          	   		KLLDSSTVTHL		yes		0.999
+          	   		ALLEADVNIKL		yes		0.999
+          	   		KMMDPRVLHHM		yes		0.988
+          	   		NLASFIEQVAV		yes		0.988
+          	   		IQRTPKIQVYS		 		0.027
+          	   		QPKIVKWDRDM		 		0.004
+          	   		ALILEPSLYTV		yes		0.999
+          	   		FLASESLIKQI		yes		0.988
+          	   		RLWDLTTGTTT		yes		0.984
+          	   		ILMEHIHKLKA		yes		0.999
+          	   		FMIDASVHPTL		yes		0.999
+          	   		GLLERVKELQA		yes		0.991
+          	   		FVHDLVLYLYR		 		0.838
+          	   		KLYGPEGLELV		yes		0.999
+          	   		RLPEVEVPQHL		yes		0.991
+          	   		VLMNQPPQIAP		 		0.857
+          	   		VLLPDERTISL		yes		0.999
+          	   		FLIAQLPKLQY		yes		0.986
+          	   		RILDIDIPMSV		yes		0.995
+          	   		GLSEAAAQSRL		yes		0.991
+          	   		GLVDEKALAQA		yes		0.995
+          	   		KLLDLSDSTSV		yes		0.999
+          	   		VMFEDGVLMRL		yes		0.999
+          	   		RLPPPFPGLEP		 		0.724
+          	   		YQFDKVGILTL		yes		0.999
+          	   		VLLFEADTITL		yes		0.999
+          	   		RVMEEIRNLTV		yes		0.995
+          	   		KMDDPDYWRTV		yes		0.984
+          	   		RMLEDRDLFVM		yes		0.984
+          	   		RIAGIRGIQGV		yes		0.981
+          	   		GLTSTDLLFHL		yes		0.987
+          	   		FLVPIESIERA		yes		0.988
+          	   		KIMTEKELLAV		yes		0.993
+          	   		VLMEDRLTNRL		yes		0.995
+          	   		NLLDLNQKLQL		yes		0.995
+          	   		SLFQGVEFHYV		yes		0.999
+          	   		VLFDVTGQVRL		yes		0.999
+          	   		SLAGDVALQQL		yes		0.999
+          	   		FLTDSNNIKEV		yes		0.995
+          	   		RLLDKLVGEFL		yes		0.999
+          	   		TLIRSDAVALV		yes		0.981
+          	   		YVIDPIKGLKL		yes		0.999
+          	   		FLLDPVKGERL		yes		0.999
+          	   		SLLGDDALVQV		yes		0.999
+          	   		NMLDVNGLFTL		yes		0.999
+          	   		GLFTLSHITQL		yes		0.995
+          	   		SLLPPDALVGL		yes		0.999
+          	   		KEQKVQEIFMQ		 		0.027
+          	   		IVLPAGALHQV		yes		0.993
+          	   		QLIDENQLYLI		yes		0.988
+          	   		GMYGKIAVMEL		yes		0.988
+          	   		RVDPNGSRYLL		yes		0.935
+          	   		ALMEQVAHQTI		yes		0.999
+          	   		QLRPEHFQEVG		 		0.066
+          	   		ALNEEAGRLLL		yes		0.999
+          	   		LLPGELAKHAV		yes		0.984
+          	   		FAIDPHLLLSV		yes		0.993
+          	   		RILSDVTHSAV		yes		0.966
+          	   		KLLNGSQRVVM		yes		0.989
+          	   		SLLEKELLFFA		yes		0.999
+          	   		GLLGAGGTVSV		yes		0.999
+          	   		KLITKAEKIRL		yes		0.984
+          	   		ILAELPEDFKA		yes		0.999
+          	   		ILDDTAKNLRV		yes		0.999
+          	   		GLWGPEEEPHL		yes		0.999
+          	   		KLIDETQDMLL		yes		0.999
+          	   		LLLGRLTGVAG		 		0.731
+          	   		LLVDDSFLHTV		yes		0.999
+          	   		KMADEDALRKI		yes		0.995
+          	   		KLFDRPQELKL		yes		0.999
+          	   		VLLSDSNLHDA		yes		0.984
+          	   		ALQEASEAYLV		yes		0.999
+          	   		KLLDTMVDTFL		yes		0.999
+          	   		RLLEEGVLRQI		yes		0.999
+          	   		MQAPRAALVFA		 		0.828
+          	   		FLIGAGIAAYL		yes		0.999
+          	   		FAVTFLLALVG		 		0.104
+          	   		RLMDDTSIAAA		yes		0.999
+          	   		VLLDHIQSAAL		yes		0.999
+          	   		FLLNQADEVKL		yes		0.999
+          	   		HLYSSIEHLTT		yes		0.963
+          	   		FLWEYGDLHLF		yes		0.999
+          	   		SLLESSRSQEL		yes		0.995
+          	   		RLPVPESITGF		 		0.731
+          	   		IMGGNSILHSA		yes		0.981
+          	   		LLFEHSDIVVI		yes		0.999
+          	   		VLGGKAFLEHL		yes		0.991
+          	   		YDRVAKVVAPK		 		0.004
+          	   		KLLETELLQEI		yes		0.999
+          	   		KVLDVSDLESV		yes		0.999
+          	   		ILLNPAYDVYL		yes		0.999
+          	   		FGANQTIIVAV		 		0.891
+          	   		RLYEAYLPETF		 		0.748
+          	   		SMMPPPVGMVA		yes		0.988
+          	   		FLAHDQAVRTL		yes		0.991
+          	   		RLFHDSAVTSV		yes		0.999
+          	   		FMLPDPQNISL		yes		0.999
+          	   		FLLEQEKTQAL		yes		0.999
+          	   		ALGEEALLRYV		yes		0.995
+          	   		RQLEEEGITFV		yes		0.995
+          	   		RLMNDMTAVAL		yes		0.988
+          	   		ILINDAGEVRL		yes		0.999
+          	   		ALLEENSTPQL		yes		0.999
+          	   		KLLDLDDKLLM		yes		0.999
+          	   		KLFDLDEKLML		yes		0.999
+          	   		LFDQDKSSMRL		 		0.274
+          	   		IQDELGGKITV		yes		0.993
+          	   		RLAELSDYRRL		yes		0.991
+          	   		LLQYLENLEKL		yes		0.942
+          	   		NLPKQPPLALA		 		0.733
+          	   		ILDAGGHNVTI		yes		0.993
+          	   		KLGDFGLLVEL		yes		0.999
+          	   		SLYDNILLHNA		yes		0.999
+          	   		TLLAAEFLKQV		yes		0.991
+          	   		ALLAENSELKL		yes		0.999
+          	   		KMFDLNGDGEV		yes		0.999
+          	   		ALLNGEYLLAA		yes		0.995
+          	   		GVAESIHLWEV		yes		0.993
+          	   		LTAPPEALLMV		yes		0.986
+          	   		KLFNESHGIFL		yes		0.999
+          	   		EGNTGTVPQPT		 		0.004
+          	   		MLIEEGGLQHL		yes		0.999
+          	   		ALADLQEAVKL		yes		0.999
+          	   		RLFDEPQLASL		yes		0.999
+          	   		ILLTEPGQVKL		yes		0.999
+          	   		KLLDISELDMV		yes		0.999
+          	   		ALIEVPDGFTA		yes		0.999
+          	   		TLADYLHLLQA		yes		0.995
+          	   		RLGEAEGLMKV		yes		0.999
+          	   		SLVAIAGLMEV		yes		0.999
+          	   		VLYEDSLSSQV		yes		0.999
+          	   		KLLDDEQPLRL		yes		0.999
+          	   		FLYPAAQLQHL		yes		0.999
+          	   		SLADDSVLERL		yes		0.999
+          	   		ALFARPDLLLL		yes		0.995
+          	   		YQFGEIRTITV		yes		0.988
+          	   		FLPDPSALQNL		yes		0.999
+          	   		ILLNNSGQIKL		yes		0.999
+          	   		GLIEDHFDVTV		yes		0.999
+          	   		GQSELASRLTL		 		0.857
+          	   		GLADASLLKKV		yes		0.999
+          	   		SLLKEPQKVQL		yes		0.995
+          	   		RLQETEGMVAV		yes		0.999
+          	   		ALADFAELLRA		yes		0.999
+          	   		TLLDPNEKYLL		yes		0.999
+          	   		FLLDPYKYMTL		yes		0.999
+          	   		ALDPLADKILI		yes		0.988
+          	   		SLMDLQDTHAA		yes		0.988
+          	   		SVAEGRALMSV		yes		0.993
+          	   		GLLESRLDPYL		yes		0.995
+          	   		YIFPLDDKAAV		yes		0.988
+          	   		SMMPDELLTSL		yes		0.999
+          	   		GLLYPTEDYKV		yes		0.995
+          	   		ILLSEPGLVKL		yes		0.999
+          	   		GILTKELLHSV		yes		0.989
+          	   		SMADIPLGFGV		yes		0.999
+          	   		FLDESRSTQYM		yes		0.984
+          	   		GLDAGLHQLHV		yes		0.995
+          	   		WLIEDGKVVTV		yes		0.999
+          	   		YLISQVEGHQV		yes		0.999
+          	   		RLWDHATMTEV		yes		0.999
+          	   		ALDGAAGTVYL		yes		0.999
+          	   		GLDNAVSLFQV		yes		0.999
+          	   		TLIDLPGHESL		yes		0.999
+          	   		VLLDVNGHIRL		yes		0.999
+          	   		ILLDDQFQPKL		yes		0.999
+          	   		LLLLDTVTMQV		yes		0.988
+          	   		AALEEADKMFL		yes		0.986
+          	   		VPYANAKGIGY		 		0.534
+          	   		FPHHLQEYIEY		 		0.363
+          	   		STSDAQSEAAS		 		0.474
+          	   		SGIGNLFVLPS		 		0.048
+          	   		LPLSSSHLNVY		 		0.496
+          	   		SPSILGRGSAF		 		0.029
+          	   		YIMEPSIFNTL		yes		0.993
+          	   		IPRNSDISQSY		 		0.027
+          	   		EEDASAVLQAI		 		0.548
+          	   		YPYVASTVPQY		 		0.363
+          	   		ILAIPACCLNA		 		0.374
+          	   		IPGVDAYSALA		 		0.048
+          	   		GGMGIIYGSPM		 		0.533
+          	   		FPFGYVSNIHY		 		0.434
+          	   		GAAPELPPAQP		 		0.514
+          	   		FPNELSLQQAF		 		0.179
+          	   		QVSGGNKLGEY		 		0.179
+          	   		GQEHAPAAPPM		 		0.363
+          	   		TPYVHNLSDLV		 		0.366
+          	   		LAGQSGQLCTY		 		0.029
+          	   		PGNDLQAEVSY		 		0.029
+          	   		PRAELPPGISP		 		0.006
+          	   		TPSVNKLPEAQ		 		0.004
+          	   		PGLGPREKVSS		 		0.006
+          	   		KVTNIEGLLHK		 		0.795
+          	   		TPGPSTCLPNY		 		0.029
+          	   		KTGTSGNGTQY		 		0.446
+          	   		LPFPPGDRVTF		 		0.712
+          	   		AVGNSPTATTR		 		0.653
+          	   		AALAAAPANPP		 		0.029
+          	   		YVRRDSGFSSQ		 		0.029
+          	   		PLLNQSISVTY		 		0.731
+          	   		KQFLELPGPTY		 		0.706
+          	   		MVTTAQGASNA		 		0.215
+          	   		KSEQKQFQAEY		 		0.027
+          	   		DSNSLHQGLGL		 		0.052
+          	   		DPYGGHRDVAY		 		0.029
+          	   		YAYDGKDYLAL		yes		0.963
+          	   		PNNIFGNRNLL		 		0.006
+          	   		YAKSSVGETVY		 		0.27
+          	   		DMLLERGVSAF		 		0.048
+          	   		PVKFIVLATAL		 		0.048
+          	   		EYPFRVGELEY		 		0.029
+          	   		MPAAQEGAVAF		 		0.217
+          	   		LPFPDETHERY		 		0.529
+          	   		MPYPVPQGPQY		 		0.52
+          	   		HPYPPGPGVAL		 		0.865
+          	   		VTAVEEAPVNA		 		0.706
+          	   		FPFLSGDNQHY		 		0.52
+          	   		APYQPSAQSSY		 		0.27
+          	   		YPFGTGGSAMY		 		0.437
+          	   		YPYNYPKPIEY		 		0.52
+          	   		FPFNPLDFESF		 		0.644
+          	   		APIWDKLGETY		 		0.363
+          	   		VAIDAGHESFL		 		0.828
+          	   		LAEFQSIPRVF		 		0.004
+          	   		LPPNDHVNSNN		 		0.004
+          	   		FAYDGKDYLTL		yes		0.986
+          	   		FPIHNLPYGVF		 		0.029
+          	   		FPYALRAYLGY		 		0.274
+          	   		SAQGSDVSLTA		 		0.653
+          	   		PKFEVIEKPQA		 		0.029
+          	   		FYNQVSTPLLR		 		0.139
+          	   		YPFFHDPPSVF		 		0.363
+          	   		LPNPVIPAAVY		 		0.27
+          	   		SAYDGKDYIAL		 		0.891
+          	   		YPMSYGQGGSY		 		0.52
+          	   		MPIRIENPNQF		 		0.027
+          	   		MPVAAREASIY		 		0.027
+          	   		YPLDPTTEHIY		 		0.53
+          	   		AAAPPSPPFSF		 		0.638
+          	   		RAAPLDSIHSL		 		0.891
+          	   		MPRTAALGVSF		 		0.004
+          	   		LPYKATENDIY		 		0.027
+          	   		LPYRATENDIY		 		0.027
+          	   		GIHETTFNSIM		 		0.36
+          	   		AAFDGRHSQTL		 		0.838
+          	   		LPIFPQLGAQY		 		0.029
+          	   		DAVEDLESVGK		 		0.029
+          	   		FAYTGRTAQEL		 		0.638
+          	   		GPGQQLMQAAM		 		0.027
+          	   		FAVESEHDQAM		 		0.687
+          	   		APRPEHTKSVY		 		0.029
+          	   		YPGPASLTQIY		 		0.366
+          	   		FSSSPGPVGMP		 		0.029
+          	   		DLRRERDSASF		 		0.008
+          	   		ILHLERHDSVF		 		0.36
+          	   		MLPSEAGFAEY		 		0.857
+          	   		NAFEHGGEFTY		 		0.6
+          	   		HTIFASNTSSL		 		0.654
+          	   		FPRPTLPNVVY		 		0.366
+          	   		GGDLREERVSF		 		0.029
+          	   		MPRAQPSSASY		 		0.027
+          	   		VPYYNRGLILY		 		0.366
+          	   		FPYYPSPGVLF		 		0.366
+          	   		TVKDDLSFAGY		 		0.653
+          	   		HPKPYHHDLPY		 		0.029
+          	   		FPYARDDLSLY		 		0.479
+          	   		DVREEGKENAF		 		0.029
+          	   		ANQCLSQADAF		 		0.004
+          	   		ATTKHSGFPVR		 		0.029
+          	   		YPLSPTKISQY		 		0.653
+          	   		PFKSPIRDISY		 		0.004
+          	   		YPFQPLSSGLY		 		0.274
+          	   		FPAEFAMYLNY		 		0.601
+          	   		YPFDQNRFVQY		 		0.373
+          	   		FIFREGDGVYY		yes		0.981
+          	   		PGGSYGPPGPQ		 		0.004
+          	   		FAVPIESDKTL		 		0.838
+          	   		FAHFPGLASEL		 		0.638
+          	   		IPYPLEKGHLF		 		0.427
+          	   		APYGNPKNMAY		 		0.52
+          	   		RPIAAGDISTF		 		0.27
+          	   		LALDASQHSSL		 		0.794
+          	   		FPHLPGKTFVY		 		0.366
+          	   		TATGPPVASVA		 		0.548
+          	   		LPKDTSPGSAY		 		0.048
+          	   		FPKSEGQYSGF		 		0.029
+          	   		AAYYPSDVSSL		 		0.638
+          	   		LPRREPTVSSF		 		0.005
+          	   		IPYSSSSPGTY		 		0.217
+          	   		MPKSEVASSVF		 		0.027
+          	   		YPYPYPHTLYL		yes		0.92
+          	   		IPIDGTELSHY		 		0.706
+          	   		FPFIGLGKVFF		 		0.416
+          	   		FPLSPTKLSQY		 		0.639
+          	   		VVTATTGSKQN		 		0.027
+          	   		FIATPGSSSSL		yes		0.971
+          	   		DSCNNSISLLS		 		0.004
+          	   		MPKSDVNKEYY		 		0.027
+          	   		MAFPHLQQPSF		 		0.366
+          	   		HTIFPSNGSSL		 		0.706
+          	   		PTPSLTGSCPQ		 		0.004
+          	   		FPIIRDQIFRY		 		0.363
+          	   		MPKGTEFGIDY		 		0.029
+          	------------------------------------------------
+          	256 predicted binders out of 425 total input sequences from allele HLA-A*02:01 (at threshold of 100% specificity)
+
+HLA-C*03:03
+          	------------------------------------------------
+          	input-sequences
+          	   		VMQDPEFLQSV		 		0.675
+          	   		RLAEVGQYEQV		 		0.05
+          	   		LLVDERSVAHV		 		0.675
+          	   		GIFSDIHLLAM		 		0.675
+          	   		GLLDLPFRVGV		 		0.092
+          	   		FLDPDIGGVAV		 		0.86
+          	   		FLMKNSDLYGA		 		0.675
+          	   		FLLGPEGQHLL		yes		0.998
+          	   		IKIPQIELTNC		 		0.019
+          	   		VVVTAVLGRLG		 		0.701
+          	   		RIFGESIMIGV		 		0.675
+          	   		RLQEGDKILSV		 		0.675
+          	   		TVANVVGQKTA		 		0.019
+          	   		GLLGQEGLVEI		 		0.675
+          	   		RLIDDEVRILI		 		0.473
+          	   		HLFGQPNSAYD		 		0.05
+          	   		GPPKADPSQPP		 		0.092
+          	   		PFSAVQAFAVA		 		0.019
+          	   		HLAEAQKSSLV		 		0.092
+          	   		SLDAAAGMLYL		yes		0.94
+          	   		IEIEIDLLQKV		 		0.092
+          	   		VALGAGGAVLL		yes		0.998
+          	   		IAPVHLPWTDL		 		0.318
+          	   		GLDPLGYEIQL		 		0.818
+          	   		LQSCQAEIIEL		 		0.609
+          	   		SLMDPNKFLLL		yes		0.951
+          	   		SLPRLQSLRVP		 		0.019
+          	   		KEGSARAWKQP		 		0.019
+          	   		LLLEQREIWLL		 		0.627
+          	   		QVPVQAIQVHQ		 		0.019
+          	   		ILLEHGADPNL		 		0.795
+          	   		ILLDHEKEWKL		 		0.693
+          	   		RAFSPTPGQDT		 		0.857
+          	   		KLMDEVAGIVA		 		0.701
+          	   		ALGTDAEGQKV		 		0.05
+          	   		VLFEHAVGYAL		yes		0.938
+          	   		SLLHLGALYGI		 		0.092
+          	   		YLHDQNPDAAL		yes		0.998
+          	   		RMQDLDEDATL		 		0.755
+          	   		ILLDERGQIKL		yes		0.917
+          	   		GLLAGDRLVEV		 		0.675
+          	   		SVIDHIHLISV		 		0.555
+          	   		GLIPIHADPRL		 		0.102
+          	   		ILDEMSHKLRL		 		0.609
+          	   		YLPDIIKDQKA		 		0.06
+          	   		ALLAGSEYLKL		yes		0.917
+          	   		LMWELEKKSAV		 		0.092
+          	   		LLDPNVKSIFV		 		0.05
+          	   		FMLQDVIDLRL		yes		0.955
+          	   		ILENPPEEMKL		 		0.06
+          	   		KLFPKGTIFTA		 		0.701
+          	   		KMLDAEDIVNT		 		0.701
+          	   		GLLQINDKIAL		 		0.794
+          	   		ALLGGNVRMML		 		0.766
+          	   		FYQDTFGQQWK		 		0.129
+          	   		KIWDVSVNSVV		 		0.675
+          	   		KLLDEIESLTL		yes		0.917
+          	   		RLYHEADKTYM		 		0.05
+          	   		SLYGGNAVVEL		yes		0.954
+          	   		ALIEAEKVAQV		 		0.609
+          	   		SMAPGLVIQAV		 		0.701
+          	   		YLLPKDQGITL		yes		0.998
+          	   		VLVEDSNNHHL		 		0.609
+          	   		RLLDVDNRVVL		yes		0.917
+          	   		KIFEMGPVFTL		yes		0.94
+          	   		YAYDGKDYIAL		yes		0.998
+          	   		VLFSSPPVILL		yes		0.94
+          	   		LLIDDKGTIKL		yes		0.917
+          	   		RQISIRGIVGV		 		0.019
+          	   		FLGDDVFLREL		yes		0.998
+          	   		FLWQEGHSAFA		 		0.609
+          	   		SLLESNKDLLL		yes		0.938
+          	   		VHHGEEEVETF		 		0.522
+          	   		KLFPGFEIETV		 		0.602
+          	   		KLLDFGSLSNL		yes		0.914
+          	   		YLEELPEKLKL		 		0.71
+          	   		RLIGDAAKNQV		 		0.092
+          	   		VLLEEGEAQRL		 		0.851
+          	   		KMLDAEDIVGT		 		0.701
+          	   		RQDSTPGKVFL		 		0.397
+          	   		KMLSGVGGFVL		 		0.847
+          	   		LLYDLADQLHA		 		0.791
+          	   		VMAAASIANIV		 		0.381
+          	   		KIIGINGDFFA		 		0.489
+          	   		KVLEPSETLVV		 		0.701
+          	   		GLAEQSVLAAL		 		0.851
+          	   		KIGDFGLVTSL		yes		0.914
+          	   		ALFDEQHREEM		 		0.609
+          	   		SMAEVDAAMAA		 		0.675
+          	   		IILEEGKEILV		 		0.675
+          	   		YLFDVQRNNIA		 		0.71
+          	   		PVPPLPEYGGK		 		0.039
+          	   		ILLPEPSIRSV		 		0.675
+          	   		GLADNTVIAKV		 		0.05
+          	   		LLLAAARLAAA		 		0.794
+          	   		KLGEFAKVLEL		 		0.693
+          	   		ALGFYPAEITL		 		0.609
+          	   		PVKAAQFEPPG		 		0.019
+          	   		RLMNETTAVAL		 		0.693
+          	   		QQLDSKFLEQV		 		0.119
+          	   		SLFIGEKAVLL		yes		0.94
+          	   		VLFENTDSVHL		 		0.791
+          	   		ALFEAAREVTL		 		0.903
+          	   		SLNQQGAHSAL		yes		0.914
+          	   		ILGPPPPSFHL		yes		0.93
+          	   		KLMDYSLLVGI		 		0.119
+          	   		GLLDPGMLVNI		 		0.791
+          	   		ALWHVPEHAVV		 		0.05
+          	   		FLFDGSPTYVL		yes		0.998
+          	   		HLFEDAYLLTL		 		0.693
+          	   		ALLEQTGDMSL		 		0.797
+          	   		SLLDIIEKVMA		 		0.05
+          	   		TLIDLPGITKV		 		0.092
+          	   		QHLDPPAPLPL		yes		0.997
+          	   		ILLDEEGHIKL		yes		0.917
+          	   		QMLEAIKALEV		 		0.675
+          	   		TLFGNNKLTTF		 		0.609
+          	   		ALFPHLLQPVL		 		0.849
+          	   		KLADDVDLEQV		 		0.092
+          	   		SIQQSIERLLV		 		0.243
+          	   		KLLDLKKQLAV		 		0.791
+          	   		LLAILPEAARA		 		0.05
+          	   		KLLDSSTVTHL		yes		0.917
+          	   		ALLEADVNIKL		 		0.851
+          	   		KMMDPRVLHHM		 		0.102
+          	   		NLASFIEQVAV		 		0.05
+          	   		IQRTPKIQVYS		 		0.019
+          	   		QPKIVKWDRDM		 		0.019
+          	   		ALILEPSLYTV		 		0.019
+          	   		FLASESLIKQI		 		0.675
+          	   		RLWDLTTGTTT		 		0.102
+          	   		ILMEHIHKLKA		 		0.05
+          	   		FMIDASVHPTL		yes		0.998
+          	   		GLLERVKELQA		 		0.609
+          	   		FVHDLVLYLYR		 		0.843
+          	   		KLYGPEGLELV		 		0.791
+          	   		RLPEVEVPQHL		 		0.609
+          	   		VLMNQPPQIAP		 		0.05
+          	   		VLLPDERTISL		yes		0.914
+          	   		FLIAQLPKLQY		 		0.675
+          	   		RILDIDIPMSV		 		0.701
+          	   		GLSEAAAQSRL		 		0.795
+          	   		GLVDEKALAQA		 		0.701
+          	   		KLLDLSDSTSV		 		0.791
+          	   		VMFEDGVLMRL		 		0.675
+          	   		RLPPPFPGLEP		 		0.791
+          	   		YQFDKVGILTL		yes		0.951
+          	   		VLLFEADTITL		 		0.795
+          	   		RVMEEIRNLTV		 		0.05
+          	   		KMDDPDYWRTV		 		0.102
+          	   		RMLEDRDLFVM		 		0.285
+          	   		RIAGIRGIQGV		 		0.05
+          	   		GLTSTDLLFHL		 		0.675
+          	   		FLVPIESIERA		 		0.675
+          	   		KIMTEKELLAV		 		0.609
+          	   		VLMEDRLTNRL		 		0.609
+          	   		NLLDLNQKLQL		yes		0.917
+          	   		SLFQGVEFHYV		 		0.05
+          	   		VLFDVTGQVRL		yes		0.938
+          	   		SLAGDVALQQL		 		0.693
+          	   		FLTDSNNIKEV		 		0.609
+          	   		RLLDKLVGEFL		yes		0.917
+          	   		TLIRSDAVALV		 		0.675
+          	   		YVIDPIKGLKL		yes		0.998
+          	   		FLLDPVKGERL		yes		0.998
+          	   		SLLGDDALVQV		 		0.675
+          	   		NMLDVNGLFTL		 		0.847
+          	   		GLFTLSHITQL		 		0.675
+          	   		SLLPPDALVGL		yes		0.954
+          	   		KEQKVQEIFMQ		 		0.019
+          	   		IVLPAGALHQV		 		0.791
+          	   		QLIDENQLYLI		 		0.092
+          	   		GMYGKIAVMEL		 		0.701
+          	   		RVDPNGSRYLL		 		0.794
+          	   		ALMEQVAHQTI		 		0.05
+          	   		QLRPEHFQEVG		 		0.05
+          	   		ALNEEAGRLLL		 		0.797
+          	   		LLPGELAKHAV		 		0.05
+          	   		FAIDPHLLLSV		yes		0.998
+          	   		RILSDVTHSAV		 		0.701
+          	   		KLLNGSQRVVM		 		0.675
+          	   		SLLEKELLFFA		 		0.609
+          	   		GLLGAGGTVSV		 		0.791
+          	   		KLITKAEKIRL		 		0.397
+          	   		ILAELPEDFKA		 		0.05
+          	   		ILDDTAKNLRV		 		0.092
+          	   		GLWGPEEEPHL		 		0.399
+          	   		KLIDETQDMLL		 		0.755
+          	   		LLLGRLTGVAG		 		0.791
+          	   		LLVDDSFLHTV		 		0.092
+          	   		KMADEDALRKI		 		0.092
+          	   		KLFDRPQELKL		yes		0.917
+          	   		VLLSDSNLHDA		 		0.05
+          	   		ALQEASEAYLV		 		0.05
+          	   		KLLDTMVDTFL		 		0.693
+          	   		RLLEEGVLRQI		 		0.609
+          	   		MQAPRAALVFA		 		0.092
+          	   		FLIGAGIAAYL		yes		0.998
+          	   		FAVTFLLALVG		 		0.794
+          	   		RLMDDTSIAAA		 		0.675
+          	   		VLLDHIQSAAL		yes		0.938
+          	   		FLLNQADEVKL		yes		0.955
+          	   		HLYSSIEHLTT		 		0.05
+          	   		FLWEYGDLHLF		 		0.788
+          	   		SLLESSRSQEL		yes		0.917
+          	   		RLPVPESITGF		 		0.06
+          	   		IMGGNSILHSA		 		0.092
+          	   		LLFEHSDIVVI		 		0.675
+          	   		VLGGKAFLEHL		 		0.627
+          	   		YDRVAKVVAPK		 		0.092
+          	   		KLLETELLQEI		 		0.675
+          	   		KVLDVSDLESV		 		0.791
+          	   		ILLNPAYDVYL		 		0.766
+          	   		FGANQTIIVAV		 		0.444
+          	   		RLYEAYLPETF		 		0.776
+          	   		SMMPPPVGMVA		 		0.675
+          	   		FLAHDQAVRTL		 		0.793
+          	   		RLFHDSAVTSV		 		0.119
+          	   		FMLPDPQNISL		yes		0.998
+          	   		FLLEQEKTQAL		yes		0.998
+          	   		ALGEEALLRYV		 		0.05
+          	   		RQLEEEGITFV		 		0.024
+          	   		RLMNDMTAVAL		 		0.609
+          	   		ILINDAGEVRL		 		0.675
+          	   		ALLEENSTPQL		 		0.693
+          	   		KLLDLDDKLLM		 		0.791
+          	   		KLFDLDEKLML		yes		0.917
+          	   		LFDQDKSSMRL		 		0.06
+          	   		IQDELGGKITV		 		0.092
+          	   		RLAELSDYRRL		 		0.693
+          	   		LLQYLENLEKL		 		0.06
+          	   		NLPKQPPLALA		 		0.243
+          	   		ILDAGGHNVTI		 		0.555
+          	   		KLGDFGLLVEL		yes		0.917
+          	   		SLYDNILLHNA		 		0.675
+          	   		TLLAAEFLKQV		 		0.05
+          	   		ALLAENSELKL		 		0.795
+          	   		KMFDLNGDGEV		 		0.794
+          	   		ALLNGEYLLAA		 		0.675
+          	   		GVAESIHLWEV		 		0.019
+          	   		LTAPPEALLMV		 		0.794
+          	   		KLFNESHGIFL		 		0.794
+          	   		EGNTGTVPQPT		 		0.019
+          	   		MLIEEGGLQHL		 		0.794
+          	   		ALADLQEAVKL		 		0.627
+          	   		RLFDEPQLASL		yes		0.938
+          	   		ILLTEPGQVKL		 		0.675
+          	   		KLLDISELDMV		 		0.092
+          	   		ALIEVPDGFTA		 		0.675
+          	   		TLADYLHLLQA		 		0.522
+          	   		RLGEAEGLMKV		 		0.05
+          	   		SLVAIAGLMEV		 		0.092
+          	   		VLYEDSLSSQV		 		0.791
+          	   		KLLDDEQPLRL		yes		0.917
+          	   		FLYPAAQLQHL		yes		0.998
+          	   		SLADDSVLERL		 		0.792
+          	   		ALFARPDLLLL		 		0.851
+          	   		YQFGEIRTITV		 		0.555
+          	   		FLPDPSALQNL		yes		0.998
+          	   		ILLNNSGQIKL		 		0.701
+          	   		GLIEDHFDVTV		 		0.05
+          	   		GQSELASRLTL		 		0.675
+          	   		GLADASLLKKV		 		0.119
+          	   		SLLKEPQKVQL		 		0.693
+          	   		RLQETEGMVAV		 		0.332
+          	   		ALADFAELLRA		 		0.092
+          	   		TLLDPNEKYLL		yes		0.914
+          	   		FLLDPYKYMTL		yes		0.998
+          	   		ALDPLADKILI		 		0.675
+          	   		SLMDLQDTHAA		 		0.609
+          	   		SVAEGRALMSV		 		0.609
+          	   		GLLESRLDPYL		 		0.797
+          	   		YIFPLDDKAAV		 		0.843
+          	   		SMMPDELLTSL		 		0.766
+          	   		GLLYPTEDYKV		 		0.05
+          	   		ILLSEPGLVKL		 		0.704
+          	   		GILTKELLHSV		 		0.092
+          	   		SMADIPLGFGV		 		0.129
+          	   		FLDESRSTQYM		 		0.776
+          	   		GLDAGLHQLHV		 		0.05
+          	   		WLIEDGKVVTV		 		0.092
+          	   		YLISQVEGHQV		 		0.259
+          	   		RLWDHATMTEV		 		0.05
+          	   		ALDGAAGTVYL		yes		0.94
+          	   		GLDNAVSLFQV		 		0.05
+          	   		TLIDLPGHESL		yes		0.917
+          	   		VLLDVNGHIRL		yes		0.938
+          	   		ILLDDQFQPKL		 		0.151
+          	   		LLLLDTVTMQV		 		0.019
+          	   		AALEEADKMFL		yes		0.955
+          	   		VPYANAKGIGY		 		0.675
+          	   		FPHHLQEYIEY		 		0.06
+          	   		STSDAQSEAAS		 		0.701
+          	   		SGIGNLFVLPS		 		0.285
+          	   		LPLSSSHLNVY		 		0.285
+          	   		SPSILGRGSAF		 		0.791
+          	   		YIMEPSIFNTL		yes		0.955
+          	   		IPRNSDISQSY		 		0.019
+          	   		EEDASAVLQAI		 		0.119
+          	   		YPYVASTVPQY		 		0.675
+          	   		ILAIPACCLNA		 		0.05
+          	   		IPGVDAYSALA		 		0.05
+          	   		GGMGIIYGSPM		 		0.102
+          	   		FPFGYVSNIHY		 		0.776
+          	   		GAAPELPPAQP		 		0.794
+          	   		FPNELSLQQAF		 		0.843
+          	   		QVSGGNKLGEY		 		0.397
+          	   		GQEHAPAAPPM		 		0.019
+          	   		TPYVHNLSDLV		 		0.019
+          	   		LAGQSGQLCTY		 		0.102
+          	   		PGNDLQAEVSY		 		0.05
+          	   		PRAELPPGISP		 		0.536
+          	   		TPSVNKLPEAQ		 		0.675
+          	   		PGLGPREKVSS		 		0.129
+          	   		KVTNIEGLLHK		 		0.019
+          	   		TPGPSTCLPNY		 		0.05
+          	   		KTGTSGNGTQY		 		0.019
+          	   		LPFPPGDRVTF		 		0.843
+          	   		AVGNSPTATTR		 		0.019
+          	   		AALAAAPANPP		 		0.791
+          	   		YVRRDSGFSSQ		 		0.102
+          	   		PLLNQSISVTY		 		0.092
+          	   		KQFLELPGPTY		 		0.024
+          	   		MVTTAQGASNA		 		0.092
+          	   		KSEQKQFQAEY		 		0.05
+          	   		DSNSLHQGLGL		 		0.627
+          	   		DPYGGHRDVAY		 		0.348
+          	   		YAYDGKDYLAL		yes		0.998
+          	   		PNNIFGNRNLL		 		0.06
+          	   		YAKSSVGETVY		 		0.675
+          	   		DMLLERGVSAF		 		0.791
+          	   		PVKFIVLATAL		 		0.129
+          	   		EYPFRVGELEY		 		0.019
+          	   		MPAAQEGAVAF		 		0.675
+          	   		LPFPDETHERY		 		0.102
+          	   		MPYPVPQGPQY		 		0.129
+          	   		HPYPPGPGVAL		yes		0.998
+          	   		VTAVEEAPVNA		 		0.522
+          	   		FPFLSGDNQHY		 		0.791
+          	   		APYQPSAQSSY		 		0.791
+          	   		YPFGTGGSAMY		 		0.821
+          	   		YPYNYPKPIEY		 		0.71
+          	   		FPFNPLDFESF		 		0.857
+          	   		APIWDKLGETY		 		0.119
+          	   		VAIDAGHESFL		yes		0.998
+          	   		LAEFQSIPRVF		 		0.675
+          	   		LPPNDHVNSNN		 		0.019
+          	   		FAYDGKDYLTL		yes		0.998
+          	   		FPIHNLPYGVF		 		0.762
+          	   		FPYALRAYLGY		 		0.791
+          	   		SAQGSDVSLTA		 		0.821
+          	   		PKFEVIEKPQA		 		0.05
+          	   		FYNQVSTPLLR		 		0.701
+          	   		YPFFHDPPSVF		 		0.843
+          	   		LPNPVIPAAVY		 		0.301
+          	   		SAYDGKDYIAL		yes		0.998
+          	   		YPMSYGQGGSY		 		0.609
+          	   		MPIRIENPNQF		 		0.05
+          	   		MPVAAREASIY		 		0.092
+          	   		YPLDPTTEHIY		 		0.821
+          	   		AAAPPSPPFSF		yes		0.958
+          	   		RAAPLDSIHSL		yes		0.998
+          	   		MPRTAALGVSF		 		0.701
+          	   		LPYKATENDIY		 		0.05
+          	   		LPYRATENDIY		 		0.019
+          	   		GIHETTFNSIM		 		0.243
+          	   		AAFDGRHSQTL		yes		0.998
+          	   		LPIFPQLGAQY		 		0.129
+          	   		DAVEDLESVGK		 		0.06
+          	   		FAYTGRTAQEL		yes		0.998
+          	   		GPGQQLMQAAM		 		0.05
+          	   		FAVESEHDQAM		yes		0.994
+          	   		APRPEHTKSVY		 		0.05
+          	   		YPGPASLTQIY		 		0.701
+          	   		FSSSPGPVGMP		 		0.791
+          	   		DLRRERDSASF		 		0.05
+          	   		ILHLERHDSVF		 		0.522
+          	   		MLPSEAGFAEY		 		0.05
+          	   		NAFEHGGEFTY		 		0.843
+          	   		HTIFASNTSSL		 		0.795
+          	   		FPRPTLPNVVY		 		0.737
+          	   		GGDLREERVSF		 		0.05
+          	   		MPRAQPSSASY		 		0.019
+          	   		VPYYNRGLILY		 		0.428
+          	   		FPYYPSPGVLF		 		0.898
+          	   		TVKDDLSFAGY		 		0.05
+          	   		HPKPYHHDLPY		 		0.05
+          	   		FPYARDDLSLY		 		0.843
+          	   		DVREEGKENAF		 		0.609
+          	   		ANQCLSQADAF		 		0.05
+          	   		ATTKHSGFPVR		 		0.019
+          	   		YPLSPTKISQY		 		0.701
+          	   		PFKSPIRDISY		 		0.039
+          	   		YPFQPLSSGLY		 		0.675
+          	   		FPAEFAMYLNY		 		0.102
+          	   		YPFDQNRFVQY		 		0.301
+          	   		FIFREGDGVYY		 		0.843
+          	   		PGGSYGPPGPQ		 		0.019
+          	   		FAVPIESDKTL		yes		0.998
+          	   		FAHFPGLASEL		yes		0.998
+          	   		IPYPLEKGHLF		 		0.821
+          	   		APYGNPKNMAY		 		0.348
+          	   		RPIAAGDISTF		 		0.821
+          	   		LALDASQHSSL		yes		0.998
+          	   		FPHLPGKTFVY		 		0.737
+          	   		TATGPPVASVA		 		0.843
+          	   		LPKDTSPGSAY		 		0.791
+          	   		FPKSEGQYSGF		 		0.737
+          	   		AAYYPSDVSSL		yes		0.998
+          	   		LPRREPTVSSF		 		0.609
+          	   		IPYSSSSPGTY		 		0.602
+          	   		MPKSEVASSVF		 		0.05
+          	   		YPYPYPHTLYL		yes		0.994
+          	   		IPIDGTELSHY		 		0.348
+          	   		FPFIGLGKVFF		 		0.843
+          	   		FPLSPTKLSQY		 		0.791
+          	   		VVTATTGSKQN		 		0.019
+          	   		FIATPGSSSSL		yes		0.998
+          	   		DSCNNSISLLS		 		0.05
+          	   		MPKSDVNKEYY		 		0.019
+          	   		MAFPHLQQPSF		 		0.737
+          	   		HTIFPSNGSSL		yes		0.917
+          	   		PTPSLTGSCPQ		 		0.019
+          	   		FPIIRDQIFRY		 		0.06
+          	   		MPKGTEFGIDY		 		0.05
+          	------------------------------------------------
+          	75 predicted binders out of 425 total input sequences from allele HLA-C*03:03 (at threshold of 100% specificity)
+

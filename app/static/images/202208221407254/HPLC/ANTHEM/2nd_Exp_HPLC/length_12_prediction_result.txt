@@ -1,0 +1,134 @@
+HLA allele	Set		Peptide		Binder?	Prediction_score
+---------------------------------------------------------------------
+HLA-A*02:01
+          	------------------------------------------------
+          	input-sequences
+          	   		RPHALSRKMLAG		 		0.065
+          	   		EVTFGNKDEAVS		 		0.059
+          	   		ERLPEVEVPQHL		 		0.164
+          	   		CLAILLPGRQLG		 		0.417
+          	   		REDMPPSLDAPV		 		0.396
+          	   		GSIKMKASSAAA		 		0.307
+          	   		KPAIRRRLPSLH		 		0.065
+          	   		LALLEDEERVVR		 		0.323
+          	   		KVVIGCPGSTFA		 		0.769
+          	   		NDVPIRLLILKP		 		0.065
+          	   		AGMLESNQASPL		 		0.844
+          	   		LIVFMFSGDHTN		 		0.17
+          	   		LPKLHLVKMLIV		 		0.061
+          	   		QGSQPSAKLPTS		 		0.065
+          	   		QGSSVPLGEGEK		 		0.065
+          	   		KERFQAFLNGET		 		0.059
+          	   		ILPQDLERAGLV		 		0.87
+          	   		VQATFGTQVVEK		 		0.557
+          	   		KLLEGEEERLRL		yes		0.998
+          	   		FLSKQQASQVLV		yes		0.984
+          	   		ISVYYNEATGGK		 		0.059
+          	   		GRLDYLSSLKVK		 		0.125
+          	   		ADLINNLGTIAK		 		0.061
+          	   		VLLDTANKKVFL		yes		0.998
+          	   		KLLEGEESRISL		yes		0.998
+          	   		VGGTSDVEVNEK		 		0.28
+          	   		DAGTIAGLNVLR		 		0.065
+          	   		LLLDVPTAAVQA		yes		0.998
+          	   		GHSGLQPTGFLS		 		0.043
+          	   		GLSEDTTEETLK		yes		0.915
+          	   		KLLEGEEERLKL		yes		0.998
+          	   		TPVLGYPSPPGG		 		0.065
+          	   		DAGQISGLNVLR		 		0.065
+          	   		KLLDPEDVAVQL		yes		0.998
+          	   		GLFGQTNTGFGA		yes		0.983
+          	   		GLFGGSSKIEEA		yes		0.989
+          	   		KKVAPAPAVVKK		 		0.183
+          	   		TVTAMDVVYALK		 		0.324
+          	   		DNIQGITKPAIR		 		0.059
+          	   		INVYYNEATGGK		 		0.038
+          	   		ALADLDELLIRA		yes		0.998
+          	   		AQINQGESITHA		 		0.747
+          	   		ILDDFIQNDRAA		yes		0.949
+          	   		SVMEVNSGIYRV		yes		0.974
+          	   		RLPATIARIPPV		 		0.766
+          	   		VLGYLPPTVITI		yes		0.931
+          	   		VAGQDGSVVQFK		 		0.17
+          	   		IRKRLLIDGDGA		 		0.065
+          	   		EPTFCVLRAISK		 		0.018
+          	   		YILPDEPAIIVH		 		0.734
+          	   		NILAKRLLILPQ		 		0.065
+          	   		ALAGHQDGITFI		yes		0.984
+          	   		GMAAMPQTVYGV		 		0.771
+          	   		GLAPAEVVVATV		yes		0.998
+          	   		ALFDQDKSSMRL		yes		0.998
+          	   		LLLPGELAKHAV		yes		0.99
+          	   		RLYDPASGTISL		yes		0.998
+          	   		TAVVKKIPLITA		 		0.17
+          	   		TPVLTRNAYSSS		 		0.031
+          	   		FLDELEDEAKAA		yes		0.998
+          	   		PLGGSVSSASST		 		0.314
+          	   		PSQEVQENYNFL		 		0.185
+          	   		LPNSWEGGFQRY		 		0.17
+          	   		PLILQISLGFVR		 		0.356
+          	   		EWLAAQCTDGYK		 		0.031
+          	   		GPSVLAGVAFMV		 		0.162
+          	   		KNCLLLEVYACQ		 		0.061
+          	   		PSNSGHAVGAVY		 		0.059
+          	   		TQMNSTAAAGIV		 		0.542
+          	   		ARECFTVGYLPS		 		0.061
+          	   		SYTFVSCLRGSS		 		0.031
+          	   		SSTVQTMGNLLS		 		0.065
+          	   		TLLPARLPPGLR		 		0.28
+          	   		CRATVRGLATFP		 		0.038
+          	   		YTNTVLSGGTTM		 		0.58
+          	   		AKASSEDAGPSP		 		0.061
+          	   		ALLEDEERVVRL		yes		0.998
+          	   		SVQLIGKLVMMT		 		0.284
+          	   		SGPLHGKLSPMP		 		0.059
+          	   		LPRVQPFQEGTY		 		0.059
+          	   		FPKVGGMPFSVY		 		0.065
+          	   		VSPIPKPLPVPV		 		0.262
+          	   		AAADSDPNLDPL		 		0.892
+          	   		FPYMEGDRGSRY		 		0.17
+          	   		SPMAERSMMSAY		 		0.031
+          	   		ISTPEELGLDKV		 		0.297
+          	   		KLIGDTPIDTFL		yes		0.998
+          	   		SYGQGGSYGQGY		 		0.065
+          	   		AASALPALVMSK		 		0.28
+          	   		SSLNQQGAHSAL		 		0.564
+          	   		GASQPNPPGFGS		 		0.059
+          	   		FPKSSSADFGTF		 		0.065
+          	   		QGMGVSAAQATY		 		0.31
+          	   		QGRSTGEAFVQF		 		0.065
+          	   		PSKGPLQSVQVF		 		0.059
+          	   		LEKAKAKELATK		 		0.065
+          	   		KLYDIDVAKVNT		yes		0.998
+          	   		KLFNLSKEDDVR		yes		0.95
+          	   		TPREPLPPIVTF		 		0.17
+          	   		IPLPPPPAPETY		 		0.315
+          	   		ELPDEIDISSYI		yes		0.913
+          	   		AAYPPAPFMHIL		 		0.618
+          	   		MPRPQAVGSSNY		 		0.065
+          	   		SVPQSLPQSNYF		 		0.167
+          	   		VGGDLREERVSF		 		0.294
+          	   		IPFPEGMGGSVY		 		0.236
+          	   		YPRELSNSVSTY		 		0.21
+          	   		YPYPGTPITQRF		 		0.236
+          	   		NPYPYSDAINTY		 		0.2
+          	   		ETQANPGKGEGL		 		0.039
+          	   		MPYGSRENSLLY		 		0.17
+          	   		VASVSGQSSGCC		 		0.031
+          	   		LPFKSPIRDISY		 		0.059
+          	   		TGYFSSTDLGRT		 		0.341
+          	   		DAREAIIPGSVY		 		0.059
+          	   		HFELGGDKKRKG		 		0.059
+          	   		FSYAPPSEDLFL		 		0.89
+          	   		LPRDAHSTPYYY		 		0.059
+          	   		SSYNTQGAASSL		 		0.592
+          	   		ASYGAQSAASSL		 		0.564
+          	   		VDLEPTVIDEVR		 		0.061
+          	   		MPYAGGGGGPTY		 		0.507
+          	   		QGIIPPGKGSQY		 		0.17
+          	   		FPAPGKPGNYQY		 		0.636
+          	   		HPKPVPGFQVAY		 		0.065
+          	   		LKQGLGPSGTSG		 		0.068
+          	------------------------------------------------
+          	25 predicted binders out of 126 total input sequences from allele HLA-A*02:01 (at threshold of 100% specificity)
+
