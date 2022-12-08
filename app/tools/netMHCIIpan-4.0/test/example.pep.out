@@ -1,0 +1,25 @@
+# NetMHCIIpan version 4.0
+
+# Input is in PEPTIDE format
+
+# Prediction Mode: EL
+
+# Threshold for Strong binding peptides (%Rank)	2%
+# Threshold for Weak binding peptides (%Rank)	10%
+
+# Allele: DRB1_0101
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Pos           MHC              Peptide   Of        Core  Core_Rel        Identity      Score_EL %Rank_EL Exp_Bind  BindLevel
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1     DRB1_0101        AAAGAEAGKATTE    1   AAGAEAGKA     0.547        Sequence      0.001552    67.50    0.000       
+   2     DRB1_0101      AALAAAAGVPPADKY    2   LAAAAGVPP     0.987        Sequence      0.053517    14.15    0.300       
+   3     DRB1_0101         EKPGNRNPYENL    3   GNRNPYENL     0.547        Sequence      0.000043    95.00    0.670       
+   4     DRB1_0101      STWLLKPGAGIMIFD    4   LKPGAGIMI     0.620        Sequence      0.064794    12.71    0.000       
+   5     DRB1_0101      KSVPLEMLLINLTTI    4   LEMLLINLT     0.893        Sequence      0.007117    37.30    0.560       
+   6     DRB1_0101      KTKEDLFGKKNLIPS    5   LFGKKNLIP     0.340        Sequence      0.001224    72.64    0.670       
+   7     DRB1_0101      KIYHKCDNACIGSIR    2   YHKCDNACI     0.753        Sequence      0.006038    39.94    0.940       
+   8     DRB1_0101      PCLFMRTVSHVILHG    3   FMRTVSHVI     0.960        Sequence      0.073746    11.81    0.345       
+   9     DRB1_0101      GAATVAAGAATTAAG    4   VAAGAATTA     0.933        Sequence      0.134894     8.20    0.000   <=WB
+--------------------------------------------------------------------------------------------------------------------------------------------
+Number of strong binders: 0 Number of weak binders: 1
+--------------------------------------------------------------------------------------------------------------------------------------------

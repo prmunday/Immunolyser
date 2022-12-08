@@ -1,0 +1,8 @@
+ls -ltr synContext/syn2* | args 9 | tr -d "*" > synlist_Context.txt
+ls -ltr synNoContext/syn* | args 9 | tr -d "*" > synlist_noContext.txt
+
+synlist2bin -o synlist_nocontext.bin synlist_noContext.txt
+synlist2bin -o synlist_context.bin synlist_Context.txt
+
+
+

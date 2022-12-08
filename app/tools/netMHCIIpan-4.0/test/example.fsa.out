@@ -1,0 +1,156 @@
+# NetMHCIIpan version 4.0
+
+# Input is in FASTA format
+
+# Peptide length 15
+
+# Prediction Mode: EL
+
+# Threshold for Strong binding peptides (%Rank)	2%
+# Threshold for Weak binding peptides (%Rank)	10%
+
+# Allele: DRB1_0101
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Pos           MHC              Peptide   Of        Core  Core_Rel        Identity      Score_EL %Rank_EL Exp_Bind  BindLevel
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1     DRB1_0101      ASQKRPSQRHGSKYL    5   PSQRHGSKY     0.140            seq1      0.000211    95.00       NA       
+   2     DRB1_0101      SQKRPSQRHGSKYLA    5   SQRHGSKYL     0.533            seq1      0.000521    88.17       NA       
+   3     DRB1_0101      QKRPSQRHGSKYLAT    4   SQRHGSKYL     0.460            seq1      0.001134    74.21       NA       
+   4     DRB1_0101      KRPSQRHGSKYLATA    3   SQRHGSKYL     0.420            seq1      0.002014    61.79       NA       
+   5     DRB1_0101      RPSQRHGSKYLATAS    4   RHGSKYLAT     0.253            seq1      0.001813    64.05       NA       
+   6     DRB1_0101      PSQRHGSKYLATAST    3   RHGSKYLAT     0.293            seq1      0.001786    64.36       NA       
+   7     DRB1_0101      SQRHGSKYLATASTM    5   SKYLATAST     0.420            seq1      0.001989    62.07       NA       
+   8     DRB1_0101      QRHGSKYLATASTMD    5   KYLATASTM     0.353            seq1      0.008256    34.92       NA       
+   9     DRB1_0101      RHGSKYLATASTMDH    5   YLATASTMD     0.640            seq1      0.037996    16.88       NA       
+  10     DRB1_0101      HGSKYLATASTMDHA    4   YLATASTMD     0.840            seq1      0.100792     9.83       NA   <=WB
+  11     DRB1_0101      GSKYLATASTMDHAR    3   YLATASTMD     0.980            seq1      0.194152     6.38       NA   <=WB
+  12     DRB1_0101      SKYLATASTMDHARH    2   YLATASTMD     0.913            seq1      0.034346    17.78       NA       
+  13     DRB1_0101      KYLATASTMDHARHG    1   YLATASTMD     0.727            seq1      0.003893    48.00       NA       
+  14     DRB1_0101      YLATASTMDHARHGF    2   ATASTMDHA     0.187            seq1      0.000509    88.50       NA       
+  15     DRB1_0101      LATASTMDHARHGFL    4   STMDHARHG     0.373            seq1      0.000436    90.52       NA       
+  16     DRB1_0101      ATASTMDHARHGFLP    3   STMDHARHG     0.420            seq1      0.000776    81.69       NA       
+  17     DRB1_0101      TASTMDHARHGFLPR    4   MDHARHGFL     0.780            seq1      0.001313    71.08       NA       
+  18     DRB1_0101      ASTMDHARHGFLPRH    3   MDHARHGFL     0.907            seq1      0.002106    60.75       NA       
+  19     DRB1_0101      STMDHARHGFLPRHR    2   MDHARHGFL     0.587            seq1      0.000786    81.45       NA       
+  20     DRB1_0101      TMDHARHGFLPRHRD    5   RHGFLPRHR     0.267            seq1      0.000690    83.74       NA       
+  21     DRB1_0101      MDHARHGFLPRHRDT    4   RHGFLPRHR     0.313            seq1      0.001057    75.66       NA       
+  22     DRB1_0101      DHARHGFLPRHRDTG    3   RHGFLPRHR     0.347            seq1      0.001637    66.30       NA       
+  23     DRB1_0101      HARHGFLPRHRDTGI    3   HGFLPRHRD     0.247            seq1      0.001140    74.11       NA       
+  24     DRB1_0101      ARHGFLPRHRDTGIL    4   FLPRHRDTG     0.640            seq1      0.000799    81.14       NA       
+  25     DRB1_0101      RHGFLPRHRDTGILD    3   FLPRHRDTG     0.727            seq1      0.001030    76.22       NA       
+  26     DRB1_0101      HGFLPRHRDTGILDS    5   RHRDTGILD     0.227            seq1      0.000747    82.38       NA       
+  27     DRB1_0101      GFLPRHRDTGILDSI    4   RHRDTGILD     0.333            seq1      0.000666    84.31       NA       
+  28     DRB1_0101      FLPRHRDTGILDSIG    3   RHRDTGILD     0.367            seq1      0.000849    79.96       NA       
+  29     DRB1_0101      LPRHRDTGILDSIGR    4   RDTGILDSI     0.260            seq1      0.001179    73.43       NA       
+  30     DRB1_0101      PRHRDTGILDSIGRF    5   TGILDSIGR     0.340            seq1      0.001275    71.75       NA       
+  31     DRB1_0101      RHRDTGILDSIGRFF    4   TGILDSIGR     0.453            seq1      0.001154    73.86       NA       
+  32     DRB1_0101      HRDTGILDSIGRFFG    3   TGILDSIGR     0.400            seq1      0.002433    57.75       NA       
+  33     DRB1_0101      RDTGILDSIGRFFGG    4   ILDSIGRFF     0.787            seq1      0.005006    43.25       NA       
+  34     DRB1_0101      DTGILDSIGRFFGGD    3   ILDSIGRFF     0.867            seq1      0.012373    29.02       NA       
+  35     DRB1_0101      TGILDSIGRFFGGDR    3   LDSIGRFFG     0.547            seq1      0.004597    44.81       NA       
+  36     DRB1_0101      GILDSIGRFFGGDRG    2   LDSIGRFFG     0.453            seq1      0.001511    68.08       NA       
+  37     DRB1_0101      ILDSIGRFFGGDRGA    4   IGRFFGGDR     0.527            seq1      0.001812    64.07       NA       
+  38     DRB1_0101      LDSIGRFFGGDRGAP    3   IGRFFGGDR     0.560            seq1      0.004012    47.41       NA       
+  39     DRB1_0101      DSIGRFFGGDRGAPK    3   GRFFGGDRG     0.393            seq1      0.005130    42.79       NA       
+  40     DRB1_0101      SIGRFFGGDRGAPKN    5   FGGDRGAPK     0.573            seq1      0.005768    40.71       NA       
+  41     DRB1_0101      IGRFFGGDRGAPKNM    4   FGGDRGAPK     0.753            seq1      0.007424    36.60       NA       
+  42     DRB1_0101      GRFFGGDRGAPKNMY    3   FGGDRGAPK     0.913            seq1      0.009067    33.51       NA       
+  43     DRB1_0101      RFFGGDRGAPKNMYK    2   FGGDRGAPK     0.787            seq1      0.002313    58.79       NA       
+  44     DRB1_0101      FFGGDRGAPKNMYKD    3   GDRGAPKNM     0.287            seq1      0.000786    81.45       NA       
+  45     DRB1_0101      FGGDRGAPKNMYKDS    3   DRGAPKNMY     0.520            seq1      0.000477    89.37       NA       
+  46     DRB1_0101      GGDRGAPKNMYKDSH    2   DRGAPKNMY     0.433            seq1      0.000291    94.71       NA       
+  47     DRB1_0101      GDRGAPKNMYKDSHH    6   KNMYKDSHH     0.173            seq1      0.000509    88.50       NA       
+  48     DRB1_0101      DRGAPKNMYKDSHHP    5   KNMYKDSHH     0.320            seq1      0.000596    86.12       NA       
+  49     DRB1_0101      RGAPKNMYKDSHHPA    4   KNMYKDSHH     0.233            seq1      0.000940    78.08       NA       
+  50     DRB1_0101      GAPKNMYKDSHHPAR    5   MYKDSHHPA     0.687            seq1      0.004410    45.59       NA       
+  51     DRB1_0101      APKNMYKDSHHPART    4   MYKDSHHPA     0.673            seq1      0.009233    33.24       NA       
+  52     DRB1_0101      PKNMYKDSHHPARTA    3   MYKDSHHPA     0.607            seq1      0.016646    25.25       NA       
+  53     DRB1_0101      KNMYKDSHHPARTAH    3   YKDSHHPAR     0.567            seq1      0.009309    33.11       NA       
+  54     DRB1_0101      NMYKDSHHPARTAHY    2   YKDSHHPAR     0.380            seq1      0.003046    53.09       NA       
+  55     DRB1_0101      MYKDSHHPARTAHYG    3   DSHHPARTA     0.400            seq1      0.002817    54.57       NA       
+  56     DRB1_0101      YKDSHHPARTAHYGS    4   HHPARTAHY     0.607            seq1      0.001985    62.12       NA       
+  57     DRB1_0101      KDSHHPARTAHYGSL    3   HHPARTAHY     0.680            seq1      0.001515    68.02       NA       
+  58     DRB1_0101      DSHHPARTAHYGSLP    5   ARTAHYGSL     0.367            seq1      0.000739    82.57       NA       
+  59     DRB1_0101      SHHPARTAHYGSLPQ    4   ARTAHYGSL     0.540            seq1      0.001127    74.34       NA       
+  60     DRB1_0101      HHPARTAHYGSLPQK    3   ARTAHYGSL     0.600            seq1      0.001846    63.68       NA       
+  61     DRB1_0101      HPARTAHYGSLPQKS    6   HYGSLPQKS     0.373            seq1      0.001761    64.64       NA       
+  62     DRB1_0101      PARTAHYGSLPQKSH    5   HYGSLPQKS     0.580            seq1      0.002992    53.44       NA       
+  63     DRB1_0101      ARTAHYGSLPQKSHG    4   HYGSLPQKS     0.513            seq1      0.009077    33.49       NA       
+  64     DRB1_0101      RTAHYGSLPQKSHGR    4   YGSLPQKSH     0.620            seq1      0.024135    21.12       NA       
+  65     DRB1_0101      TAHYGSLPQKSHGRT    3   YGSLPQKSH     0.807            seq1      0.022149    21.98       NA       
+  66     DRB1_0101      AHYGSLPQKSHGRTQ    2   YGSLPQKSH     0.747            seq1      0.004911    43.62       NA       
+  67     DRB1_0101      HYGSLPQKSHGRTQD    3   SLPQKSHGR     0.360            seq1      0.001071    75.37       NA       
+  68     DRB1_0101      YGSLPQKSHGRTQDE    2   SLPQKSHGR     0.293            seq1      0.000565    86.97       NA       
+  69     DRB1_0101      GSLPQKSHGRTQDEN    3   PQKSHGRTQ     0.587            seq1      0.000401    91.53       NA       
+  70     DRB1_0101      SLPQKSHGRTQDENP    2   PQKSHGRTQ     0.387            seq1      0.000277    95.00       NA       
+  71     DRB1_0101      LPQKSHGRTQDENPV    6   GRTQDENPV     0.467            seq1      0.001096    74.88       NA       
+  72     DRB1_0101      PQKSHGRTQDENPVV    5   GRTQDENPV     0.693            seq1      0.001591    66.95       NA       
+  73     DRB1_0101      QKSHGRTQDENPVVH    4   GRTQDENPV     0.693            seq1      0.002466    57.47       NA       
+  74     DRB1_0101      KSHGRTQDENPVVHF    3   GRTQDENPV     0.667            seq1      0.003025    53.23       NA       
+  75     DRB1_0101      SHGRTQDENPVVHFF    2   GRTQDENPV     0.367            seq1      0.002099    60.83       NA       
+  76     DRB1_0101      HGRTQDENPVVHFFK    3   TQDENPVVH     0.227            seq1      0.000858    79.77       NA       
+  77     DRB1_0101      GRTQDENPVVHFFKN    4   DENPVVHFF     0.273            seq1      0.000595    86.15       NA       
+  78     DRB1_0101      RTQDENPVVHFFKNI    3   DENPVVHFF     0.300            seq1      0.000595    86.15       NA       
+  79     DRB1_0101      TQDENPVVHFFKNIV    6   VVHFFKNIV     0.300            seq1      0.000719    83.05       NA       
+  80     DRB1_0101      QDENPVVHFFKNIVT    5   VVHFFKNIV     0.387            seq1      0.004423    45.53       NA       
+  81     DRB1_0101      DENPVVHFFKNIVTP    5   VHFFKNIVT     0.840            seq1      0.049165    14.77       NA       
+  82     DRB1_0101      ENPVVHFFKNIVTPR    4   VHFFKNIVT     0.893            seq1      0.129070     8.43       NA   <=WB
+  83     DRB1_0101      NPVVHFFKNIVTPRT    3   VHFFKNIVT     0.900            seq1      0.151440     7.60       NA   <=WB
+  84     DRB1_0101      PVVHFFKNIVTPRTP    5   FKNIVTPRT     0.740            seq1      0.198122     6.29       NA   <=WB
+  85     DRB1_0101      VVHFFKNIVTPRTPP    4   FKNIVTPRT     0.953            seq1      0.447448     2.98       NA   <=WB
+  86     DRB1_0101      VHFFKNIVTPRTPPP    3   FKNIVTPRT     1.000            seq1      0.604962     1.85       NA   <=SB
+  87     DRB1_0101      HFFKNIVTPRTPPPS    2   FKNIVTPRT     1.000            seq1      0.322628     4.23       NA   <=WB
+  88     DRB1_0101      FFKNIVTPRTPPPSQ    1   FKNIVTPRT     0.933            seq1      0.042521    15.89       NA       
+  89     DRB1_0101      FKNIVTPRTPPPSQG    4   VTPRTPPPS     0.440            seq1      0.004878    43.75       NA       
+  90     DRB1_0101      KNIVTPRTPPPSQGK    3   VTPRTPPPS     0.800            seq1      0.005282    42.28       NA       
+  91     DRB1_0101      NIVTPRTPPPSQGKG    2   VTPRTPPPS     0.687            seq1      0.001203    73.01       NA       
+  92     DRB1_0101      IVTPRTPPPSQGKGR    3   PRTPPPSQG     0.427            seq1      0.000386    91.97       NA       
+  93     DRB1_0101      VTPRTPPPSQGKGRK    2   PRTPPPSQG     0.600            seq1      0.000158    95.00       NA       
+  94     DRB1_0101      TPRTPPPSQGKGRKS    6   PSQGKGRKS     0.507            seq1      0.000229    95.00       NA       
+  95     DRB1_0101      PRTPPPSQGKGRKSA    5   PSQGKGRKS     0.773            seq1      0.000395    91.71       NA       
+  96     DRB1_0101      RTPPPSQGKGRKSAH    4   PSQGKGRKS     0.893            seq1      0.000663    84.38       NA       
+  97     DRB1_0101      TPPPSQGKGRKSAHK    3   PSQGKGRKS     0.900            seq1      0.001183    73.36       NA       
+  98     DRB1_0101      PPPSQGKGRKSAHKG    2   PSQGKGRKS     0.653            seq1      0.000696    83.60       NA       
+  99     DRB1_0101      PPSQGKGRKSAHKGF    1   PSQGKGRKS     0.327            seq1      0.000398    91.62       NA       
+ 100     DRB1_0101      PSQGKGRKSAHKGFK    4   KGRKSAHKG     0.373            seq1      0.000395    91.71       NA       
+ 101     DRB1_0101      SQGKGRKSAHKGFKG    3   KGRKSAHKG     0.273            seq1      0.000480    89.29       NA       
+ 102     DRB1_0101      QGKGRKSAHKGFKGV    5   KSAHKGFKG     0.540            seq1      0.000772    81.79       NA       
+ 103     DRB1_0101      GKGRKSAHKGFKGVD    4   KSAHKGFKG     0.793            seq1      0.001547    67.57       NA       
+ 104     DRB1_0101      KGRKSAHKGFKGVDA    3   KSAHKGFKG     0.647            seq1      0.002399    58.04       NA       
+ 105     DRB1_0101      GRKSAHKGFKGVDAQ    5   HKGFKGVDA     0.793            seq1      0.006143    39.67       NA       
+ 106     DRB1_0101      RKSAHKGFKGVDAQG    4   HKGFKGVDA     0.953            seq1      0.013876    27.51       NA       
+ 107     DRB1_0101      KSAHKGFKGVDAQGT    6   FKGVDAQGT     0.807            seq1      0.079094    11.37       NA       
+ 108     DRB1_0101      SAHKGFKGVDAQGTL    5   FKGVDAQGT     1.000            seq1      0.381304     3.59       NA   <=WB
+ 109     DRB1_0101      AHKGFKGVDAQGTLS    4   FKGVDAQGT     1.000            seq1      0.631259     1.71       NA   <=SB
+ 110     DRB1_0101      HKGFKGVDAQGTLSK    3   FKGVDAQGT     1.000            seq1      0.797682     0.89       NA   <=SB
+ 111     DRB1_0101      KGFKGVDAQGTLSKI    2   FKGVDAQGT     1.000            seq1      0.519664     2.39       NA   <=WB
+ 112     DRB1_0101      GFKGVDAQGTLSKIF    1   FKGVDAQGT     0.987            seq1      0.076314    11.60       NA       
+ 113     DRB1_0101      FKGVDAQGTLSKIFK    3   VDAQGTLSK     0.447            seq1      0.002158    60.17       NA       
+ 114     DRB1_0101      KGVDAQGTLSKIFKL    2   VDAQGTLSK     0.467            seq1      0.001168    73.62       NA       
+ 115     DRB1_0101      GVDAQGTLSKIFKLG    3   AQGTLSKIF     0.407            seq1      0.000814    80.79       NA       
+ 116     DRB1_0101      VDAQGTLSKIFKLGG    4   GTLSKIFKL     0.547            seq1      0.001072    75.35       NA       
+ 117     DRB1_0101      DAQGTLSKIFKLGGR    3   GTLSKIFKL     0.447            seq1      0.002609    56.23       NA       
+ 118     DRB1_0101      AQGTLSKIFKLGGRD    4   LSKIFKLGG     0.787            seq1      0.003591    49.62       NA       
+ 119     DRB1_0101      QGTLSKIFKLGGRDS    3   LSKIFKLGG     0.533            seq1      0.007376    36.71       NA       
+ 120     DRB1_0101      GTLSKIFKLGGRDSR    5   IFKLGGRDS     0.993            seq1      0.132614     8.29       NA   <=WB
+ 121     DRB1_0101      TLSKIFKLGGRDSRS    4   IFKLGGRDS     1.000            seq1      0.303747     4.45       NA   <=WB
+ 122     DRB1_0101      LSKIFKLGGRDSRSG    3   IFKLGGRDS     1.000            seq1      0.427784     3.15       NA   <=WB
+ 123     DRB1_0101      SKIFKLGGRDSRSGS    2   IFKLGGRDS     1.000            seq1      0.268861     4.96       NA   <=WB
+ 124     DRB1_0101      KIFKLGGRDSRSGSP    1   IFKLGGRDS     0.880            seq1      0.023767    21.28       NA       
+ 125     DRB1_0101      IFKLGGRDSRSGSPM    3   LGGRDSRSG     0.507            seq1      0.001210    72.88       NA       
+ 126     DRB1_0101      FKLGGRDSRSGSPMA    2   LGGRDSRSG     0.540            seq1      0.000504    88.63       NA       
+ 127     DRB1_0101      KLGGRDSRSGSPMAR    4   RDSRSGSPM     0.247            seq1      0.000398    91.62       NA       
+ 128     DRB1_0101      LGGRDSRSGSPMARR    4   DSRSGSPMA     0.493            seq1      0.000652    84.64       NA       
+ 129     DRB1_0101      GGRDSRSGSPMARRE    3   DSRSGSPMA     0.507            seq1      0.000901    78.88       NA       
+ 130     DRB1_0101      GRDSRSGSPMARREL    3   SRSGSPMAR     0.287            seq1      0.000585    86.42       NA       
+ 131     DRB1_0101      RDSRSGSPMARRELV    3   RSGSPMARR     0.287            seq1      0.000428    90.75       NA       
+ 132     DRB1_0101      DSRSGSPMARRELVI    2   RSGSPMARR     0.213            seq1      0.000286    94.86       NA       
+ 133     DRB1_0101      SRSGSPMARRELVIS    3   GSPMARREL     0.327            seq1      0.000319    93.90       NA       
+ 134     DRB1_0101      RSGSPMARRELVISL    5   MARRELVIS     0.360            seq1      0.000352    92.95       NA       
+ 135     DRB1_0101      SGSPMARRELVISLI    5   ARRELVISL     0.387            seq1      0.000527    88.01       NA       
+ 136     DRB1_0101      GSPMARRELVISLIV    4   ARRELVISL     0.367            seq1      0.000816    80.74       NA       
+ 137     DRB1_0101      SPMARRELVISLIVE    3   ARRELVISL     0.407            seq1      0.001472    68.63       NA       
+ 138     DRB1_0101      PMARRELVISLIVES    3   RRELVISLI     0.373            seq1      0.001533    67.77       NA       
+--------------------------------------------------------------------------------------------------------------------------------------------
+Number of strong binders: 3 Number of weak binders: 13
+--------------------------------------------------------------------------------------------------------------------------------------------

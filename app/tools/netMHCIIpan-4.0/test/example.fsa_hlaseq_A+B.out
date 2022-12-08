@@ -1,0 +1,157 @@
+# NetMHCIIpan version 4.0
+
+# Input is in FASTA format
+
+# Peptide length 15
+
+# Prediction Mode: EL
+
+# User-defined MHC pseudo sequence YAFFMFSGGAILNTLYGQFEYFAIEKVRVHLDVT USER_DEF
+
+# NB: Strong and Weak binders can not be defined with a user-defined MHC pseudo-sequence.
+
+# Allele: USER_DEF
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Pos           MHC              Peptide   Of        Core  Core_Rel        Identity      Score_EL %Rank_EL Exp_Bind  BindLevel
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1      USER_DEF      ASQKRPSQRHGSKYL    3   KRPSQRHGS     0.613            seq1      0.017984   -99.00       NA       
+   2      USER_DEF      SQKRPSQRHGSKYLA    2   KRPSQRHGS     0.333            seq1      0.017866   -99.00       NA       
+   3      USER_DEF      QKRPSQRHGSKYLAT    6   RHGSKYLAT     0.713            seq1      0.081280   -99.00       NA       
+   4      USER_DEF      KRPSQRHGSKYLATA    5   RHGSKYLAT     0.827            seq1      0.176129   -99.00       NA       
+   5      USER_DEF      RPSQRHGSKYLATAS    4   RHGSKYLAT     0.813            seq1      0.217663   -99.00       NA       
+   6      USER_DEF      PSQRHGSKYLATAST    3   RHGSKYLAT     0.827            seq1      0.224959   -99.00       NA       
+   7      USER_DEF      SQRHGSKYLATASTM    2   RHGSKYLAT     0.620            seq1      0.131345   -99.00       NA       
+   8      USER_DEF      QRHGSKYLATASTMD    1   RHGSKYLAT     0.287            seq1      0.085990   -99.00       NA       
+   9      USER_DEF      RHGSKYLATASTMDH    5   YLATASTMD     0.387            seq1      0.099000   -99.00       NA       
+  10      USER_DEF      HGSKYLATASTMDHA    4   YLATASTMD     0.473            seq1      0.123013   -99.00       NA       
+  11      USER_DEF      GSKYLATASTMDHAR    3   YLATASTMD     0.580            seq1      0.137875   -99.00       NA       
+  12      USER_DEF      SKYLATASTMDHARH    2   YLATASTMD     0.420            seq1      0.093890   -99.00       NA       
+  13      USER_DEF      KYLATASTMDHARHG    1   YLATASTMD     0.247            seq1      0.055272   -99.00       NA       
+  14      USER_DEF      YLATASTMDHARHGF    4   ASTMDHARH     0.300            seq1      0.021945   -99.00       NA       
+  15      USER_DEF      LATASTMDHARHGFL    3   ASTMDHARH     0.380            seq1      0.016866   -99.00       NA       
+  16      USER_DEF      ATASTMDHARHGFLP    3   STMDHARHG     0.400            seq1      0.019479   -99.00       NA       
+  17      USER_DEF      TASTMDHARHGFLPR    4   MDHARHGFL     0.467            seq1      0.020812   -99.00       NA       
+  18      USER_DEF      ASTMDHARHGFLPRH    3   MDHARHGFL     0.513            seq1      0.030666   -99.00       NA       
+  19      USER_DEF      STMDHARHGFLPRHR    5   ARHGFLPRH     0.253            seq1      0.046582   -99.00       NA       
+  20      USER_DEF      TMDHARHGFLPRHRD    4   ARHGFLPRH     0.320            seq1      0.082324   -99.00       NA       
+  21      USER_DEF      MDHARHGFLPRHRDT    3   ARHGFLPRH     0.373            seq1      0.086160   -99.00       NA       
+  22      USER_DEF      DHARHGFLPRHRDTG    3   RHGFLPRHR     0.400            seq1      0.080355   -99.00       NA       
+  23      USER_DEF      HARHGFLPRHRDTGI    3   HGFLPRHRD     0.320            seq1      0.042295   -99.00       NA       
+  24      USER_DEF      ARHGFLPRHRDTGIL    2   HGFLPRHRD     0.340            seq1      0.018535   -99.00       NA       
+  25      USER_DEF      RHGFLPRHRDTGILD    6   RHRDTGILD     0.467            seq1      0.041101   -99.00       NA       
+  26      USER_DEF      HGFLPRHRDTGILDS    5   RHRDTGILD     0.587            seq1      0.078036   -99.00       NA       
+  27      USER_DEF      GFLPRHRDTGILDSI    4   RHRDTGILD     0.573            seq1      0.097706   -99.00       NA       
+  28      USER_DEF      FLPRHRDTGILDSIG    3   RHRDTGILD     0.513            seq1      0.129405   -99.00       NA       
+  29      USER_DEF      LPRHRDTGILDSIGR    2   RHRDTGILD     0.360            seq1      0.139623   -99.00       NA       
+  30      USER_DEF      PRHRDTGILDSIGRF    3   RDTGILDSI     0.393            seq1      0.095947   -99.00       NA       
+  31      USER_DEF      RHRDTGILDSIGRFF    2   RDTGILDSI     0.353            seq1      0.033275   -99.00       NA       
+  32      USER_DEF      HRDTGILDSIGRFFG    4   GILDSIGRF     0.360            seq1      0.022846   -99.00       NA       
+  33      USER_DEF      RDTGILDSIGRFFGG    3   GILDSIGRF     0.353            seq1      0.028180   -99.00       NA       
+  34      USER_DEF      DTGILDSIGRFFGGD    3   ILDSIGRFF     0.493            seq1      0.028336   -99.00       NA       
+  35      USER_DEF      TGILDSIGRFFGGDR    3   LDSIGRFFG     0.347            seq1      0.021839   -99.00       NA       
+  36      USER_DEF      GILDSIGRFFGGDRG    2   LDSIGRFFG     0.213            seq1      0.014222   -99.00       NA       
+  37      USER_DEF      ILDSIGRFFGGDRGA    4   IGRFFGGDR     0.240            seq1      0.012358   -99.00       NA       
+  38      USER_DEF      LDSIGRFFGGDRGAP    3   IGRFFGGDR     0.280            seq1      0.014923   -99.00       NA       
+  39      USER_DEF      DSIGRFFGGDRGAPK    3   GRFFGGDRG     0.260            seq1      0.022809   -99.00       NA       
+  40      USER_DEF      SIGRFFGGDRGAPKN    5   FGGDRGAPK     0.353            seq1      0.027787   -99.00       NA       
+  41      USER_DEF      IGRFFGGDRGAPKNM    4   FGGDRGAPK     0.507            seq1      0.026122   -99.00       NA       
+  42      USER_DEF      GRFFGGDRGAPKNMY    3   FGGDRGAPK     0.547            seq1      0.026233   -99.00       NA       
+  43      USER_DEF      RFFGGDRGAPKNMYK    5   DRGAPKNMY     0.393            seq1      0.022818   -99.00       NA       
+  44      USER_DEF      FFGGDRGAPKNMYKD    4   DRGAPKNMY     0.547            seq1      0.027899   -99.00       NA       
+  45      USER_DEF      FGGDRGAPKNMYKDS    3   DRGAPKNMY     0.533            seq1      0.033200   -99.00       NA       
+  46      USER_DEF      GGDRGAPKNMYKDSH    2   DRGAPKNMY     0.420            seq1      0.029763   -99.00       NA       
+  47      USER_DEF      GDRGAPKNMYKDSHH    3   GAPKNMYKD     0.393            seq1      0.023696   -99.00       NA       
+  48      USER_DEF      DRGAPKNMYKDSHHP    4   PKNMYKDSH     0.307            seq1      0.022420   -99.00       NA       
+  49      USER_DEF      RGAPKNMYKDSHHPA    6   MYKDSHHPA     0.427            seq1      0.040344   -99.00       NA       
+  50      USER_DEF      GAPKNMYKDSHHPAR    5   MYKDSHHPA     0.473            seq1      0.068000   -99.00       NA       
+  51      USER_DEF      APKNMYKDSHHPART    4   MYKDSHHPA     0.467            seq1      0.089643   -99.00       NA       
+  52      USER_DEF      PKNMYKDSHHPARTA    3   MYKDSHHPA     0.427            seq1      0.111269   -99.00       NA       
+  53      USER_DEF      KNMYKDSHHPARTAH    3   YKDSHHPAR     0.353            seq1      0.110324   -99.00       NA       
+  54      USER_DEF      NMYKDSHHPARTAHY    3   KDSHHPART     0.407            seq1      0.076228   -99.00       NA       
+  55      USER_DEF      MYKDSHHPARTAHYG    5   HHPARTAHY     0.400            seq1      0.049329   -99.00       NA       
+  56      USER_DEF      YKDSHHPARTAHYGS    4   HHPARTAHY     0.647            seq1      0.043262   -99.00       NA       
+  57      USER_DEF      KDSHHPARTAHYGSL    6   ARTAHYGSL     0.340            seq1      0.054223   -99.00       NA       
+  58      USER_DEF      DSHHPARTAHYGSLP    5   ARTAHYGSL     0.640            seq1      0.105045   -99.00       NA       
+  59      USER_DEF      SHHPARTAHYGSLPQ    4   ARTAHYGSL     0.740            seq1      0.144205   -99.00       NA       
+  60      USER_DEF      HHPARTAHYGSLPQK    3   ARTAHYGSL     0.727            seq1      0.187642   -99.00       NA       
+  61      USER_DEF      HPARTAHYGSLPQKS    2   ARTAHYGSL     0.447            seq1      0.168584   -99.00       NA       
+  62      USER_DEF      PARTAHYGSLPQKSH    5   HYGSLPQKS     0.487            seq1      0.154841   -99.00       NA       
+  63      USER_DEF      ARTAHYGSLPQKSHG    4   HYGSLPQKS     0.640            seq1      0.146569   -99.00       NA       
+  64      USER_DEF      RTAHYGSLPQKSHGR    3   HYGSLPQKS     0.727            seq1      0.166879   -99.00       NA       
+  65      USER_DEF      TAHYGSLPQKSHGRT    2   HYGSLPQKS     0.627            seq1      0.099132   -99.00       NA       
+  66      USER_DEF      AHYGSLPQKSHGRTQ    1   HYGSLPQKS     0.513            seq1      0.047447   -99.00       NA       
+  67      USER_DEF      HYGSLPQKSHGRTQD    3   SLPQKSHGR     0.213            seq1      0.014606   -99.00       NA       
+  68      USER_DEF      YGSLPQKSHGRTQDE    5   QKSHGRTQD     0.427            seq1      0.015324   -99.00       NA       
+  69      USER_DEF      GSLPQKSHGRTQDEN    4   QKSHGRTQD     0.427            seq1      0.023082   -99.00       NA       
+  70      USER_DEF      SLPQKSHGRTQDENP    3   QKSHGRTQD     0.447            seq1      0.033933   -99.00       NA       
+  71      USER_DEF      LPQKSHGRTQDENPV    3   KSHGRTQDE     0.380            seq1      0.034744   -99.00       NA       
+  72      USER_DEF      PQKSHGRTQDENPVV    5   GRTQDENPV     0.393            seq1      0.041077   -99.00       NA       
+  73      USER_DEF      QKSHGRTQDENPVVH    4   GRTQDENPV     0.393            seq1      0.063745   -99.00       NA       
+  74      USER_DEF      KSHGRTQDENPVVHF    4   RTQDENPVV     0.473            seq1      0.074359   -99.00       NA       
+  75      USER_DEF      SHGRTQDENPVVHFF    3   RTQDENPVV     0.473            seq1      0.063374   -99.00       NA       
+  76      USER_DEF      HGRTQDENPVVHFFK    4   QDENPVVHF     0.267            seq1      0.048994   -99.00       NA       
+  77      USER_DEF      GRTQDENPVVHFFKN    3   QDENPVVHF     0.467            seq1      0.035920   -99.00       NA       
+  78      USER_DEF      RTQDENPVVHFFKNI    2   QDENPVVHF     0.287            seq1      0.026628   -99.00       NA       
+  79      USER_DEF      TQDENPVVHFFKNIV    5   PVVHFFKNI     0.473            seq1      0.040526   -99.00       NA       
+  80      USER_DEF      QDENPVVHFFKNIVT    5   VVHFFKNIV     0.320            seq1      0.068905   -99.00       NA       
+  81      USER_DEF      DENPVVHFFKNIVTP    4   VVHFFKNIV     0.327            seq1      0.118360   -99.00       NA       
+  82      USER_DEF      ENPVVHFFKNIVTPR    3   VVHFFKNIV     0.347            seq1      0.126044   -99.00       NA       
+  83      USER_DEF      NPVVHFFKNIVTPRT    3   VHFFKNIVT     0.380            seq1      0.104444   -99.00       NA       
+  84      USER_DEF      PVVHFFKNIVTPRTP    4   FFKNIVTPR     0.233            seq1      0.095641   -99.00       NA       
+  85      USER_DEF      VVHFFKNIVTPRTPP    4   FKNIVTPRT     0.427            seq1      0.099314   -99.00       NA       
+  86      USER_DEF      VHFFKNIVTPRTPPP    3   FKNIVTPRT     0.653            seq1      0.102577   -99.00       NA       
+  87      USER_DEF      HFFKNIVTPRTPPPS    2   FKNIVTPRT     0.607            seq1      0.067300   -99.00       NA       
+  88      USER_DEF      FFKNIVTPRTPPPSQ    5   VTPRTPPPS     0.287            seq1      0.041799   -99.00       NA       
+  89      USER_DEF      FKNIVTPRTPPPSQG    4   VTPRTPPPS     0.540            seq1      0.035193   -99.00       NA       
+  90      USER_DEF      KNIVTPRTPPPSQGK    3   VTPRTPPPS     0.667            seq1      0.036669   -99.00       NA       
+  91      USER_DEF      NIVTPRTPPPSQGKG    2   VTPRTPPPS     0.560            seq1      0.021806   -99.00       NA       
+  92      USER_DEF      IVTPRTPPPSQGKGR    1   VTPRTPPPS     0.327            seq1      0.010170   -99.00       NA       
+  93      USER_DEF      VTPRTPPPSQGKGRK    3   RTPPPSQGK     0.447            seq1      0.006922   -99.00       NA       
+  94      USER_DEF      TPRTPPPSQGKGRKS    2   RTPPPSQGK     0.400            seq1      0.003829   -99.00       NA       
+  95      USER_DEF      PRTPPPSQGKGRKSA    5   PSQGKGRKS     0.460            seq1      0.004274   -99.00       NA       
+  96      USER_DEF      RTPPPSQGKGRKSAH    4   PSQGKGRKS     0.553            seq1      0.006697   -99.00       NA       
+  97      USER_DEF      TPPPSQGKGRKSAHK    3   PSQGKGRKS     0.487            seq1      0.011458   -99.00       NA       
+  98      USER_DEF      PPPSQGKGRKSAHKG    2   PSQGKGRKS     0.260            seq1      0.012728   -99.00       NA       
+  99      USER_DEF      PPSQGKGRKSAHKGF    5   KGRKSAHKG     0.353            seq1      0.013387   -99.00       NA       
+ 100      USER_DEF      PSQGKGRKSAHKGFK    4   KGRKSAHKG     0.407            seq1      0.024008   -99.00       NA       
+ 101      USER_DEF      SQGKGRKSAHKGFKG    3   KGRKSAHKG     0.360            seq1      0.029225   -99.00       NA       
+ 102      USER_DEF      QGKGRKSAHKGFKGV    3   GRKSAHKGF     0.247            seq1      0.030581   -99.00       NA       
+ 103      USER_DEF      GKGRKSAHKGFKGVD    4   KSAHKGFKG     0.427            seq1      0.040381   -99.00       NA       
+ 104      USER_DEF      KGRKSAHKGFKGVDA    3   KSAHKGFKG     0.427            seq1      0.041140   -99.00       NA       
+ 105      USER_DEF      GRKSAHKGFKGVDAQ    3   SAHKGFKGV     0.347            seq1      0.036398   -99.00       NA       
+ 106      USER_DEF      RKSAHKGFKGVDAQG    4   HKGFKGVDA     0.387            seq1      0.023519   -99.00       NA       
+ 107      USER_DEF      KSAHKGFKGVDAQGT    6   FKGVDAQGT     0.647            seq1      0.067760   -99.00       NA       
+ 108      USER_DEF      SAHKGFKGVDAQGTL    5   FKGVDAQGT     0.787            seq1      0.089104   -99.00       NA       
+ 109      USER_DEF      AHKGFKGVDAQGTLS    4   FKGVDAQGT     0.873            seq1      0.111109   -99.00       NA       
+ 110      USER_DEF      HKGFKGVDAQGTLSK    3   FKGVDAQGT     0.887            seq1      0.149780   -99.00       NA       
+ 111      USER_DEF      KGFKGVDAQGTLSKI    2   FKGVDAQGT     0.753            seq1      0.094409   -99.00       NA       
+ 112      USER_DEF      GFKGVDAQGTLSKIF    1   FKGVDAQGT     0.547            seq1      0.036180   -99.00       NA       
+ 113      USER_DEF      FKGVDAQGTLSKIFK    3   VDAQGTLSK     0.280            seq1      0.030567   -99.00       NA       
+ 114      USER_DEF      KGVDAQGTLSKIFKL    4   AQGTLSKIF     0.353            seq1      0.027431   -99.00       NA       
+ 115      USER_DEF      GVDAQGTLSKIFKLG    3   AQGTLSKIF     0.387            seq1      0.024769   -99.00       NA       
+ 116      USER_DEF      VDAQGTLSKIFKLGG    5   TLSKIFKLG     0.353            seq1      0.030730   -99.00       NA       
+ 117      USER_DEF      DAQGTLSKIFKLGGR    4   TLSKIFKLG     0.387            seq1      0.048009   -99.00       NA       
+ 118      USER_DEF      AQGTLSKIFKLGGRD    3   TLSKIFKLG     0.400            seq1      0.065726   -99.00       NA       
+ 119      USER_DEF      QGTLSKIFKLGGRDS    5   KIFKLGGRD     0.360            seq1      0.065415   -99.00       NA       
+ 120      USER_DEF      GTLSKIFKLGGRDSR    4   KIFKLGGRD     0.467            seq1      0.075410   -99.00       NA       
+ 121      USER_DEF      TLSKIFKLGGRDSRS    3   KIFKLGGRD     0.533            seq1      0.074562   -99.00       NA       
+ 122      USER_DEF      LSKIFKLGGRDSRSG    2   KIFKLGGRD     0.373            seq1      0.045705   -99.00       NA       
+ 123      USER_DEF      SKIFKLGGRDSRSGS    3   FKLGGRDSR     0.300            seq1      0.032109   -99.00       NA       
+ 124      USER_DEF      KIFKLGGRDSRSGSP    4   LGGRDSRSG     0.253            seq1      0.018036   -99.00       NA       
+ 125      USER_DEF      IFKLGGRDSRSGSPM    3   LGGRDSRSG     0.413            seq1      0.011808   -99.00       NA       
+ 126      USER_DEF      FKLGGRDSRSGSPMA    5   RDSRSGSPM     0.260            seq1      0.010097   -99.00       NA       
+ 127      USER_DEF      KLGGRDSRSGSPMAR    4   RDSRSGSPM     0.353            seq1      0.014922   -99.00       NA       
+ 128      USER_DEF      LGGRDSRSGSPMARR    6   RSGSPMARR     0.367            seq1      0.032378   -99.00       NA       
+ 129      USER_DEF      GGRDSRSGSPMARRE    5   RSGSPMARR     0.540            seq1      0.049084   -99.00       NA       
+ 130      USER_DEF      GRDSRSGSPMARREL    4   RSGSPMARR     0.613            seq1      0.044474   -99.00       NA       
+ 131      USER_DEF      RDSRSGSPMARRELV    3   RSGSPMARR     0.693            seq1      0.039889   -99.00       NA       
+ 132      USER_DEF      DSRSGSPMARRELVI    2   RSGSPMARR     0.573            seq1      0.020428   -99.00       NA       
+ 133      USER_DEF      SRSGSPMARRELVIS    1   RSGSPMARR     0.247            seq1      0.011305   -99.00       NA       
+ 134      USER_DEF      RSGSPMARRELVISL    5   MARRELVIS     0.347            seq1      0.014090   -99.00       NA       
+ 135      USER_DEF      SGSPMARRELVISLI    5   ARRELVISL     0.320            seq1      0.028620   -99.00       NA       
+ 136      USER_DEF      GSPMARRELVISLIV    5   RRELVISLI     0.387            seq1      0.047518   -99.00       NA       
+ 137      USER_DEF      SPMARRELVISLIVE    4   RRELVISLI     0.407            seq1      0.072929   -99.00       NA       
+ 138      USER_DEF      PMARRELVISLIVES    3   RRELVISLI     0.313            seq1      0.108233   -99.00       NA       
+--------------------------------------------------------------------------------------------------------------------------------------------
+Number of strong binders: 0 Number of weak binders: 0
+--------------------------------------------------------------------------------------------------------------------------------------------

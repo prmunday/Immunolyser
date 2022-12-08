@@ -1,0 +1,11 @@
+Training data:
+Without Context:
+/home/projects/vaccine/people/birey/nar/dat/pipeline_2020_04_01/NNalignIn/NNalignIn_noOverlap_noXcon
+With Context:
+/home/projects/vaccine/people/birey/nar/dat/pipeline_2020_04_01/NNalignIn/NNalignIn_noOverlap_noXcon_context
+
+Synapses:
+Without Context:
+/home/projects/vaccine/people/birey/nar/res/pipeline_2020_04_01/nnalign/exp1
+With Context:
+/home/projects/vaccine/people/birey/nar/res/pipeline_2020_04_01/nnalign/exp2
