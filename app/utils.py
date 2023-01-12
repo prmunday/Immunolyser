@@ -237,6 +237,14 @@ def generateBindingPredictions(taskId, alleles, method):
                         output, err = p.communicate(b"input data that is passed to subprocess' stdin")
                         f.close()     
 
+                elif replicate[-13:] == '12to20mer.txt':
+                    if(method == 'MixMHC2pred'):
+                        command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate), '-a']
+                        for allele in alleles.split(','):
+                            command.append(allele)
+                        command.append('--no_context')
+                        call(command)
+
                 elif replicate[-7:] == 'mer.txt':
                     if(method=='ANTHEM'):
 
@@ -280,10 +288,6 @@ def generateBindingPredictions(taskId, alleles, method):
                             shutil.rmtree(data_folder[0])
 
                             os.chdir(project_root)
-                
-                elif replicate[-13:] == '12to20mer.txt':
-                    if(method == 'MixMHC2pred'):
-                        call(['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate), '-a', " ".join(alleles.split(',')), '--no_context' ])
 
         if method=='ANTHEM' and sample!='Control':
 
@@ -321,11 +325,13 @@ def saveBindersData(taskId, alleles, method):
 
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
-
-            if sample != 'Control' and (replicate[-12:] == '8to14mer.txt' or replicate[:-13:]=='12to20mer.txt'):
+            if sample != 'Control' and (replicate[-12:] == '8to14mer.txt' or replicate[-13:]=='12to20mer.txt'):
 
                 # Original upload file used to derive all other columns present in the input file
-                input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
+                if replicate[-12:] == '8to14mer.txt':
+                    input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
+                elif replicate[-13:]=='12to20mer.txt':
+                    input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-14]))
 
                 # Adding Colunm to represen the peptides without the PTM changes
                 input_file['PlainPeptide'] = input_file.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
@@ -336,7 +342,6 @@ def saveBindersData(taskId, alleles, method):
 
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
-                
                 # ANTHEM case
                 if method == 'ANTHEM':
                     # Looping through all the result files of one replicate in ANTHEM results
@@ -563,7 +568,7 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
                             predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
                         os.chdir(project_root)
 
-                elif replicate[:-13:] == '12to20mer.txt':
+                elif replicate[-13:] == '12to20mer.txt':
                     for allele in alleles:
                         os.chdir('app/')
                         temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-14]}/binders/{allele}/*.csv')
