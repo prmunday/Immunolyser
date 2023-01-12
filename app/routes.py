@@ -118,6 +118,10 @@ def initialiser():
 
     mhcclass = request.form.get('MHCClass')
     print('MHC Class of Interest', mhcclass)
+    # saving mhc class selected in a file
+    mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
+    mhcclass_selected_file.write(mhcclass)
+    mhcclass_selected_file.close()
 
     # saving alleles selected in a file
     allele_file = open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt"), "w")
@@ -130,6 +134,11 @@ def initialiser():
     else :
         predictionTools = request.form.getlist('predictionTools')
     print("Prediction tools selected: {}".format(predictionTools))
+
+    # saving used prediction tools
+    predictiontools = open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt"), "w")
+    predictiontools.write(','.join(predictionTools))
+    predictiontools.close()
 
     # Creating directories to store binding prediction results
     for sample, replicates in data.items():
@@ -248,7 +257,14 @@ def initialiser():
     
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection)
+    
+    # Do show Majority Voted option when MHC Class 2 analysis
+    if mhcclass == 'mhc2':
+        hideMajorityVotedOption = True
+    else :
+        hideMajorityVotedOption = True
+
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
 
 @app.route("/analytics")
 def analytics():
@@ -267,8 +283,14 @@ def getExistingReport(taskId):
     elif str(taskId).isnumeric() == False:
         return 'No task id recieved to generate old report'
 
-    predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
-    
+    # predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
+    with open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt")) as f:
+        predictionTools = f.readline().split(',')
+
+    # MHC Class of Interest
+    with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
+        mhcclass = f.readline()
+
     data = {}
     maxLen = 30
     minLen = 5
@@ -318,15 +340,25 @@ def getExistingReport(taskId):
     bar_percent = plot_lenght_distribution(sample_data, hist='percent')
     bar_density = plot_lenght_distribution(sample_data, hist='density')
 
-    seqlogos = getSeqLogosImages(sample_data)
-    gibbsImages = getGibbsImages(taskId, sample_data)
+    if mhcclass == 'mhc1':
+        showSeqLogoandGibbsSection = True
+        hideMajorityVotedOption = True
+        seqlogos = getSeqLogosImages(sample_data)
+        gibbsImages = getGibbsImages(taskId, sample_data)
+    elif mhcclass == 'mhc2':
+        showSeqLogoandGibbsSection = False
+        hideMajorityVotedOption = True
+        seqlogos = {}
+        gibbsImages = {}
 
     if alleles_unformatted != '':
         predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    return render_template('analytics.html', taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools)
+
+
+    return render_template('analytics.html', taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
 
 @app.route("/feedback", methods=["POST", "GET"])
 def feedback():
