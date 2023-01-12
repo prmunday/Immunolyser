@@ -116,13 +116,19 @@ def initialiser():
 
     alleles_unformatted = request.form.get('alleles')
 
+    mhcclass = request.form.get('MHCClass')
+    print('MHC Class of Interest', mhcclass)
+
     # saving alleles selected in a file
     allele_file = open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt"), "w")
     allele_file.write(alleles_unformatted)
     allele_file.close()
 
     # Prediction tools selected by the user
-    predictionTools = request.form.getlist('predictionTools')
+    if (mhcclass == 'mhc2'):
+        predictionTools = ['MixMHC2pred']
+    else :
+        predictionTools = request.form.getlist('predictionTools')
     print("Prediction tools selected: {}".format(predictionTools))
 
     # Creating directories to store binding prediction results
@@ -148,8 +154,13 @@ def initialiser():
     if alleles_unformatted != "":
         temp = list()
         for allele in alleles_unformatted.split(','):
-            temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
-            
+
+            # Appedning in genral format, if mhc class 1 is of interest
+            if mhcclass == 'mhc1':
+                temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
+            else:
+                temp.append(allele) 
+
         alleles = ",".join(temp)
         del temp
                 
@@ -174,33 +185,51 @@ def initialiser():
     bar_percent = plot_lenght_distribution(sample_data, hist='percent')
     bar_density = plot_lenght_distribution(sample_data, hist='density')
 
-    # Saving 8 to 14 nmers for mhc1 predictions
-    saveNmerData(dirName, sample_data, peptideLength=[8,14], unique = True)
+    # Saving 8 to 14 nmers for mhc1 predictions or 12 to 20 for mhc2 predictions
+    if mhcclass == 'mhc1':
+        minLenForPrediction = 8
+        maxLenForPrediction = 14
+    elif mhcclass == 'mhc2':
+        minLenForPrediction = 12
+        maxLenForPrediction = 20
 
-    for i in range(8,14):
+    saveNmerData(dirName, sample_data, peptideLength=[minLenForPrediction,maxLenForPrediction], unique = True)
+
+    for i in range(minLenForPrediction,maxLenForPrediction):
         saveNmerData(dirName, sample_data, peptideLength=i, unique = True)
 
     # Saving 9mer of each file including duplicates. This will be used for the peptide distribution graph
+    # This needs to be update in the case of mhc2 class predictions as the core will the longer and adjusted
     saveNmerData(dirName, sample_data, peptideLength=9, unique=False)
 
     # # Calling script to generate sequence logos
-    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
 
     # # Method to return names of png files of seqlogos
     # # This value is supposed to be returned from saveNmerDate method but for now writting
     # # temporary script to return names of seqlogos pngs files in a dictionary.
     
-    seqlogos = getSeqLogosImages(sample_data)
-    # seqlogos = {}
-    
-    # gibbsImages = {}
-    
-    # # Calling script to generate gibbsclusters
-    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
+    # Generating Seq2Logos and GibbsCluster only if MHC 2 class of interest
+    if mhcclass == 'mhc1':
 
-    # # Getting names of the gibbscluster
-    gibbsImages = getGibbsImages(taskId, sample_data)
+        # Calling script to generate sequence logos
+        subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+        seqlogos = getSeqLogosImages(sample_data)
+        
+        # Calling script to generate gibbsclusters
+        subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
+        # Getting names of the gibbscluster
+        gibbsImages = getGibbsImages(taskId, sample_data)
+
+        showSeqLogoandGibbsSection = True
+
+    elif mhcclass == 'mhc2' :
+        seqlogos = {}
+        gibbsImages = {}
+
+        showSeqLogoandGibbsSection = False
+   
     # Generating binding predictions
     if alleles!="":    
         for predictionTool in predictionTools:
@@ -219,7 +248,7 @@ def initialiser():
     
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
-    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout)
+    return render_template('analytics.html', taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection)
 
 @app.route("/analytics")
 def analytics():

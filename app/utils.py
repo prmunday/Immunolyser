@@ -280,7 +280,10 @@ def generateBindingPredictions(taskId, alleles, method):
                             shutil.rmtree(data_folder[0])
 
                             os.chdir(project_root)
-
+                
+                elif replicate[-13:] == '12to20mer.txt':
+                    if(method == 'MixMHC2pred'):
+                        call(['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate), '-a', " ".join(alleles.split(',')), '--no_context' ])
 
         if method=='ANTHEM' and sample!='Control':
 
@@ -319,7 +322,7 @@ def saveBindersData(taskId, alleles, method):
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
 
-            if sample != 'Control' and replicate[-12:] == '8to14mer.txt':
+            if sample != 'Control' and (replicate[-12:] == '8to14mer.txt' or replicate[:-13:]=='12to20mer.txt'):
 
                 # Original upload file used to derive all other columns present in the input file
                 input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
@@ -427,6 +430,31 @@ def saveBindersData(taskId, alleles, method):
                             .merge(input_file, on='PlainPeptide',how='left')\
                             .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)     
 
+                # MixMHC2pred case
+                if method == 'MixMHC2pred':
+                    f = pd.read_csv('app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate),skiprows=19,sep='\t')
+
+                    f['Binding Level'] = ""
+                    f['Control'] = ""
+                        
+                    # Keeping strong and weak binders only
+                    f = f[f.apply(lambda x : float(x['%Rank_best'])<2,axis=1)]
+
+                    # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                    f['Binding Level'] = f['%Rank_best'].apply(lambda x : 'SB' if float(x)<0.5 else 'WB')
+                        
+                    # Tagging binders present in control group
+                    f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+
+                    # Updating the name of binding results column Peptide to PlainPeptide
+                    f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
+                    for allele in alleles.split(','):
+                        f[f['BestAllele'] == allele]\
+                            .sort_values(by=['%Rank_best'])[['PlainPeptide','%Rank_best','Binding Level','Control']]\
+                            .merge(input_file, on='PlainPeptide',how='left')\
+                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-14],allele,replicate[:-14],allele,method), index=False)
+
                 # netMHCpan case
                 if method == 'NetMHCpan':
                     f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate),'r')
@@ -528,12 +556,19 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
             os.chdir(project_root)
             for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
                 if replicate[-12:] == '8to14mer.txt':
-
                     for allele in alleles:
                         os.chdir('app/')
                         temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-13]}/binders/{allele}/*.csv')
                         if len(temp) != 0:
                             predicted_binders[sample][allele][method][replicate[:-13]]= temp[0]
+                        os.chdir(project_root)
+
+                elif replicate[:-13:] == '12to20mer.txt':
+                    for allele in alleles:
+                        os.chdir('app/')
+                        temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-14]}/binders/{allele}/*.csv')
+                        if len(temp) != 0:
+                            predicted_binders[sample][allele][method][replicate[:-14]]= temp[0]
                         os.chdir(project_root)
 
     # print(predicted_binders)      
@@ -564,5 +599,7 @@ def getPredictionResusltsForUpset(taskId,alleles,methods,samples):
                         #     predicted_binders[allele][sample][method][replicate[:-13]]= temp[0]
                         # os.chdir(project_root)
                         predicted_binders[allele][sample].append(replicate[:-13])
+                    elif replicate[-13:] == '12to20mer.txt':
+                        predicted_binders[allele][sample].append(replicate[:-14])
 
     return predicted_binders
