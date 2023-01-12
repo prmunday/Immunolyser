@@ -22,95 +22,96 @@
                             for more operations. 
     </p> 
 
-<br>
 
-    <h3>Peptide consensus binding motif analysis</h3>
 
-<br>
+    <div hidden="{{ showSeqLogoandGibbsSection }}">
+        <br>
+        <h3>Peptide consensus binding motif analysis</h3>
+        <br>
 
-    <div class="seqlogo">
-    {% for sample, replicates in seqlogos.items() %}
-        <h4>{{sample}}</h4>
-        <div class="your-class">
-        {% for replicate in replicates %}
-            <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate[0]), width=10)}}" alt="" title="Sample size : {{replicate[1]}}">                
-        {%endfor%}
+        <div class="seqlogo">
+            {% for sample, replicates in seqlogos.items() %}
+                <h4>{{sample}}</h4>
+                <div class="your-class">
+                    {% for replicate in replicates %}
+                        <img src="{{ url_for('static',filename='images/{0}/{1}/seqlogos/{2}'.format(taskId,sample,replicate[0]), width=10)}}" alt="" title="Sample size : {{replicate[1]}}">                
+                    {%endfor%}
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+
+        <br>
+
+        <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.</p> 
+        <br>
     </div>
 
-<br>
+    <div hidden="{{ showSeqLogoandGibbsSection }}">
+        <h3>Peptide sequence analysis</h3>
+        <br>
 
-    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.
-    </p> 
+        <div class="container" style="max-height: 100%;">
+            <div class="row">
+                <div id="gibbsScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
 
-<br>
-
-    <h3>Peptide sequence analysis</h3>
-
-<br>
-
-    <div class="container" style="max-height: 100%;">
-        <div class="row">
-            <div id="gibbsScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
-
-                {% for sample, replicates in gibbsImages.items() %}
-                    <div class="row">
-                        <a data-toggle="collapse" href="#{{sample}}">{{sample}}</a>
-                        <br><br>
-                        <div id="{{sample}}" class="collapse show in">
-                            {% for replicate, gibbs in replicates.items() %}
-                                <div class="row" style="margin-left: 20px; margin-right: 10px;">
-                                    <input class="form-check-input" type="checkbox" value="" checked onchange="temp('{{taskId}}','{{sample}}','{{replicate}}',this.checked)">
-                                    <label class="form-check-label" for="flexCheckDefault">
-                                        {{replicate}}
-                                    </label>
-                                </div>
-                            {%endfor%}
-                        </div>
-                        <br>
-                    </div>
-                {% endfor %}
-
-
-            </div>
-            <div id="gibbsViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px; padding-right: 30px ; padding-left: 30px">
-
-                <div class="seqlogo">
                     {% for sample, replicates in gibbsImages.items() %}
-                        <h4>{{sample}}</h4>
-                        
-                        {% for replicate, gibbs in replicates.items() %}
-                            <div id="{{sample}}_{{replicate}}_view">
-                                <div class="row" style="margin-left: 30px;">
-                                    <h5>{{replicate}}</h5>
-                                    <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateCluster('{{taskId}}','{{sample}}','{{replicate}}',this)">
-                                        <option value="" selected>Clustering with highest KLD</option>
-                                        <option value="1">One cluster</option>
-                                        <option value="2">Two clusters</option>
-                                        <option value="3">Three clusters</option>
-                                        <option value="4">Four clusters</option>
-                                        <option value="5">Five clusters</option>
-                                    </select>
-                                    <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
-                                        <span class="sr-only">Loading...</span>
+                        <div class="row">
+                            <a data-toggle="collapse" href="#{{sample}}">{{sample}}</a>
+                            <br><br>
+                            <div id="{{sample}}" class="collapse show in">
+                                {% for replicate, gibbs in replicates.items() %}
+                                    <div class="row" style="margin-left: 20px; margin-right: 10px;">
+                                        <input class="form-check-input" type="checkbox" value="" checked onchange="temp('{{taskId}}','{{sample}}','{{replicate}}',this.checked)">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            {{replicate}}
+                                        </label>
                                     </div>
-                                </div>
-                                <br>
-
-                                {% for bar_plot,clusters  in gibbs.items() %}
-                                    <div class="your-class" id="{{sample}}_{{replicate}}">
-                                        <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/images/{3}'.format(taskId,sample,replicate,bar_plot), width=10)}}" alt="">                
-                                        {% for cluster  in clusters %}
-                                            <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/logos/{3}'.format(taskId,sample,replicate,cluster[0]), width=10)}}" alt="", title="Sample size : {{cluster[1]}}">                
-                                        {%endfor%}
-                                    </div>
-                                    <br>
                                 {%endfor%}
                             </div>
-                        {%endfor%}
+                            <br>
+                        </div>
                     {% endfor %}
-                </div>                
+
+
+                </div>
+                <div id="gibbsViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px; padding-right: 30px ; padding-left: 30px">
+
+                    <div class="seqlogo">
+                        {% for sample, replicates in gibbsImages.items() %}
+                            <h4>{{sample}}</h4>
+                            
+                            {% for replicate, gibbs in replicates.items() %}
+                                <div id="{{sample}}_{{replicate}}_view">
+                                    <div class="row" style="margin-left: 30px;">
+                                        <h5>{{replicate}}</h5>
+                                        <select style="margin-left: 10px;" class="col-3 custom-select custom-select-sm" onchange="updateCluster('{{taskId}}','{{sample}}','{{replicate}}',this)">
+                                            <option value="" selected>Clustering with highest KLD</option>
+                                            <option value="1">One cluster</option>
+                                            <option value="2">Two clusters</option>
+                                            <option value="3">Three clusters</option>
+                                            <option value="4">Four clusters</option>
+                                            <option value="5">Five clusters</option>
+                                        </select>
+                                        <div style="margin-left: 20px;" class="spinner-border" role="status" hidden>
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    {% for bar_plot,clusters  in gibbs.items() %}
+                                        <div class="your-class" id="{{sample}}_{{replicate}}">
+                                            <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/images/{3}'.format(taskId,sample,replicate,bar_plot), width=10)}}" alt="">                
+                                            {% for cluster  in clusters %}
+                                                <img src="{{ url_for('static',filename='images/{0}/{1}/gibbscluster/{2}/logos/{3}'.format(taskId,sample,replicate,cluster[0]), width=10)}}" alt="", title="Sample size : {{cluster[1]}}">                
+                                            {%endfor%}
+                                        </div>
+                                        <br>
+                                    {%endfor%}
+                                </div>
+                            {%endfor%}
+                        {% endfor %}
+                    </div>                
+                </div>
             </div>
         </div>
     </div>
@@ -190,11 +191,6 @@
     }
 
     </script>
-
-<br>
-    
-    <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.
-    </p> 
 
 <br>
     {% if predicted_binders is not none %}
