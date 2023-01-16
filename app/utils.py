@@ -459,6 +459,10 @@ def saveBindersData(taskId, alleles, method):
                             .sort_values(by=['%Rank_best'])[['PlainPeptide','%Rank_best','Binding Level','Control']]\
                             .merge(input_file, on='PlainPeptide',how='left')\
                             .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-14],allele,replicate[:-14],allele,method), index=False)
+                        
+                        # Saving the predicted core and saving it in 9mer file which will be used for Seq2Logo and GibbsCluster
+                        f[['Core_best']]\
+                            .to_csv(os.path.join(data_mount, taskId, sample, replicate[:-14]+'_9mer.txt'), header=False, index=False)
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
