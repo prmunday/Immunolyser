@@ -23,8 +23,8 @@
     </p> 
 
 
+    {% if showSeqLogoandGibbsSection %}
 
-    <div hidden="{{ showSeqLogoandGibbsSection }}">
         <br>
         <h3>Peptide consensus binding motif analysis</h3>
         <br>
@@ -44,9 +44,10 @@
 
         <p class="text-justify">Above are the sequence logos for each replicate (if any) of all samples uploaded. Seq2Logo is applied to generate these sequence logos using the Kullback-Leibler approach.</p> 
         <br>
-    </div>
 
-    <div hidden="{{ showSeqLogoandGibbsSection }}">
+    {% endif %}
+
+    {% if showSeqLogoandGibbsSection %}
         <h3>Peptide sequence analysis</h3>
         <br>
 
@@ -114,7 +115,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <script>
         function temp(taskId,sample,replicate,checked){
