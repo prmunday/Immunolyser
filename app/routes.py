@@ -210,34 +210,6 @@ def initialiser():
     # Saving 9mer of each file including duplicates. This will be used for the peptide distribution graph
     # This needs to be update in the case of mhc2 class predictions as the core will the longer and adjusted
     saveNmerData(dirName, sample_data, peptideLength=9, unique=False)
-
-    # # Calling script to generate sequence logos
-    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
-
-    # # Method to return names of png files of seqlogos
-    # # This value is supposed to be returned from saveNmerDate method but for now writting
-    # # temporary script to return names of seqlogos pngs files in a dictionary.
-    
-    # Generating Seq2Logos and GibbsCluster only if MHC 2 class of interest
-    if mhcclass == 'mhc1':
-
-        # Calling script to generate sequence logos
-        subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
-        seqlogos = getSeqLogosImages(sample_data)
-        
-        # Calling script to generate gibbsclusters
-        subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
-
-        # Getting names of the gibbscluster
-        gibbsImages = getGibbsImages(taskId, sample_data)
-
-        showSeqLogoandGibbsSection = True
-
-    elif mhcclass == 'mhc2' :
-        seqlogos = {}
-        gibbsImages = {}
-
-        showSeqLogoandGibbsSection = False
    
     # Generating binding predictions
     if alleles!="":    
@@ -257,6 +229,25 @@ def initialiser():
     
     upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
 
+        # # Calling script to generate sequence logos
+    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+
+    # # Method to return names of png files of seqlogos
+    # # This value is supposed to be returned from saveNmerDate method but for now writting
+    # # temporary script to return names of seqlogos pngs files in a dictionary.
+    
+    # Generating Seq2Logos and GibbsCluster only if MHC 2 class of interest
+    # Calling script to generate sequence logos
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+    seqlogos = getSeqLogosImages(sample_data)
+
+    # Calling script to generate gibbsclusters
+    subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
+
+    # Getting names of the gibbscluster
+    gibbsImages = getGibbsImages(taskId, sample_data)
+
+    showSeqLogoandGibbsSection = True
     
     # Do show Majority Voted option when MHC Class 2 analysis
     if mhcclass == 'mhc2':
