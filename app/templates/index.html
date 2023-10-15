@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<br>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>Welcome to Immunolyser 1.0</h1>
+
+            <br>
+
+            <div style="text-align:justify;">
+
+                <br>
+                <p>Immunolyser is an automated web-based tool developed for immunologists to analyse immunopeptidomics data in a seamless pipeline based on the integration of multiple computational tools for peptide analysis. The pipeline generates a comprehensive report summarising the sequence conservation, clustering of similar peptides in groups, and prediction of binding affinity to various MHC allotypes based on the uploaded peptide data. The pipeline has a user-friendly interface available online, with no requirement of programming experience.
+
+                <br>
+                
+                <p>
+                    Please refer to the <a href="{{ url_for('help') }}">help</a> page for detailed guidelines on how to use the pipeline and analyse the web-based output reports.
+                </p>
+
+                <p>
+                    If you find Immunoloyser helpful, please consider citing us in your study:<br>
+                    <i>Prithvi Raj Munday, Joshua Fehring, Jerico Revote, Kirti Pandey, Mohammad Shahbazy, Katherine E Scull, Sri H. Ramarathinam, Pouya Faridi, Nathan P. Croft, Asolina Braun, Chen Li, and Anthony W. Purcell. Immunolyser: a web-based computational pipeline for analysing and mining immunopeptidomic data. Computational and Structural Biotechnology Journal, 2023.</i>
+                </p>
+                
+                <H4>How to use Immunolyser?</H4>
+                <p>
+                    Use the <a href="{{ url_for('initialiser') }}">Initialiser</a> module to submit a job. Following input will be required to run the analysis.
+                    
+                    <ul>
+                        <li><b>Sample file(s)</b>: The sample file needed is a csv file and should have a 'Peptide' column. 'Length' and 'Accession' columns (optional), or other additional columns can be present but will not interfere with analysis. Multiple samples can be uploaded and for every sample, multiple replicate files can be uploaded by selecting multiple files.</li>
+                        <li><b>Control file(s)</b> (optional): The control file is a csv file and should have a 'Peptide' column. Peptides present in this file are labelled as 'control' in downloadable results files. Users can also upload multiple control files in case control datasets are present across different files.</li>
+                        <li><b>Alleles of interest</b> (optional): MHC-I/II alleles of interest can be chosen for peptide-MHC binding predictions.</li>
+                        <li><font color="red"><b>Running time</b>: Once submitted, please wait patiently as Immunolyser will take a while to finish processing and analysing the submitted data. Please do not refresh or close the page.</font></li>
+                    </ul>
+                </p>
+                
+                <H4>Demo and example input</H4>
+
+                <p>
+                    A demo report has been generated to demonstrate the organisation and features of analysis results. It can be accessed by clicking on the <a href="{{ url_for('demo') }}">Demo</a> tab. To test the pipeline end-to-end, the example files (exported from PEAKs) can be downloaded from <a href="/static/temp/Study by Pandey et al Dateset.zip" target="_blank"> here</a> and uploaded in the demo <a href="{{ url_for('initialiser') }}">initialiser</a> module to run the analysis. The dataset provided and used to generate the demo report are from the recent immunopeptidomic study by Pandey et al. In addition, we attached <a href="/static/temp/demo data from multiple softwares.zip" target="_blank"> example input files</a> exported from other search engines, including Skyline, ProteinPilot, Spectronaut, and DIA-NN. 
+                </p>
+
+                <H4>References</H4>
+                <p>
+                    Following are the tools used in the pipeline to conduct the analysis.
+
+                    <ol>
+                        <li><b>Seq2Logo 2.0</b>: A method for construction and visualization of amino acid binding motifs and sequence profiles including sequence weighting, pseudo counts and two-sided representation of amino acid enrichment and depletion. <i>Martin Christen Frolund Thomsen; Morten Nielsen, Nucleic Acids Research 2012; 40 (W1): W281-W287</i>.</li>
+                        <li><b>GibbsCluster 2.0</b>: Unsupervised clustering and alignment of peptide sequences. <i>Andreatta M, Alvarez B, Nielsen M, Nucleic Acids Research (2017) doi: 10.1093/nar/gkx248</i>.</li>
+                        <li><b>NetMHCpan 4.1</b>: Improved predictions of MHC antigen presentation by concurrent motif deconvolution and integration of MS MHC eluted ligand data. <i>Birkir Reynisson, Bruno Alvarez, Sinu Paul, Bjoern Peters and Morten Nielsen, Nucleic Acids Research, May 2020, https://doi.org/10.1093/nar/gkaa379</i>.</li>
+                        <li><b>Anthem</b>: a user customised tool for fast and accurate prediction of binding between peptides and HLA class I molecules. <i>Mei S, Li F, Xiang D, et al. Brief Bioinform 2021. doi:10.1093/bib/bbaa415</i>.</li>
+                        <li><b>MixMHCpred 2.1</b>: <i>Bassani-Sternberg M et al. Deciphering HLA motifs across HLA peptidomes improves neo-antigen predictions and identifies allostery regulating HLA specificity, PLoS Comp Bio (2017) </i> and <i>Gfeller et al. The length distribution and multiple specificity of naturally presented HLA-I ligands, J Immunol (2018)</i>.</li>
+                        <li><b>MixMHC2pred</b>: <i> Racle J, Michaux J, Rockinger GA et al. Robust prediction of HLA class II epitopes by deep motif deconvolution of immunopeptidomes, Nat Biotechnol 2019;37:1283-1286</i>.</li>
+                    </ol>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+    <br>
+{% endblock %}

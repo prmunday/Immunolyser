@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div id="message_id" hidden>Thanks for your feedback. :)</div>
+
+{% if feedback is not none %}
+<script>
+
+        var msg_value = document.getElementById('message_id').innerHTML;
+        Swal.fire({
+        icon: 'success',
+        title: 'Thanks!!',
+        text:  msg_value  });
+    </script>
+{% endif %}
+    
+    <form action="" method="post">
+
+    
+        <div class="form-floating">
+            <textarea class="form-control" rows="10" placeholder="Please leave your valuable feedback here." id="feedback" name="feedback"></textarea>
+        </div>
+
+        <br><br>
+        <input class="col-md-12 mb-3" id="submit" name="submit" type="submit" value="Submit">
+
+    </form>
+{% endblock %}

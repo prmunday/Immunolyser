@@ -1,0 +1,33 @@
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if index %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('index') }}">Home<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item {% if initialiser %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('initialiser') }}">Initialiser</a>
+                </li>
+                <li class="nav-item {% if analytics %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('analytics') }}">Generic Analysis</a>
+                </li>
+                <li class="nav-item {% if pepscanner %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('pepscanner') }}">Pepscanner</a>
+                </li>
+                <li class="nav-item {% if demo %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('demo') }}" target="_blank">Demo</a>
+                </li>
+                <li class="nav-item {% if feedback %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('feedback') }}" target="_blank">Feedback</a>
+                </li>
+                <li class="nav-item {% if help %}active{% endif %}">
+                  <a class="nav-link" href="{{ url_for('help') }}">Help</a>
+                </li>
+              </ul>
+              <span class="navbar-text">
+                {% if analytics %}Task ID: {{taskId}}{% endif %}
+              </span>
+              <span id="taskId" hidden>{{taskId}}</span>
+            </div>
+          </nav>
+    </header>
