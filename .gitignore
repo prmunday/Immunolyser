@@ -1,4 +1,6 @@
-immunolyser-data
 app/tools
 config.py
-app/static/images
+app/static/images/*
+app/__pycache__/*
+immunuolyser-data/*
+__pycache__/
