@@ -242,12 +242,12 @@ def initialiser():
     
     # Generating Seq2Logos and GibbsCluster only if MHC 2 class of interest
     # Calling script to generate sequence logos
-    subprocess.check_call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
+    subprocess.check_call('python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
     seqlogos = getSeqLogosImages(sample_data)
     # seqlogos = {}
 
     # Calling script to generate gibbsclusters
-    subprocess.check_call('sudo python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
+    subprocess.check_call('python3 {} {} {}'.format(os.path.join('app', 'gibbscluster.py'), taskId, data_mount), shell=True)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
@@ -429,7 +429,7 @@ def createGibbsBar():
         if os.path.exists(dirpath) and os.path.isdir(dirpath):
             shutil.rmtree(dirpath)
 
-        subprocess.check_call('sudo python3 {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate), shell=True)
+        subprocess.check_call('python3 {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate), shell=True)
 
         barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
@@ -451,7 +451,7 @@ def createGibbsBar():
         seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
         if len(seqClusters) != int(cluster):
-            subprocess.check_call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, int(cluster)), shell=True)
+            subprocess.check_call('python3 {} {} {} {} {} {}'.format(os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, int(cluster)), shell=True)
             seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
     # Adding information regarding number of peptides in the core
@@ -643,9 +643,9 @@ def getSeqLogo():
 
     seqLogoLocation = os.path.join(project_root,'app','static','images',taskId,'seqLogoApi')
 
-    print('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides))
+    print('python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides))
 
-    subprocess.check_call('sudo python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
+    subprocess.check_call('python3 {} {} {} {} {} {}'.format(os.path.join('app','seqlogoAPI.py'),peptides_location_forseqlogo,seqLogoLocation,name,nine_mers,total_peptides), shell=True)
 
     return os.path.join('static','images',taskId,'seqLogoApi-001.jpg')
 
