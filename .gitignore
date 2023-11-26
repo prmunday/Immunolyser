@@ -1,2 +1,4 @@
 immunolyser-data
 app/tools
+config.py
+app/static/images
