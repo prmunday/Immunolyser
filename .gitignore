@@ -4,4 +4,4 @@ app/static/images/*
 app/__pycache__/*
 __pycache__/
 immunolyser-data/*
-venv/*
+lenv/*
