@@ -121,10 +121,19 @@ def initialiser():
 #     sample1 = {}
 #     sample2 = {}
 
-    alleles_unformatted = request.form.get('alleles')
-
     mhcclass = request.form.get('MHCClass')
     print('MHC Class of Interest', mhcclass)
+
+    alleles_unformatted = request.form.get('alleles')
+
+    if (mhcclass == 'mhc2'):
+        valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_Class2_allele_names_unformatted.txt"))
+    else :
+        valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_allele_names_unformatted.txt"))
+
+    if not valid_alleles_present:
+        return "Valid alleles not passed for the job."
+
     # saving mhc class selected in a file
     mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
     mhcclass_selected_file.write(mhcclass)
@@ -800,3 +809,21 @@ def validate_sample_name(input_text):
 
     # If all checks pass, the input is valid
     return True, "Name is valid."
+
+def croos_check_the_allele(items, file_path):
+    with open(file_path, 'r') as file:
+        # Read lines from the file
+        file_content = file.readlines()
+
+        # Remove newline characters from each line
+        file_content = [line.strip() for line in file_content]
+
+        # Split the input items into a list
+        input_items = items.split(',')
+
+        # Check if each item is present in the file
+        for item in input_items:
+            if item not in file_content:
+                return False, f"Allele '{item}' not found in the file."
+
+    return True, "All alleles are present in the file."
