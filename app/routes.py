@@ -391,6 +391,8 @@ def createGibbsBar():
     
     cluster = request.form['cluster']
     taskId = request.form['taskId']
+    if is_valid_uuid(taskId) == False:
+        return f"The ID '{taskId}' is not a valid task ID."
     replicate = request.form['replicate']
     sample = request.form['sample']
 
@@ -444,6 +446,8 @@ def getBinders():
 
     tool = request.form['tool']
     taskId = request.form['taskId']
+    if is_valid_uuid(taskId) == False:
+        return f"The ID '{taskId}' is not a valid task ID."
     allele = request.form['allele']
     listonly = request.form['list']
     replicates = request.form['replicates']
@@ -544,6 +548,8 @@ def getBinders():
 def getOverLapPeptides():
 
     taskId = request.form['taskId']
+    if is_valid_uuid(taskId) == False:
+        return f"The ID '{taskId}' is not a valid task ID."
     replicates = request.form['replicates']
 
     res = []
@@ -586,6 +592,8 @@ def getSeqLogo():
 
 
     taskId = request.form['taskId']    
+    if is_valid_uuid(taskId) == False:
+        return f"The ID '{taskId}' is not a valid task ID."
     elems = request.form['elems']
 
     # print(type(elems))
