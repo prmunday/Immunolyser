@@ -6766,6 +6766,9 @@
 </div>
 
 <script>
+
+	// Define a global variables
+	var maxLengthSampleName = 30;
 	sampleId = 1;
 
 	// Setting up valied MHC alleles
@@ -6946,25 +6949,39 @@
 
 	function checkSampleName(sample_name){
 
-		characters_not_dir_name = ['\\','/',':','*','?','"','<','>','|',' ']
+		if (sample_name==''){
+			showSpinner(false);
+			alert('Please enter a name each of the sample.');
+			return false;
+		}
 
-		for(i=0;i<characters_not_dir_name.length;i++){
-			
-			if (sample_name==''){
-				showSpinner(false);
-				alert('Please enter a name each of the sample.');
-				return false;
-			}
-
-			if (sample_name.includes(characters_not_dir_name[i])){
-				showSpinner(false);
-				alert('Sample name should not contain special character: \n/ \\ : * ? " < > | space');
-				return false;
-			}
+		if(validateAlphanumeric(sample_name)== false){
+			showSpinner(false);
+			alert("Invalid input. Sample name should only contian alphanumeric characters.");
+			return false;
+		}
+		
+		if (validateStringLength(sample_name) == false){
+			showSpinner(false);
+			alert("Invalid input. Please enter a sample name with a maximum length of " + maxLengthSampleName + " characters.");
+			return false;
 		}
 
 		return true;
 	}
+
+	function validateAlphanumeric(input) {
+		// Define a regular expression for alphanumeric characters
+		var alphanumericRegex = /^[a-zA-Z0-9]+$/;
+
+		// Test the input against the regular expression
+		return alphanumericRegex.test(input);
+    }
+
+	function validateStringLength(input) {
+		// Check if the input length is within the specified limit
+		return input.length <= maxLengthSampleName;
+    }
 
 	var col_warning = false
 	cols = ['Peptide'];
