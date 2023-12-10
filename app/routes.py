@@ -50,6 +50,11 @@ def initialiser():
     for key, value  in request.files.items():
         sample_name = request.form[key]
 
+        is_valid, message = validate_sample_name(sample_name)
+
+        if not is_valid:
+            print("Sample name is not valid. " + message)
+
         # Skipping Control Data
         # if sample_name == "Control":
         #     continue
@@ -779,3 +784,19 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
 def demo():
     global DEMO_TASK_ID
     return getExistingReport(DEMO_TASK_ID)
+
+def validate_sample_name(input_text):
+    # Check if the input is not null
+    if not input_text:
+        return False, "Name cannot be null."
+
+    # Check if the input is not more than 30 characters
+    if len(input_text) > 30:
+        return False, "Nmae must not exceed 30 characters."
+
+    # Check if the input contains only alphanumeric characters
+    if not re.match("^[a-zA-Z0-9]+$", input_text):
+        return False, "Name must contain only alphanumeric characters."
+
+    # If all checks pass, the input is valid
+    return True, "Name is valid."
