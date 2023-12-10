@@ -16,11 +16,9 @@ import shutil
 from app.Pepscan import PepScan
 import re
 from collections import Counter,OrderedDict
+import uuid
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
-
-# Experiment ID
-TASK_COUNTER = 0
 
 # DEMO Task ID
 DEMO_TASK_ID = "202302040318103"
@@ -281,8 +279,8 @@ def getExistingReport(taskId):
     if str(taskId) == DEMO_TASK_ID:
         demo = True
         pass
-    elif str(taskId).isnumeric() == False:
-        return 'No task id recieved to generate old report'
+    elif is_valid_uuid(taskId) == False:
+        return f"The ID '{taskId}' is not a valid task ID."
 
     # Confirming the project root is correct
     os.chdir(project_root)
@@ -370,11 +368,22 @@ def getExistingReport(taskId):
 
 # Method to manage experiment ID
 def getTaskId():
-    global TASK_COUNTER
-    TASK_COUNTER = TASK_COUNTER+1
-    task_Id = time.strftime("%Y%m%d%H%M%S")+str(TASK_COUNTER)
+    # Generate a random UUID
+    unique_id = uuid.uuid4()
 
-    return task_Id
+    # Convert UUID to string
+    unique_id_str = str(unique_id)
+
+    return unique_id_str
+
+def is_valid_uuid(submission_id):
+    try:
+        # Try to create a UUID object from the given string
+        uuid_obj = uuid.UUID(submission_id)
+        return True
+    except ValueError:
+        # ValueError will be raised if the string is not a valid UUID
+        return False
 
 # This method is to create the bar graphs for an input file not created already
 @app.route("/api/generateGibbs", methods=["POST"])
