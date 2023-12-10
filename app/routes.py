@@ -368,36 +368,6 @@ def getExistingReport(taskId):
 
     return render_template('analytics.html', overlapLayout=overlapLayout, taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
 
-@app.route("/feedback", methods=["POST", "GET"])
-def feedback():
-
-    if 'feedback' not in request.form.keys():
-        return render_template("feedback.html", feedback=None)
-
-    if len(request.form.get('feedback'))==0:
-        return render_template("feedback.html", feedback=None)
-        
-
-    data_mount = app.config['IMMUNOLYSER_DATA']
-
-    dirName = os.path.join(data_mount,'feedback')
-    try:
-        # Create target Directory
-        os.makedirs(dirName)
-        print("Directory " , dirName ,  " Created ") 
-    except FileExistsError:
-        print("Directory " , dirName ,  " already exists")
-
-    feedback_file = open(os.path.join(dirName,'feedback.txt'), 'a')
-
-    feedback_file.write(request.form.get('feedback')+'\n\n---Feedback---\n\n')
-    # Close the file
-    feedback_file.close()
-
-   
-    
-    return render_template("feedback.html", feedback=True)
-
 # Method to manage experiment ID
 def getTaskId():
     global TASK_COUNTER
