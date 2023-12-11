@@ -155,7 +155,7 @@ def saveNmerData(location, samples, peptideLength = 9, unique = True):
             if type(peptideLength) == int:
                 replicate_data[replicate_data.Length == peptideLength]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength)+file_extension), header=False, index=False)
             else:
-                replicate_data[replicate_data['Length'].between(peptideLength[0], peptideLength[1], inclusive=True)]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength[0])+'to'+str(peptideLength[1])+file_extension), header=False, index=False)
+                replicate_data[replicate_data['Length'].between(peptideLength[0], peptideLength[1], inclusive='both')]['Peptide'].to_csv(os.path.join(location, file_name, replicate_name[:-4]+'_'+str(peptideLength[0])+'to'+str(peptideLength[1])+file_extension), header=False, index=False)
 
 
 def getSeqLogosImages(samples_data):
