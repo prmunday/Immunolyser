@@ -1,5 +1,4 @@
 app/tools
-config.py
 app/static/images/*
 app/__pycache__/*
 __pycache__/
