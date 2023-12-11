@@ -131,7 +131,7 @@ def initialiser():
     else :
         valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_allele_names_unformatted.txt"))
 
-    if not valid_alleles_present:
+    if alleles_unformatted != "" and not valid_alleles_present:
         return "Valid alleles not passed for the job."
 
     # saving mhc class selected in a file
