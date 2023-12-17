@@ -21,7 +21,7 @@ import uuid
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
 # DEMO Task ID
-DEMO_TASK_ID = "202302040318103"
+DEMO_TASK_ID = app.config['DEMO_TASK_ID']
 
 data_mount = app.config['IMMUNOLYSER_DATA']
 

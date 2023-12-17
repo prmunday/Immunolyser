@@ -5,3 +5,6 @@ class Config(object):
 
     # Location to store all the data
     IMMUNOLYSER_DATA = os.environ.get('IMMUNOLYSER_DATA')
+
+    # Task id of demo job
+    DEMO_TASK_ID = os.environ.get('DEMO_TASK_ID')
