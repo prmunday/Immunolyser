@@ -295,7 +295,7 @@ def getExistingReport(taskId):
         demo = True
         pass
     elif is_valid_uuid(taskId) == False:
-        return f"The ID '{taskId}' is not a valid task ID."
+        return f"The given ID is not a valid task ID."
 
     # Confirming the project root is correct
     os.chdir(project_root)
