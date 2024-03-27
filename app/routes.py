@@ -805,7 +805,7 @@ def validate_sample_name(input_text):
         return False, "Nmae must not exceed 30 characters."
 
     # Check if the input contains only alphanumeric characters
-    if not re.match("^[a-zA-Z0-9]+$", input_text):
+    if not re.match("^[a-zA-Z0-9_]+$", input_text):
         return False, "Name must contain only alphanumeric characters."
 
     # If all checks pass, the input is valid
