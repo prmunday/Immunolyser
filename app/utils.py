@@ -291,6 +291,10 @@ def generateBindingPredictions(taskId, alleles, method):
 
                 elif replicate[-7:] == 'mer.txt':
                     if(method=='ANTHEM'):
+                        
+                        # Skip ANTHEM processing if nothibng to process
+                        if os.path.getsize('{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)) == 0:
+                            continue
 
                         # Here, the peptides which can be accpeted by Anthem will be carry forwarded
                         temp = list()
@@ -382,6 +386,9 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                     input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
                 elif replicate[-13:]=='12to20mer.txt':
                     input_file = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-14]))
+
+                # Dropping null Peptides
+                input_file = input_file[input_file['Peptide'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
 
                 # Adding Colunm to represen the peptides without the PTM changes
                 input_file['PlainPeptide'] = input_file.apply(lambda x : omitPTMContent(x['Peptide']),axis=1)
