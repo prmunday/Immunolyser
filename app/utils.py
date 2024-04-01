@@ -107,6 +107,9 @@ def filterPeaksFile(samples, minLen=1, maxLen=133):
 #       Temporary variable to store the changes done because of filtering process
         temp = sample
         
+#       Dropping null Peptides
+        temp = temp[temp['Peptide'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
+
 #       Removing contamincation founf from accession number
         if temp.columns.__contains__('Accession'):
             temp = temp[temp.apply(lambda x : str(x['Accession']).find('CONTAM') == -1,axis=1)]
