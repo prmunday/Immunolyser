@@ -6882,21 +6882,14 @@
 		alleleText = document.getElementById('alleles');
 		
 		var selected_class = document.getElementById("MHCClass").value;
-		// If MHC Class one of interest, then warning to select alleles
-		if (selected_class == "mhc1" && alleleText.value.length==0){
+		// Warning to select alleles
+		if (alleleText.value.length==0){
 			if(allele_warning==false){
 				showSpinner(false);
 				alert('If the form is submitted without the allele names, no binding prediction will be performed');
 				allele_warning = true;
 				return false;
 			}
-		}
-
-		// If MHC Class two of interest, then required alleles validation
-		else if(selected_class == "mhc2" && alleleText.value.length==0){
-			showSpinner(false);
-			alert('Alleles are required for MHC Class II analysis. Please select alleles of interest.');
-			return false;
 		}
 
 		var alleleText = document.forms["login"]["alleles"].value;
