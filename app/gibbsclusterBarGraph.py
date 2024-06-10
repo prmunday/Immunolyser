@@ -15,5 +15,5 @@ print(os.popen('perl ./app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA_for_bar.p
         -H R \
         -G ./../../../../../../../../app/tools/seq2logo-2.1/Seq2Logo.py \
         -g 1-5 \
-        -k 4 \
-        -R {}/app/static/images/{}/{}/gibbscluster/{} '.format(data_mount,task_id, sample, replicate, os.getcwd(), task_id, sample, replicate[:-9])).read())
+        -k {} \
+        -R {}/app/static/images/{}/{}/gibbscluster/{} '.format(data_mount,task_id, sample, replicate, os.cpu_count(), os.getcwd(), task_id, sample, replicate[:-9])).read())
