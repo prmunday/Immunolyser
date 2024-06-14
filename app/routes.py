@@ -260,7 +260,7 @@ def initialiser():
     # seqlogos = {}
 
     # Calling script to generate gibbsclusters
-    subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount], shell=False)
+    subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass], shell=False)
 
     # Getting names of the gibbscluster
     gibbsImages = getGibbsImages(taskId, sample_data)
@@ -413,6 +413,10 @@ def createGibbsBar():
 
     print(f'generateGibbs : Passed params : Cluster={cluster}, taskId={taskId}, replicate={replicate}, sample={sample}')
 
+    # MHC Class of Interest
+    with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
+        mhcclass = f.readline()
+
     barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
     if len(barLocation) ==1:
@@ -447,7 +451,7 @@ def createGibbsBar():
         seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
         if len(seqClusters) != int(cluster):
-            subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster], shell=False)
+            subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster, mhcclass], shell=False)
             seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
     # Adding information regarding number of peptides in the core
