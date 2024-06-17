@@ -49,7 +49,7 @@ def plot_lenght_distribution(samples, hist="percent"):
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
 
             title = 'The frequency distribution of the peptide lengths'
-            yaxis_label = 'Numebr of Peptides'
+            yaxis_label = 'Number of Peptides'
 
         bardatacombined = pd.concat(peptideProportion, axis=1).apply(lambda x : mean(x), axis=1)
         bardatacombined = bardatacombined.to_frame().reset_index().rename(columns= {0: 'Count'})
