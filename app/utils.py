@@ -58,7 +58,7 @@ def plot_lenght_distribution(samples, hist="percent"):
         if (len(peptideProportion)>1):
 
             # Combining arrays to further calculate the standard deviation
-            errors = pd.concat(peptideProportion, axis=1).apply(lambda x : stdev(x), axis=1)
+            # errors = pd.concat(peptideProportion, axis=1).apply(lambda x : stdev(x), axis=1)
 
             fig.add_trace(go.Bar(
                                 x = bardatacombined['Length'], 
@@ -67,7 +67,7 @@ def plot_lenght_distribution(samples, hist="percent"):
                                 error_y= dict( 
                                     type='data', 
                                     # array=sample.getPeptideLengthError()/2,
-                                    array=errors,
+                                    # array=errors,
                                     color='green', 
                                     thickness=1, 
                                     width=3, 
