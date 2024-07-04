@@ -1,5 +1,5 @@
 from pandas.tseries.offsets import Second
-from app import app
+from app import app, celery
 from flask import render_template, request, jsonify
 from app import sample
 from app.forms import InitialiserForm, ParentForm
@@ -25,15 +25,38 @@ DEMO_TASK_ID = app.config['DEMO_TASK_ID']
 
 data_mount = app.config['IMMUNOLYSER_DATA']
 
-@app.route("/initialiser", methods=["POST", "GET"])
-def initialiser():    
-    samples = []
 
+@app.route("/initialiser", methods=["POST", "GET"])
+def initialiser():
+
+    if request.method == 'GET':
+        # Handle GET request
+        return render_template("initialiser.html", initialiser=True)
+    elif request.method == 'POST':
+        # Handle POST request
+
+        # Initialiser needs following values when submitting a new job
+        # taskId
+        # request object
+        request_data = request.get_json()
+        for key, value  in request.files.items():
+            sample_name = request.form[key]
+            print(sample_name)
+
+        task = submit_job.delay(request_data)
+        return f'Request for Immunolyser report has been received. Task ID is {task.id}'
+
+@celery.task(name='app.submit_job', bind=True)
+def submit_job(self, request_data):    
+
+    return f"Nothing"
+    samples = []
     # Have to take this input from user
     maxLen = 30
     minLen = 5
 
-    taskId = getTaskId()
+    taskId = self.request.id
+    request = request_data['request_data']
     dirName = os.path.join(data_mount, taskId)
     try:
         # Create target Directory
