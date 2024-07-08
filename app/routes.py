@@ -1,22 +1,11 @@
-from pandas.tseries.offsets import Second
 from app import app, celery
 from flask import render_template, request, jsonify
-from app import sample
-from app.forms import InitialiserForm, ParentForm
-import pandas as pd
-import os
-import subprocess
 from werkzeug.utils import secure_filename
 from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData
-from app.sample import Sample
-import time
 from pathlib import Path
-import glob
-import shutil
 from app.Pepscan import PepScan
-import re
 from collections import Counter,OrderedDict
-import uuid
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -24,6 +13,9 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 DEMO_TASK_ID = app.config['DEMO_TASK_ID']
 
 data_mount = app.config['IMMUNOLYSER_DATA']
+logger = logging.getLogger(__name__)
+# Configure logging format and level as needed
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
 @app.route("/initialiser", methods=["POST", "GET"])
@@ -35,28 +27,49 @@ def initialiser():
     elif request.method == 'POST':
         # Handle POST request
 
-        # Initialiser needs following values when submitting a new job
-        # taskId
-        # request object
-        request_data = request.get_json()
-        for key, value  in request.files.items():
-            sample_name = request.form[key]
-            print(sample_name)
+        # Create list of sample names and the files information
+        samples = {}
+        files_info = {}
+        for key, file_list  in request.files.items():
 
-        task = submit_job.delay(request_data)
+            # Processing content first
+            replicates_object = {}
+            replicates = request.files.getlist(key)
+            for replicate in replicates:
+                file_filename = secure_filename(replicate.filename)
+                file_content = replicate.read()
+                file_content_base64 = base64.b64encode(file_content).decode('utf-8')
+                replicates_object[file_filename] = file_content_base64
+
+            samples[request.form[key]] = replicates_object
+
+    #         filename = secure_filename(file.filename)
+    # file_content = file.read()  # R
+
+        mhcclass = request.form.get('MHCClass')
+        alleles_unformatted = request.form.get('alleles')
+        # Prediction tools selected by the user
+        if (mhcclass == 'mhc2'):
+            predictionTools = ['MixMHC2pred']
+        else :
+            predictionTools = request.form.getlist('predictionTools')
+
+
+        task = submit_job.delay(samples, mhcclass, alleles_unformatted, predictionTools)
         return f'Request for Immunolyser report has been received. Task ID is {task.id}'
 
 @celery.task(name='app.submit_job', bind=True)
-def submit_job(self, request_data):    
+def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):    
 
-    return f"Nothing"
-    samples = []
     # Have to take this input from user
     maxLen = 30
     minLen = 5
+    logger.info('MHC Class of Interest: %s', mhcclass)
+    logger.info('alleles_unformatted: %s', alleles_unformatted)
+    logger.info('Prediction tools selected: : %s', predictionTools)
 
     taskId = self.request.id
-    request = request_data['request_data']
+    
     dirName = os.path.join(data_mount, taskId)
     try:
         # Create target Directory
@@ -70,8 +83,7 @@ def submit_job(self, request_data):
     control = list()
 
     # Creating folders to store images
-    for key, value  in request.files.items():
-        sample_name = request.form[key]
+    for sample_name in samples.keys():
 
         is_valid, message = validate_sample_name(sample_name)
 
@@ -94,8 +106,7 @@ def submit_job(self, request_data):
             print("Directory already exists")    
 
     # Saving the data and loading into the dictionary
-    for key, value  in request.files.items():
-        sample_name = request.form[key]
+    for sample_name, replicates in samples.items():
 
         # Creating sub directories to store sample data
         try:
@@ -108,14 +119,16 @@ def submit_job(self, request_data):
         # if sample_name != "Control":
         data[sample_name] = list()
 
-        replicates = request.files.getlist(key)
         print("replics name : {}".format(replicates))
-        for replicate in replicates:
-            file_filename = secure_filename(replicate.filename)
+        for file_filename, file_content_base64 in replicates.items():
+
+            replicate = base64.b64decode(file_content_base64)
 
             # If there is no control file uploaded then there is no point to save it.
             if file_filename != "":
-                replicate.save(os.path.join(dirName, sample_name, file_filename))
+
+                with open(os.path.join(dirName, sample_name, file_filename), 'wb') as f:
+                    f.write(replicate)
 
             # Not including the control group in sample data dict
             # if sample_name != "Control":
@@ -144,10 +157,8 @@ def submit_job(self, request_data):
 #     sample1 = {}
 #     sample2 = {}
 
-    mhcclass = request.form.get('MHCClass')
-    print('MHC Class of Interest', mhcclass)
 
-    alleles_unformatted = request.form.get('alleles')
+
 
     if (mhcclass == 'mhc2'):
         valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_Class2_allele_names_unformatted.txt"))
@@ -167,13 +178,7 @@ def submit_job(self, request_data):
     allele_file.write(alleles_unformatted)
     allele_file.close()
 
-    # Prediction tools selected by the user
-    if (mhcclass == 'mhc2'):
-        predictionTools = ['MixMHC2pred']
-    else :
-        predictionTools = request.form.getlist('predictionTools')
-    print("Prediction tools selected: {}".format(predictionTools))
-
+    
     # saving used prediction tools
     predictiontools = open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt"), "w")
     predictiontools.write(','.join(predictionTools))
