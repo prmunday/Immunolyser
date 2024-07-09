@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+
+    <div class="d-flex align-items-center">
+        <button id="checkStatusBtn" class="btn btn-primary mr-auto" onclick="checkStatus()">Check Status</button>
+        <div id="statusMessage" class="ml-auto"></div>
+    </div>    
+</div>
+
+<script>
+    function checkStatus() {
+        const jobId = '{{ message.split("Task ID is ")[1] }}';  // Extract the job ID from the message
+        fetch(`/check_status/${jobId}`)
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById('checkStatusBtn');
+                const statusMessage = document.getElementById('statusMessage');
+                if (data.status === 'success') {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    btn.innerText = 'Success';
+                    statusMessage.innerHTML = `
+                        <button class="btn btn-primary mr-2" onclick="openReport('${jobId}')">Open Report</button>
+                        <button class="btn btn-primary" onclick="copyToClipboard('${window.location.origin}/${jobId}')">Copy Link</button>
+                    `;
+                } else if (data.status === 'failure') {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-danger');
+                    btn.innerText = 'Failure';
+                    statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${data.traceback}')">Click to see trace</button>`;
+                } else {
+                    statusMessage.innerText = `Status: ${data.status}`;
+                }
+            });
+    }
+
+    function openReport(jobId) {
+        window.open(`/${jobId}`, '_blank');
+    }
+
+    function copyToClipboard(text) {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert('Link copied to clipboard!');
+    }
+
+    function showTraceback(traceback) {
+        alert(traceback);  // Or you can display it in a modal or a separate div
+    }
+</script>
+
+{% endblock %}

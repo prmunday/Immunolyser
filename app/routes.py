@@ -1,5 +1,5 @@
 from app import app, celery
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData
 from pathlib import Path
@@ -56,7 +56,8 @@ def initialiser():
 
 
         task = submit_job.delay(samples, mhcclass, alleles_unformatted, predictionTools)
-        return f'Request for Immunolyser report has been received. Task ID is {task.id}'
+
+        return redirect(url_for('job_confirmation', task_id=task.id))
 
 @celery.task(name='app.submit_job', bind=True)
 def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):    
@@ -146,20 +147,6 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     # Samples and file uploaded
     print("Samples and files uploaded", data)
 
-    if len(data) == 0:
-        return render_template("initialiser.html", initialiser=True)
-
-#     # Storing in classes
-#     # sample1 = Sample(sample_one_name)
-#     # sample2 = Sample(sample_two_name)
-
-#     # Or in variables
-#     sample1 = {}
-#     sample2 = {}
-
-
-
-
     if (mhcclass == 'mhc2'):
         valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_Class2_allele_names_unformatted.txt"))
     else :
@@ -227,17 +214,9 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
         for replicate in file_names:
             sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
 
-    # Loading control data in pandas frames
-    # for control_replicate in control:
-        # control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
-
     # Have to later add the user input for length
     for sample_name, sample in sample_data.items():
         sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
-
-
-    bar_percent = plot_lenght_distribution(sample_data, hist='percent')
-    bar_density = plot_lenght_distribution(sample_data, hist='density')
 
     # Saving 8 to 14 nmers for mhc1 predictions or 12 to 20 for mhc2 predictions
     if mhcclass == 'mhc1':
@@ -264,54 +243,33 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     if alleles!="":    
         for predictionTool in predictionTools:
             saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
-
-
-    predicted_binders = None
-    # Method to get the prediction results
-    if alleles!="":    
-        predicted_binders = getPredictionResuslts(taskId,alleles_unformatted,predictionTools,sample_data.keys())
     
-    upsetLayout = getPredictionResusltsForUpset(taskId,alleles_unformatted,predictionTools,sample_data.keys())
-
-    # Calling script to generate sequence logos
-    # subprocess.call('sudo python3 {} {} {}'.format(os.path.join('app','seqlogo.py'), taskId, data_mount), shell=True)
-
-    # # Method to return names of png files of seqlogos
-    # # This value is supposed to be returned from saveNmerDate method but for now writting
-    # # temporary script to return names of seqlogos pngs files in a dictionary.
-    
-    # Generating Seq2Logos and GibbsCluster only if MHC 2 class of interest
     # Calling script to generate sequence logos
     subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount], shell=False)
 
-    seqlogos = getSeqLogosImages(sample_data)
-    # seqlogos = {}
-
     # Calling script to generate gibbsclusters
     subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass], shell=False)
-
-    # Getting names of the gibbscluster
-    gibbsImages = getGibbsImages(taskId, sample_data)
-    # gibbsImages = {}
-
-    showSeqLogoandGibbsSection = True
-    
-    # Do show Majority Voted option when MHC Class 2 analysis
-    if mhcclass == 'mhc2':
-        hideMajorityVotedOption = False
-    else :
-        hideMajorityVotedOption = True
-
-    # Data required to plot upset plot to show peptides overlap
-    overlapLayout = {}
-    overlapLayout = getOverLapData(sample_data)
-
-    return render_template('analytics.html',overlapLayout=overlapLayout, taskId=taskId, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos = seqlogos, gibbsImages = gibbsImages, analytics=True,predicted_binders=predicted_binders, predictionTools = predictionTools,upsetLayout=upsetLayout, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
 
 @app.route("/analytics")
 def analytics():
 
     return render_template("error.html",analytics=True, msg = 'initialiser')
+
+@app.route('/job-confirmation/<task_id>')
+def job_confirmation(task_id):
+    message = f'Request for Immunolyser report has been received. Task ID is {task_id}'
+    return render_template('onSubmission.html', message=message)
+
+# GET method to check the status of the job. Job state is managed by Celery
+@app.route('/check_status/<job_id>', methods=['GET'])
+def check_status(job_id):
+    job = submit_job.AsyncResult(job_id)
+    if job.state == 'SUCCESS':
+        return jsonify({'status': 'success'}), 200
+    elif job.state == 'FAILURE':
+        return jsonify({'status': 'failure', 'traceback': str(job.traceback)}), 200
+    else:
+        return jsonify({'status': job.state}), 200
 
 @app.route('/<taskId>')
 def getExistingReport(taskId):
