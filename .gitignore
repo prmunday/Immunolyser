@@ -4,3 +4,4 @@ app/__pycache__/*
 __pycache__/
 immunolyser-data/*
 lenv/*
+results.sqlite
