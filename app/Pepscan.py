@@ -1,14 +1,11 @@
 import pandas as pd
 import numpy as np
-
 from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('agg')
 import seaborn as sns
-
 import io
-import base64
 import os
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -155,8 +152,14 @@ class PepScan:
         peptides = self.protein_frame[self.protein_frame["ID"] == protein]
         peptides.reset_index(drop = True, inplace = True)
         locations = [0]*100
+
         #calculate relative length of peptides
         for pep in range(len(peptides)):
+
+            # Ammend by Prithvi: Skipping adding the location of the peptide if peptide not found in the protein
+            if peptides["Location"][pep] == "No Position Found": 
+                continue
+
             start = int(peptides["Relative Location"][pep]//0.01)
             end = int(((int(peptides["Location"][pep]) + len(peptides["Peptide"][pep]) - 1)/len(peptides["Sequence"][pep]))//0.01)
             #increment count for each relative position
@@ -196,27 +199,5 @@ if __name__ == "__main__":
     #search proteome file for source proteins of peptide file
     # scanner.search_proteome(peptide_file = "VMM1_1st_nil_DT9_peptide_C0303_NetMHCpan_binders.csv", proteome_file = "uniprot-proteome_UP000005640.fasta")
     scanner.search_proteome(peptide_file = "elutiondata.csv", proteome_file = "uniprot-proteome_UP000005640.fasta")
-    #display plot
-#     scanner.peptide_dist(['P01903',
-#  'P30504',
-#  'Q6ZS81',
-#  'A0A0G2JMH6',
-#  'P49327',
-#  'P19320',
-#  'A0A0U1RQF0',
-#  'Q9UIQ6',
-#  'P20273',
-#  'P18583',
-#  'Q15751',
-#  'P30505',
-#  'E7EPN9',
-#  'Q29865',
-#  'Q9Y520',
-#  'A0A1W2PR11',
-#  'Q01082',
-#  'P13284',
-#  'A0A1W2PRZ0',
-#  'Q95604'])
+
     scanner.peptide_dist(["Q96C19", "P04818", "F8W6I7", "A0A0U1RQF0"])
-    #view peptide/source protein table
-    #print(scanner.protein_frame)
