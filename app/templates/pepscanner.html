@@ -66,6 +66,14 @@
         <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide' and 'Accession' columns."></i>
     </div>
 
+    <div style="padding-left: 18px;" class="input-group mb-3">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" id="background" style="cursor: pointer;" name="background" required type="file">
+        <label class="custom-file-label" for="inputGroupFile01" id="background">Select the background fasta file (optional)</label>
+      </div>
+      <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select the background fasta file.&#013;This is the file you would download from UniProt as proteome from any species. If you don't upload this, the human proteome with proteins reviewed by UniProt (Swiss-Prot reviewed) will be used as the background."></i>
+    </div>
+
     <!-- <label for="sample" hidden>Peptide File</label> 
 	<input id="sample" name="sample-1" required type="file" class="col-md-6 mb-3"> -->
 
@@ -78197,6 +78205,8 @@
                 </select>
               </div>
             </div>
+
+
             <input style="float: right; margin-right: 20px;" id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
             
 </form>
