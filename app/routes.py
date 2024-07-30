@@ -680,7 +680,7 @@ def generatePepscanner(demo=False):
 
     print(demo == "true")
     if (demo== "true"):
-        peptides = 'Type proteins of interest (optional; human proteins only)'  
+        peptides = ''  
         fileName = 'elutiondata.csv'
 
         # Input peptide file
@@ -712,7 +712,7 @@ def generatePepscanner(demo=False):
 
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
 
-    if peptides != 'Type proteins of interest (optional; human proteins only)':
+    if peptides != '':
         # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
         peptides = peptides.replace(' ','').split(',')
         while("" in peptides) :
