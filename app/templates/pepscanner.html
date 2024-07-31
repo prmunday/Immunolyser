@@ -59,30 +59,30 @@
     <!-- <input id="file" name="file" required type="file" class="col-md-6 mb-3">	 -->
 
     <div style="padding-left: 18px;" class="input-group mb-3">
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required type="file">
-          <label class="custom-file-label" for="inputGroupFile01" id="filename">Select the peptide File</label>
-        </div>
-        <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide' and 'Accession' columns."></i>
+      <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required>
+          <label class="custom-file-label" for="file" id="filename">Select the peptide File</label>
+      </div>
+      <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide' and 'Accession' columns."></i>
     </div>
 
     <div style="padding-left: 18px;" class="input-group mb-3">
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" id="background" style="cursor: pointer;" name="background" required type="file">
-        <label class="custom-file-label" for="inputGroupFile01" id="background">Select the background fasta file (optional)</label>
-      </div>
-      <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select the background fasta file.&#013;This is the file you would download from UniProt as proteome from any species. If you don't upload this, the human proteome with proteins reviewed by UniProt (Swiss-Prot reviewed) will be used as the background."></i>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="background" style="cursor: pointer;" name="background" required>
+            <label class="custom-file-label" for="background">Select the background fasta file (optional)</label>
+        </div>
+        <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select the background fasta file.&#013;This is the file you would download from UniProt as proteome from any species. If you don't upload this, the human proteome with proteins reviewed by UniProt (Swiss-Prot reviewed) will be used as the background."></i>
     </div>
 
-<div class="col" style="padding-left: 18px;">
-    <div style="display: flex; align-items: center;">
-        <input type="text" class="form-control" id="proteinInput" placeholder="Type protein ID and press Enter" style="flex: 1; margin-right: 10px;">
-        <button class="btn btn-primary" id="addProteinBtn">Add Protein ID</button>
+    <div class="col" style="padding-left: 18px;">
+        <div style="display: flex; align-items: center;">
+            <input type="text" class="form-control" id="proteinInput" placeholder="Type protein ID and press Enter" style="flex: 1; margin-right: 10px;">
+            <button class="btn btn-primary" id="addProteinBtn">Add Protein ID</button>
+        </div>
+        <small class="form-text text-muted">Example: A0A024QYW1</small>
+        <div class="mt-3" id="proteinList"></div>
+        <div class="mt-3 text-danger" id="validationMessage"></div>
     </div>
-    <small class="form-text text-muted">Example: A0A024QYW1</small>
-    <div class="mt-3" id="proteinList"></div>
-    <div class="mt-3 text-danger" id="validationMessage"></div>
-</div>
 
 
     <input style="float: right; margin-right: 20px;" id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
