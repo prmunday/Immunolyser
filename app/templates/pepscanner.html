@@ -60,7 +60,7 @@
 
     <div style="padding-left: 18px;" class="input-group mb-3">
       <div class="custom-file">
-          <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required>
+          <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required accept=".csv">
           <label class="custom-file-label" for="file" id="filename">Select the peptide File</label>
       </div>
       <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide' and 'Accession' columns."></i>
@@ -127,11 +127,14 @@
             return false;
           }
 
-        fileInput = document.getElementById('file')
-          // peptides = document.getElementById('peptides');
+          fileInput = document.getElementById('file')
+          background = document.getElementById('background');
 
-        form.append("file", fileInput.files[0], fileInput.value);
-        form.append("peptides", protiens);
+          form.append("file", fileInput.files[0], fileInput.value);
+          if (background.files.length > 0) {
+              form.append("background", background.files[0], background.value);
+          }
+          form.append("peptides", protiens);
         }
         else {
           form.append("demo", true);

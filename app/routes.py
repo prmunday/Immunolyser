@@ -5,7 +5,8 @@ from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, g
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
-import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io
+from Bio import SeqIO
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -688,14 +689,30 @@ def generatePepscanner(demo=False):
 
     else: 
 
-        # Extracing passed file and the peptides list
+        # Extracting passed file, background, and the peptides list
         uploaded_file = request.files['file']
-        peptides = request.form['peptides']    
-        fileName = uploaded_file.filename.replace('C:\\fakepath\\',"")
+        uploaded_background_file = request.files.get('background')  # Use get() to handle the case where 'background' might not be present
+        peptides = request.form['peptides']
+        fileName = uploaded_file.filename.replace('C:\\fakepath\\', "")
 
         # Input peptide file
-        peptides_file = os.path.join(project_root,'app','static','images',taskId,fileName)
-        
+        peptides_file = os.path.join(project_root, 'app', 'static', 'images', taskId, fileName)
+
+        if uploaded_background_file:
+            # Background file exists
+            background_file_contents = uploaded_background_file.read().decode('utf-8')
+            # Validate the uploaded FASTA file
+            is_valid, message = validate_fasta(background_file_contents)
+            if not is_valid:
+                return jsonify({"error": message}), 400
+            
+            # Save the file if it is valid
+            background_filename = secure_filename(uploaded_background_file.filename)
+            background_file_path = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
+            with open(background_file_path, 'w') as file:
+                file.write(background_file_contents)
+
+        # Saving the input file
         if uploaded_file.filename != '':
             uploaded_file.save(peptides_file)
 
@@ -731,6 +748,40 @@ def generatePepscanner(demo=False):
     metadata['fileName'] = fileName
 
     return jsonify(metadata)
+
+def validate_fasta(file_contents):
+    """
+    Validate a FASTA file using Biopython.
+
+    Parameters:
+        file_contents (str): The contents of the uploaded FASTA file.
+
+    Returns:
+        bool: True if the file is a valid FASTA file, False otherwise.
+        str: Message indicating the validation result.
+    """
+    try:
+        # Create a StringIO object from the file contents
+        file_stream = io.StringIO(file_contents)
+
+        # Try to parse the file stream
+        records = list(SeqIO.parse(file_stream, "fasta"))
+
+        # Check if any records were found
+        if not records:
+            return False, "File is empty or not a valid FASTA file."
+
+        # Additional checks (optional)
+        for record in records:
+            if not record.id:
+                return False, f"Record {record} has no ID."
+            if not record.seq:
+                return False, f"Record {record} has no sequence."
+
+        return True, "File is a valid FASTA file."
+
+    except Exception as e:
+        return False, f"Error: {str(e)}"
 
 def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
     
