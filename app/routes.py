@@ -707,7 +707,7 @@ def generatePepscanner(demo=False):
                 return jsonify({"error": message}), 400
             
             # Save the file if it is valid
-            background_filename = secure_filename(uploaded_background_file.filename)
+            background_filename = secure_filename(uploaded_background_file.filename.replace('C:\\fakepath\\', ""))
             background_file_path = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
             with open(background_file_path, 'w') as file:
                 file.write(background_file_contents)
