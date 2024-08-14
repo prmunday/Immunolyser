@@ -686,6 +686,8 @@ def generatePepscanner(demo=False):
 
         # Input peptide file
         peptides_file = os.path.join(project_root,'app','static',fileName)
+        # Background human proteome
+        ref_proteome = os.path.join(project_root,'app','references data','uniprot-proteome_UP000005640.fasta')
 
     else: 
 
@@ -713,7 +715,7 @@ def generatePepscanner(demo=False):
                 file.write(background_file_contents)
         
         else: # Else use existing human background proteome
-            ref_proteome = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
+            ref_proteome = os.path.join(project_root,'app','references data','uniprot-proteome_UP000005640.fasta')
 
         # Saving the input file
         if uploaded_file.filename != '':
