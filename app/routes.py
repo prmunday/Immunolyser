@@ -5,7 +5,7 @@ from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, g
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
-import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests
 from Bio import SeqIO
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
@@ -813,8 +813,31 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
             gn = mapping.loc[mapping['Protein'] == key, "GN"].iloc[0]
             species = mapping.loc[mapping['Protein'] == key, "Species"].iloc[0]
         else:
-            gn = ""
-            species = ""
+            # Fetch from UniProt if not found in local file
+            uniprot_url = f"https://www.uniprot.org/uniprot/{key}.txt"
+            response = requests.get(uniprot_url)
+            
+            if response.status_code == 200:
+                data = response.text
+                gn = ""
+                species = ""
+
+                # Parsing the UniProt text data
+                for line in data.split('\n'):
+                    if line.startswith("GN   Name="):
+                        gn = line.split('=')[1].split(' ')[0].strip(';')
+                    if line.startswith("OS   "):
+                        species = line[5:].strip()
+                        break
+
+                # If GN and Species not found in UniProt data
+                if not gn:
+                    gn = "Unknown"
+                if not species:
+                    species = "Unknown"
+            else:
+                gn = "Unknown"
+                species = "Unknown"
 
         odict[key]= [value, gn, species]
 
