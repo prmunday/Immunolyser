@@ -153,63 +153,84 @@
 
         $.ajax(settings).done(function (response) {
 
-        res = JSON.parse(response);
+          res = JSON.parse(response);
 
-        taskId = res['taskId']
-        fileName = res['fileName']
+          taskId = res['taskId']
+          fileName = res['fileName']
 
-        document.getElementById('pepscannerimage').src = "static/images/"+ taskId +"/pepscanner.png";
+          document.getElementById('pepscannerimage').src = "static/images/"+ taskId +"/pepscanner.png";
 
-        console.log(res);
+          console.log(res);
 
-        unique_peptides = document.getElementById('uniquepeptides');
-        unique_peptides.innerHTML = "Unique protiens: ".concat(res['unique_peptides']);
+          unique_peptides = document.getElementById('uniquepeptides');
+          unique_peptides.innerHTML = "Unique protiens: ".concat(res['unique_peptides']);
 
-        top_protiens = document.getElementById('topprotiens');
-        top_protiens.innerHTML = "";
+          top_protiens = document.getElementById('topprotiens');
+          top_protiens.innerHTML = "";
 
-        var sortable = [];
-        for (var i in res['top_protiens']) {
-            sortable.push([i, res['top_protiens'][i]]);
+          var sortable = [];
+          for (var i in res['top_protiens']) {
+              sortable.push([i, res['top_protiens'][i]]);
+          }
+
+          sortable.sort(function(a, b) {
+              return b[1] - a[1];
+          });
+          
+          for (const [key, value] of sortable) {
+              var row = document.createElement("tr");
+              
+              var cell1 = document.createElement("td");
+              cell1.style.width = "25%";
+              cell1.innerHTML = key;
+              row.appendChild(cell1);
+
+              var cell2 = document.createElement("td");
+              cell2.style.width = "25%";
+              // cell2.innerHTML = value;
+              cell2.innerHTML = "<a href='static/images/"+taskId+"/protienandepeptides/"+fileName + " " +key+".csv'>"+value[0]+"</a>";
+              row.appendChild(cell2);
+
+
+              var cell3 = document.createElement("td");
+              cell3.style.width = "25%";
+              cell3.innerHTML = value[1];
+              // getGeneName(key,data => console.log("The data is:", data));
+              row.appendChild(cell3);
+
+              var cell4 = document.createElement("td");
+              cell4.style.width = "25%";
+              cell4.innerHTML = value[2];
+              row.appendChild(cell4);
+
+              top_protiens.append(row);
+              
+          }
+
+          showSpinner(false);
+
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+
+          showSpinner(false);
+          
+        // Check if responseText is JSON and parse it
+        try {
+            let responseJSON = JSON.parse(jqXHR.responseText);
+            if (responseJSON && responseJSON.error) {
+                errorMessage = responseJSON.error;
+            }
+        } catch (e) {
+            console.log("Failed to parse responseText as JSON:", e);
         }
 
-        sortable.sort(function(a, b) {
-            return b[1] - a[1];
-        });
+          // Display an alert with error details
+          alert("An error occurred:\n" +
+                "Status: " + textStatus + "\n" +
+                "Error: " + errorThrown + "\n" +
+                "Response: " + errorMessage);
+          });
         
-        for (const [key, value] of sortable) {
-            var row = document.createElement("tr");
-            
-            var cell1 = document.createElement("td");
-            cell1.style.width = "25%";
-            cell1.innerHTML = key;
-            row.appendChild(cell1);
-
-            var cell2 = document.createElement("td");
-            cell2.style.width = "25%";
-            // cell2.innerHTML = value;
-            cell2.innerHTML = "<a href='static/images/"+taskId+"/protienandepeptides/"+fileName + " " +key+".csv'>"+value[0]+"</a>";
-            row.appendChild(cell2);
-
-
-            var cell3 = document.createElement("td");
-            cell3.style.width = "25%";
-            cell3.innerHTML = value[1];
-            // getGeneName(key,data => console.log("The data is:", data));
-            row.appendChild(cell3);
-
-            var cell4 = document.createElement("td");
-            cell4.style.width = "25%";
-            cell4.innerHTML = value[2];
-            row.appendChild(cell4);
-
-            top_protiens.append(row);
-            
-        }
-
-        showSpinner(false);
-
-        });
         return false;
         
     }
