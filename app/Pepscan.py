@@ -88,7 +88,7 @@ class PepScan:
                 rel_locs.append(self.protein_frame["Location"][row]/len(self.protein_frame["Sequence"][row]))
         return rel_locs
 
-    def search_proteome(self, peptide_file, proteome_file = "uniprot-proteome_UP000005640.fasta",accessionsids='accessionsids'):
+    def search_proteome(self, peptide_file, proteome_file = "uniprot-proteome_UP000005640.fasta"):
         """Searches a proteome (proteome_file) and retrieves all protein sequences referenced by protein IDs corresponding to peptides stored in a PEAKS output csv (peptide_file)
 
         Keyword Arguments:
@@ -103,9 +103,6 @@ class PepScan:
         self.clean()
         ids = []
         use_id = []
-
-        # Importing unique accession ids for reference
-        accessionids = pd.read_csv(accessionsids)['ID'].to_list()
 
         #Retrieve most confident accession for each peptide
         for all_accession in self.peptide_frame["Accession"]:

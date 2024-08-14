@@ -708,9 +708,12 @@ def generatePepscanner(demo=False):
             
             # Save the file if it is valid
             background_filename = secure_filename(uploaded_background_file.filename.replace('C:\\fakepath\\', ""))
-            background_file_path = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
-            with open(background_file_path, 'w') as file:
+            ref_proteome = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
+            with open(ref_proteome, 'w') as file:
                 file.write(background_file_contents)
+        
+        else: # Else use existing human background proteome
+            ref_proteome = os.path.join(project_root, 'app', 'static', 'images', taskId, background_filename)
 
         # Saving the input file
         if uploaded_file.filename != '':
@@ -718,16 +721,10 @@ def generatePepscanner(demo=False):
 
     scanner = PepScan()
 
-    # Attaching reference proteome file
-    ref_proteome = os.path.join(project_root,'app','references data','uniprot-proteome_UP000005640.fasta')
-
-    # Ignore this file for now
-    accessionsidfile = os.path.join(project_root,'app','references data','accessionids.csv')
-
     inputFile = pd.read_csv(peptides_file)
     metadata = findMostOccuringAccessionIds(inputFile, taskId, fileName)
 
-    scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome,accessionsids=accessionsidfile)
+    scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome)
 
     if peptides != '':
         # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
