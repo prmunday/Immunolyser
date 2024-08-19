@@ -9755,6 +9755,13 @@
 				return false;
 			};
 		}
+
+		// Limit number of alleles
+		if (uniqueAlleles.length > 4) {
+			showSpinner(false);
+			alert("Please enter no more than 4 alleles.");
+			return false;
+		}
 		
 		return true;
 	}
