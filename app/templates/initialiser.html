@@ -11,19 +11,22 @@
 		<div>
 			<h4>Data Input</h4>
 			<div class="form-row">
-				<div class="col-md-6 mb-3">Sample Name <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do NOT contain any special characters."></i></div>
-				<div class="col-md-6 mb-3">Sample Files <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates are needed."></i></div>
+				<div class="col-md-6 mb-3">Sample Name 
+					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do NOT contain any special characters."></i>
+				</div>
+				<div class="col-md-6 mb-3">Sample Files 
+					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates are needed."></i>
+				</div>
 			</div>
 			<div id="samples">
 				<div id="sample" class="form-row">
 					<label for="sample_name" hidden>Sample</label> 
 					<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-6 mb-3">
 					<br>
-					<label for="sample" hidden>Peptide File</label> 
-					<input id="sample" multiple name="sample-1" required type="file" class="col-md-6 mb-3">	
+					<label for="sample_file-1" hidden>Peptide File</label> 
+					<input id="sample_file-1" multiple name="sample-1" required type="file" class="col-md-6 mb-3" onchange="calculateTotalRows()">    
 				</div>
 			</div>
-		
 			<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
 			<input id="remove_sample" name="remove_sample" type="button" value="Remove Sample" onclick="deleteSample()">
 		</div>
@@ -9582,7 +9585,9 @@
 
 	// Define a global variables
 	var maxLengthSampleName = 30;
-	sampleId = 1;
+	var sampleId = 1;
+	var maxSamples = 5;
+	var maxRows = 50000;
 
 	// Setting up valied MHC alleles
 	var validAlleles = new Array();
@@ -9604,33 +9609,56 @@
 		validAlleles.push(mhclass2alleles[i].text);
 	}
 
-	function addSample(){
+	function addSample() {
+		if (sampleId >= maxSamples) {
+			alert('You cannot add more than ' + maxSamples + ' samples.');
+			return;
+		}
 		var samples = document.getElementById('samples');
 		var sample = document.getElementById('sample');
 
-		count = ++sampleId;
-
-		var cln = sample.cloneNode(true)
-		cln.children[1].name = "sample-"+ count;
-		cln.children[1].id = "sample_name-"+ count;
+		sampleId++;
+		var cln = sample.cloneNode(true);
+		cln.children[1].name = "sample-" + sampleId;
+		cln.children[1].id = "sample_name-" + sampleId;
 		cln.children[1].value = "";
-		cln.children[4].name = "sample-"+ count;
-		cln.children[4].id = "sample_file-"+ count;
+		cln.children[4].name = "sample-" + sampleId;
+		cln.children[4].id = "sample_file-" + sampleId;
 		cln.children[4].value = "";
-		samples.appendChild(cln)
+		cln.children[4].setAttribute('onchange', 'calculateTotalRows()');
+		samples.appendChild(cln);
 	}
 
-	function deleteSample(){
-		if(sampleId>1){
-			--sampleId;
-			var select = document.getElementById('samples')
+	function deleteSample() {
+		if (sampleId > 1) {
+			var select = document.getElementById('samples');
 			select.removeChild(select.lastChild);
+			sampleId--;
+		} else {
+			alert('Analysis requires at least one sample.');
 		}
-		else{
-			showSpinner(false);
-			alert('Analysis require atleast one sample')
-		}
-		
+	}
+
+	function calculateTotalRows() {
+		var totalRows = 0;
+		var fileInputs = document.querySelectorAll('input[type="file"]');
+
+		fileInputs.forEach(fileInput => {
+			Array.from(fileInput.files).forEach(file => {
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var rows = e.target.result.split('\n').length - 1; // subtract 1 for header
+					totalRows += rows;
+
+					if (totalRows > maxRows) {
+						alert('Total number of peptides across all files exceeds ' + maxRows + '. Please select fewer or smaller files.');
+						fileInput.value = ""; // reset file input
+						totalRows -= rows; // rollback the totalRows
+					}
+				};
+				reader.readAsText(file);
+			});
+		});
 	}
 
 	var allele_warning = false
