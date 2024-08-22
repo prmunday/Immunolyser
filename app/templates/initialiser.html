@@ -24,7 +24,7 @@
 					<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-6 mb-3">
 					<br>
 					<label for="sample_file-1" hidden>Peptide File</label> 
-					<input id="sample_file-1" multiple name="sample-1" required type="file" class="col-md-6 mb-3" onchange="calculateTotalRows()">    
+					<input id="sample_file-1" multiple name="sample-1" required type="file" class="col-md-6 mb-3" onchange="calculateNumberOfPeptidesInCsv(event)">    
 				</div>
 			</div>
 			<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
@@ -9581,13 +9581,19 @@
 
 </div>
 
-<script>
+<script type="text/javascript">
 
 	// Define a global variables
-	var maxLengthSampleName = 30;
-	var sampleId = 1;
-	var maxSamples = 5;
-	var maxRows = 100000;
+	let maxLengthSampleName = parseInt("{{ sample_name_max_length }}");
+	let sampleId = 1;
+	let maxSamples = parseInt("{{ max_samples }}");
+	let maxRows = parseInt("{{ max_total_peptides }}");
+	const peptidesPerSample = {
+		'sample_file-1': 0 // Mandatory first sample with 0 peptides to start with
+	};
+
+	// DOM Elements (Cache)
+	const parentDiv = document.getElementById('samples'); // For MutationObserver : When any sample is added or remved
 
 	// Setting up valied MHC alleles
 	var validAlleles = new Array();
@@ -9609,6 +9615,15 @@
 		validAlleles.push(mhclass2alleles[i].text);
 	}
 
+	// Event Listeners
+	// Add all event listeners here or within the init function
+	function addEventListeners() {
+		// MutationObserver for detecting div addition/removal
+		const observer = new MutationObserver(mutationCallback);
+		observer.observe(parentDiv, { childList: true });
+
+	}
+
 	function addSample() {
 		if (sampleId >= maxSamples) {
 			alert('You cannot add more than ' + maxSamples + ' samples.');
@@ -9625,40 +9640,92 @@
 		cln.children[4].name = "sample-" + sampleId;
 		cln.children[4].id = "sample_file-" + sampleId;
 		cln.children[4].value = "";
-		cln.children[4].setAttribute('onchange', 'calculateTotalRows()');
+		cln.children[4].setAttribute('onchange', 'calculateNumberOfPeptidesInCsv(event)');
 		samples.appendChild(cln);
+
+		// Update dictionary tracking number of pepitdes
+		peptidesPerSample[cln.children[4].id] = 0;
+	}
+
+	// Functions
+	// Callback for MutationObserver : Keeping track when sample is added or removed
+	function mutationCallback(mutationsList) {
+		for(const mutation of mutationsList) {
+			if (mutation.type === 'childList') {
+
+				for (const removedNode of mutation.removedNodes) {
+					if (removedNode.id) {
+						// Updating dictionary tracking number of peptides
+						// Removing entry tracking sample being removed
+						delete peptidesPerSample[removedNode.children[4].id];
+					}
+				}
+
+			}
+		}
 	}
 
 	function deleteSample() {
 		if (sampleId > 1) {
 			var select = document.getElementById('samples');
+			
+			// Updating dictionary tracking number of peptides
+			// Removing entry tracking sample being removed
+			delete peptidesPerSample[select.lastChild.children[4].id];
+
 			select.removeChild(select.lastChild);
+
 			sampleId--;
 		} else {
 			alert('Analysis requires at least one sample.');
 		}
 	}
 
-	function calculateTotalRows() {
-		var totalRows = 0;
-		var fileInputs = document.querySelectorAll('input[type="file"]');
+	// Handler for file input change
+	function calculateNumberOfPeptidesInCsv(event) {
 
-		fileInputs.forEach(fileInput => {
-			Array.from(fileInput.files).forEach(file => {
-				var reader = new FileReader();
+		var totalRows = 0;
+		const files = event.target.files;
+		let filesProcessed = 0;
+
+		// Check if no files are attached
+		if (files.length === 0) {
+			peptidesPerSample[event.target.id] = 0;
+			return;
+		}
+
+		showSpinner(true);
+
+		try {
+			// Loop through each file
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+
+				// Create a FileReader to read the file
+				const reader = new FileReader();
+
+				// Define the onload function to handle the file once it's read
 				reader.onload = function(e) {
 					var rows = e.target.result.split('\n').length - 1; // subtract 1 for header
 					totalRows += rows;
+					filesProcessed++;
 
-					if (totalRows > maxRows) {
-						alert('Total number of peptides across all files exceeds ' + maxRows + '. Please select fewer or smaller files.');
-						fileInput.value = ""; // reset file input
-						totalRows -= rows; // rollback the totalRows
+					// Once all files have been processed, update the dictionary
+					if (filesProcessed === files.length) {
+						peptidesPerSample[event.target.id] = totalRows;
+						showSpinner(false);
 					}
 				};
+
+				// Read the file as text (you can also use readAsArrayBuffer, readAsBinaryString, etc.)
 				reader.readAsText(file);
-			});
-		});
+			}
+
+		} 
+		catch (error) {
+			console.error('Error reading files:', error);
+			showSpinner(false);
+		}
 	}
 
 	var allele_warning = false
@@ -9717,6 +9784,19 @@
 
 		control = document.getElementById('control').getElementsByTagName('input')[1];
 		if(checkSampleFiles(control)==false){
+			return false;
+		}
+
+
+		// Validating number of peptides being uploaded
+
+		// Calculate the sum of values in the dictionary
+		const totalPeptides = Object.values(peptidesPerSample).reduce((sum, value) => sum + value, 0);
+    
+		// Compare the total with maxRows
+		if (totalPeptides > maxRows) {
+			showSpinner(false);
+			alert(`Total peptides ${totalPeptides} exceed the maximum allowed ${maxRows}.`);
 			return false;
 		}
 
@@ -9964,6 +10044,15 @@
 			allelesreferencefilelink.href = "/static/MHC_Class2_allele_names.txt";
 		}
 	}
+
+	// Initialization
+	function init() {
+		addEventListeners();
+		// Additional initialization logic if needed
+	}
+
+	// Ensure the DOM is fully loaded before initializing
+	document.addEventListener('DOMContentLoaded', init);
 
 </script>
 {% endblock %}
