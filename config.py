@@ -14,3 +14,8 @@ class Config(object):
     CELERY_DEFAULT_QUEUE='celery'  # Ensure all tasks are routed to 'celery' queue
     DEBUG = True
     PIN = '123'
+
+    # Job input limites saved by variable. Used by both server and the client.
+    SAMPLE_NAME_MAX_LENGTH = 30
+    MAX_SAMPLES = 5
+    MAX_TOTAL_PEPTIDES = 100000
