@@ -75,6 +75,9 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     logger.info('alleles_unformatted: %s', alleles_unformatted)
     logger.info('Prediction tools selected: : %s', predictionTools)
 
+    total_peptides = 0
+    max_rows = app.config['MAX_TOTAL_PEPTIDES']
+
     taskId = self.request.id
     
     dirName = os.path.join(data_mount, taskId)
@@ -127,21 +130,47 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
         data[sample_name] = list()
 
         print("replics name : {}".format(replicates))
-        for file_filename, file_content_base64 in replicates.items():
 
-            replicate = base64.b64decode(file_content_base64)
+        files_to_save = {}
+        # First pass: Accumulate row counts
+        for sample_name, replicates in samples.items():
+            files_to_save[sample_name] = {}
+            print("replicates name : {}".format(replicates))
+            for file_filename, file_content_base64 in replicates.items():
+                replicate = base64.b64decode(file_content_base64)
 
-            # If there is no control file uploaded then there is no point to save it.
-            if file_filename != "":
+                if file_filename != "":
+                    # Read the CSV content using pandas
+                    df = pd.read_csv(io.BytesIO(replicate))
+                    
+                    # Count rows excluding the header
+                    row_count = len(df)
+                    total_peptides += row_count
 
+                    # Store file information for potential saving
+                    files_to_save[sample_name][file_filename] = replicate
+
+        # Check if total peptides exceed the limit
+        if total_peptides > max_rows:
+            raise Exception(f"Total peptides {total_peptides} exceed the maximum allowed {max_rows}.")
+
+        # Second pass: Save files if within the limit
+        for sample_name, replicates in files_to_save.items():
+            # Create directories if they do not exist
+            try:
+                os.mkdir(os.path.join(dirName, sample_name))
+                print("Directory Created: ", os.path.join(dirName, sample_name))
+            except FileExistsError:
+                print("Directory already exists")
+
+            data[sample_name] = list()
+            for file_filename, replicate in replicates.items():
+                # Save the file
                 with open(os.path.join(dirName, sample_name, file_filename), 'wb') as f:
                     f.write(replicate)
-
-            # Not including the control group in sample data dict
-            # if sample_name != "Control":
+                    
+                # Storing the filename in data dictionary
                 data[sample_name].append(file_filename)
-            # elif file_filename !="":
-                # control.append(file_filename)
 
 
         # If control data is not uploaded, then deleting the sample from the data dictionary
