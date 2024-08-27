@@ -37,6 +37,9 @@
 
             {% block content %}
             {% endblock %}
+
+            <!-- Include the modal template -->
+            {% include 'includes/modal.html' %}
         </div>
 
             {% include "includes/footer.html" %}
@@ -60,6 +63,13 @@
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
         });
 	});
+
+    function showTraceback(encodedTraceback) {
+        // Decode the traceback before displaying it
+        const decodedTraceback = decodeURIComponent(encodedTraceback);
+        document.getElementById('tracebackContent').innerText = decodedTraceback;
+        $('#tracebackModal').modal('show');  // Show the modal
+    }
 </script>
 
 </html>    

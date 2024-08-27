@@ -10,7 +10,7 @@
     <div class="d-flex align-items-center">
         <button id="checkStatusBtn" class="btn btn-primary mr-auto" onclick="checkStatus()">Check Status</button>
         <div id="statusMessage" class="ml-auto"></div>
-    </div>    
+    </div>
 </div>
 
 <script>
@@ -33,7 +33,9 @@
                     btn.classList.remove('btn-primary');
                     btn.classList.add('btn-danger');
                     btn.innerText = 'Failure';
-                    statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${data.traceback}')">Click to see trace</button>`;
+
+                    // Directly pass the traceback to the modal, ensuring it is URL-encoded
+                    statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${encodeURIComponent(data.traceback)}')">Click to see trace</button>`;
                 } else {
                     statusMessage.innerText = `Status: ${data.status}`;
                 }
@@ -54,9 +56,6 @@
         alert('Link copied to clipboard!');
     }
 
-    function showTraceback(traceback) {
-        alert(traceback);  // Or you can display it in a modal or a separate div
-    }
 </script>
 
 {% endblock %}
