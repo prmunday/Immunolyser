@@ -6,10 +6,10 @@
 <br>
 
 <div class="container">
-	<form onSubmit="return checkAlleles();" id="login" action="" method="post" enctype="multipart/form-data" novalidate>
+	<form onSubmit="return checkAlleles();" id="login" action="" method="post" enctype="multipart/form-data" novalidate class="form-section">
 		
 		<div>
-			<h4>Data Input</h4>
+			<h5>Data Input</h5>
 			<div class="form-row">
 				<div class="col-md-6 mb-3">Sample Name 
 					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do NOT contain any special characters."></i>
@@ -35,29 +35,49 @@
 
 		<div>
 			<div id="control" class="form-row">
-				<h4 class="col-md-6 mb-3">Control Data<span style="font-size:16px;"> (optional)</span></h4>
+				<h5 class="col-md-6 mb-3">Control Data<span style="font-size:16px;"> (optional)</span></h5>
 				<label for="control_name" hidden>Control</label> 
 				<input id="control_name-1" name="control-1" type="text" value="Control" class="col-md-3 mb-3" hidden>
-				<br>
+				<!-- <br> -->
 				<label for="control" hidden>Peptide File </label>
 				<input id="control" multiple name="control-1" type="file" class="col-md-6 mb-3">	
 			</div>
 		</div>
 
-		<br>
+		<!-- <br> -->
 		<div>
-			<h4>MHC Binding Predictions</h4>
+			<h5>MHC Binding Predictions</h5>
 			
-			<br>
-			<!-- Row to select MHC class of interest -->
+			<!-- Row to select Species -->
 			<div class="form-row">
-				<h5 class="col-md-6">MHC Class of interest</h5>
-				<select class="col-md-3" name="MHCClass" id="MHCClass" onchange="udpateSelectedMHCClass()">
-					<option value="mhc1">MHC I</option>
-					<option value="mhc2">MHC II</option>
-				  </select>
+				<h6 class="col-md-6">Species</h6>
+				<select class="col-md-3" name="Species" id="Species">
+					{% for option in option_sets['Species'] %}
+						<option value="{{ option.value }}">{{ option.label }}</option>
+					{% endfor %}
+				</select>
 			</div>
+		
+			<!-- Row to select MHC Class of interest -->
+			<div class="form-row">
+				<h6 class="col-md-6">MHC Class of interest</h6>
+				<select class="col-md-3" name="MHCClass" id="MHCClass" onchange="updateBindingTools()">
+					{% for option in option_sets['MHCClass'] %}
+						<option value="{{ option.value }}">{{ option.label }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		
+			<!-- Row to select Binding Prediction Tool -->
+			<div class="form-row">
+				<h6 class="col-md-6">Binding Prediction Tool</h6>
+				<select class="col-md-3" name="BindingTool" id="BindingTool">
+					<!-- Options will be dynamically added here -->
+				</select>
+			</div>
+
 			<br>
+
 			<div class="form-row">
 				<h5 class="col-md-6">Select Alleles</h5>
 
@@ -9594,6 +9614,7 @@
 
 	// DOM Elements (Cache)
 	const parentDiv = document.getElementById('samples'); // For MutationObserver : When any sample is added or remved
+	const optionSets = JSON.parse('{{ option_sets|tojson|safe }}');
 
 	// Setting up valied MHC alleles
 	var validAlleles = new Array();
@@ -10045,9 +10066,38 @@
 		}
 	}
 
+	function updateBindingTools() {
+        const mhcClass = document.getElementById('MHCClass').value;
+        const bindingToolSelect = document.getElementById('BindingTool');
+        
+        // Clear current options
+        bindingToolSelect.innerHTML = '';
+
+        // Get the selected MHC Class label
+        const mhcClassOption = optionSets['MHCClass'].find(option => option.value === mhcClass);
+        if (!mhcClassOption) return; // Exit if MHC Class is not found
+
+        // Determine which tools to show
+        let toolsToShow = [];
+        if (mhcClassOption.label === 'MHC I') {
+            toolsToShow = optionSets['BindingTool'].slice(0, 2); // First 2 tools
+        } else if (mhcClassOption.label === 'MHC II') {
+            toolsToShow = optionSets['BindingTool'].slice(2); // Last 2 tools
+        }
+
+        // Add options to the dropdown
+        toolsToShow.forEach(tool => {
+            const option = document.createElement('option');
+            option.value = tool.value;
+            option.textContent = tool.label;
+            bindingToolSelect.appendChild(option);
+        });
+    }
+
 	// Initialization
 	function init() {
 		addEventListeners();
+		updateBindingTools();
 		// Additional initialization logic if needed
 	}
 
