@@ -9588,6 +9588,7 @@
 	let sampleId = 1;
 	let maxSamples = parseInt("{{ max_samples }}");
 	let maxRows = parseInt("{{ max_total_peptides }}");
+	let maxAlleles = parseInt("{{ max_alleles }}");
 	const peptidesPerSample = {
 		'sample_file-1': 0 // Mandatory first sample with 0 peptides to start with
 	};
@@ -9837,9 +9838,9 @@
 		}
 
 		// Limit number of alleles
-		if (uniqueAlleles.length > 6) {
+		if (uniqueAlleles.length > maxAlleles) {
 			showSpinner(false);
-			alert("Please enter no more than 6 alleles.");
+			alert(`Please enter no more than ${maxAlleles} alleles.`);
 			return false;
 		}
 		

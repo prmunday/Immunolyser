@@ -28,7 +28,8 @@ def initialiser():
                                 initialiser=True,
                                 sample_name_max_length=app.config['SAMPLE_NAME_MAX_LENGTH'],
                                 max_samples=app.config['MAX_SAMPLES'],
-                                max_total_peptides=app.config['MAX_TOTAL_PEPTIDES'])
+                                max_total_peptides=app.config['MAX_TOTAL_PEPTIDES'],
+                                max_alleles=app.config['MAX_ALLELES'])
     
     elif request.method == 'POST':
         # Handle POST request
