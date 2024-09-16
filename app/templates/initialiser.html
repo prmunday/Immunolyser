@@ -9927,12 +9927,6 @@
 				alert('Cannot accept ' + name + ' file as it is not a csv file.');
 				return false;
 			}
-
-			if(name.substring(0, name.length - 4).includes('.')){
-				showSpinner(false);
-				alert('File name cannot have "." in it.');
-				return false;
-			}
 			
 			let reader = new FileReader();
 			reader.readAsText(sample_files.files[i]);
