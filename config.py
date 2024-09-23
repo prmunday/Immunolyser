@@ -18,5 +18,5 @@ class Config(object):
     # Job input limites saved by variable. Used by both server and the client.
     SAMPLE_NAME_MAX_LENGTH = 30
     MAX_SAMPLES = 6
-    MAX_TOTAL_PEPTIDES = 100000
+    MAX_TOTAL_PEPTIDES = 200000
     MAX_ALLELES = 6
