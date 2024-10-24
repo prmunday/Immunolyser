@@ -50,6 +50,10 @@ def initialiser():
 
             samples[request.form[key]] = replicates_object
 
+        # Raise error if no samples uploaded
+        if len(samples) == 0:
+            return f"No Sample uploaded!"
+
     #         filename = secure_filename(file.filename)
     # file_content = file.read()  # R
 
