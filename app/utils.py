@@ -13,6 +13,8 @@ import shutil
 from zipfile import ZipFile
 from os.path import basename
 from app import app
+from constants import *
+from mhcflurry import Class1PresentationPredictor
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 data_mount = app.config['IMMUNOLYSER_DATA']
@@ -270,8 +272,19 @@ def generateBindingPredictions(taskId, alleles, method):
 
     for sample in os.listdir('{}/{}'.format(data_mount,taskId)):
         for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
+
+            # Loading data in dataframe for the use of predictors
+            if replicate[-12:] == '8to14mer.txt':
+                data = pd.read_csv('{}/{}/{}/{}.csv'.format(data_mount,taskId,sample,replicate[:-13]))
+
+
             if sample != 'Control':
                 if replicate[-12:] == '8to14mer.txt':
+
+            # Loading data in dataframe for the use of predictors
+                    data = pd.read_csv('{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), header=None)
+                    input_peptides = data[0].tolist() 
+
                     if(method=='MixMHCpred'):
                         call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
 
@@ -281,79 +294,26 @@ def generateBindingPredictions(taskId, alleles, method):
                         output, err = p.communicate(b"input data that is passed to subprocess' stdin")
                         f.close()     
 
+                    elif(method==Class_One_Predictors.MHCflurry):
+                        predictor = Class1PresentationPredictor.load()
+
+                        for allele in alleles.split(','):
+
+                            mhc_flurry_prediction_result = predictor.predict(
+                                peptides=input_peptides,
+                                alleles=[allele],
+                                verbose=1)
+                            
+                            mhc_flurry_prediction_result.to_csv('app/static/images/{}/{}/{}/{}/{}'.format(taskId,sample,Class_One_Predictors.MHCflurry,replicate[:-13],replicate), index=False)
+
                 elif replicate[-13:] == '12to20mer.txt':
                     if(method == 'MixMHC2pred'):
                         command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate), '-a']
                         for allele in alleles.split(','):
                             command.append(allele)
                         command.append('--no_context')
-                        call(command)
-
-                elif replicate[-7:] == 'mer.txt':
-                    if(method=='ANTHEM'):
-                        
-                        # Skip ANTHEM processing if nothibng to process
-                        if os.path.getsize('{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)) == 0:
-                            continue
-
-                        # Here, the peptides which can be accpeted by Anthem will be carry forwarded
-                        temp = list()
-                        for allele in allelesForAnthem.split(','):
-                            
-                            if replicate[-8:-7] in ['8','9']:
-                                nmer = replicate[-8:-7]
-                            else:
-                                nmer = replicate[-9:-7]
-
-                            if allele in data[nmer]:
-                                temp.append(allele)
-
-                        filteredAllelesForAnthem = ",".join(temp)
-                        del temp
-
-                        os.chdir(os.path.join(project_root,'app/tools/Anthem-master'))
-
-                        # Have to find a better way to read output of anthem.
-                        # For now reading the files in newly generated folder and deleting them.
-
-                        # Current folder
-                        current_files = os.listdir()
-                        
-                        if filteredAllelesForAnthem != "":
-                            call(['../../../lenv/bin/python3','sware_b_main.py', '--HLA', filteredAllelesForAnthem, '--mode', 'prediction', '--peptide_file', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate)])
-
-                            present_files = os.listdir()
-                            data_folder = list(set(present_files)-set(current_files))
-
-                            # Copying the output file to the destination
-                            if replicate[-8:-7] in ['8','9']:
-                                copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-9]))
-
-                            else:
-                                copy_tree(data_folder[0], '../../static/images/{}/{}/ANTHEM/{}'.format(taskId,sample,replicate[:-10]))
+                        call(command)                    
         
-                            # Deleting the output file
-                            shutil.rmtree(data_folder[0])
-
-                            os.chdir(project_root)
-
-        if method=='ANTHEM' and sample!='Control':
-
-            os.chdir('{}/app/static/images/{}/{}/ANTHEM/'.format(project_root,taskId,sample))
-        
-            for replicate in os.listdir('./'):
-            #     if replicate[-4:] == '.txt':
-
-                zip_file = ZipFile(replicate+'.zip', 'w')
-                for folderName, subfolders, filenames in os.walk(replicate):
-                    for filename in filenames:
-                        #create complete filepath of file in directory
-                        filePath = os.path.join(folderName, filename)
-                        # Add file to zip
-                        if filename[-3:]=='txt':
-                            zip_file.write(filePath, basename(filePath))
-                zip_file.close()
-
             os.chdir(project_root)
 
 def saveBindersData(taskId, alleles, method, mhcclass):
