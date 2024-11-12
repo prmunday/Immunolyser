@@ -219,13 +219,25 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                     for allele in alleles_unformatted.split(','):
                         try:
                             if sample != 'Control':
+
+                                # Path to store user friendly binders data
                                 path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele)
+
+                                # Path to store raw binder tool output
+                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4],allele)
                             else:
                                 path = os.path.join('app', 'static', 'images', taskId, sample)
+
                             if not os.path.exists(path):
                                 # os.makedirs(directory)
                                 Path(path).mkdir(parents=True, exist_ok=True)
                                 print("Directory Created : {}".format(path))
+
+                            if not os.path.exists(path_predictor_output):
+                                # os.makedirs(directory)
+                                Path(path_predictor_output).mkdir(parents=True, exist_ok=True)
+                                print("Directory Created : {}".format(path_predictor_output))
+                                
                         except FileExistsError:
                             print("Directory already exists {}".format(path))
 
@@ -277,7 +289,7 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     # Generating binding predictions
     if alleles!="":    
         for predictionTool in predictionTools:
-            generateBindingPredictions(taskId, alleles, predictionTool)
+            generateBindingPredictions(taskId, alleles_unformatted, predictionTool)
 
     # Fetching the binders from the results
     if alleles!="":    
