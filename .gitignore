@@ -6,3 +6,4 @@ immunolyser-data/*
 lenv/*
 results.sqlite
 .vscode/launch.json
+test.py

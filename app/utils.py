@@ -249,23 +249,9 @@ def findNumberOfPeptidesInCore(clusters, taskId, sample, replicate):
 # This method will generate the binding predictions.
 # User can select the binding prediction to be used.
 # User can enter the names of alleles of interest.
-def generateBindingPredictions(taskId, alleles, method):
+def generateBindingPredictions(taskId, alleles_unformatted, method):
     
-    # Reading the alleles which can be accepted by Anthem
-    if method=='ANTHEM':
-        with open('app/tools/Anthem-master/source/lenghHLA.json') as f:
-            data = json.load(f)
-
-    print('Generating Binding Predictions for task {} for {} alleles using {}.'.format(taskId,alleles,method))
-
-    # Converting HLAs syntax from HLA-A02:01 to HLA-A*02:01
-    temp = list()
-    allelesForAnthem = ""
-    for allele in alleles.split(','):
-        temp.append('HLA-{}*{}:{}'.format(allele[4],allele[5:7],allele[8:]))
-        
-    allelesForAnthem = ",".join(temp)
-    del temp
+    print('Generating Binding Predictions for task {} for {} alleles using {}.'.format(taskId,alleles_unformatted,method))
 
     # Ensuring program in the right directory
     os.chdir(project_root)
@@ -286,33 +272,42 @@ def generateBindingPredictions(taskId, alleles, method):
                     input_peptides = data[0].tolist() 
 
                     if(method=='MixMHCpred'):
-                        call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate), '-a', alleles ])
+                        
+                        # Calling for every allele
+                        for allele in alleles_unformatted.split(","):
+                            call(['./app/tools/MixMHCpred/MixMHCpred', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}/{}'.format(taskId,sample,replicate[:-13], allele, replicate), '-a', getFormattedAlleleByMHCClass(allele, MHC_Class.mhc1) ])
 
                     elif(method=='NetMHCpan'):
-                        f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate), 'w')
-                        p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', alleles], stdout=f)
-                        output, err = p.communicate(b"input data that is passed to subprocess' stdin")
-                        f.close()     
+
+                        # Calling for every allele
+                        for allele in alleles_unformatted.split(","):
+
+                            f = open('app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(taskId,sample,replicate[:-13], allele,replicate), 'w')
+                            p = Popen(['./app/tools/netMHCpan-4.1/netMHCpan', '-p', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', getFormattedAlleleByMHCClass(allele, MHC_Class.mhc1)], stdout=f)
+                            output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+                            f.close()     
 
                     elif(method==Class_One_Predictors.MHCflurry):
                         predictor = Class1PresentationPredictor.load()
 
-                        for allele in alleles.split(','):
+                        for allele in alleles_unformatted.split(','):
 
                             mhc_flurry_prediction_result = predictor.predict(
                                 peptides=input_peptides,
-                                alleles=[allele],
+                                alleles=[getFormattedAlleleByMHCClass(allele, MHC_Class.mhc1)],
                                 verbose=1)
                             
-                            mhc_flurry_prediction_result.to_csv('app/static/images/{}/{}/{}/{}/{}'.format(taskId,sample,Class_One_Predictors.MHCflurry,replicate[:-13],replicate), index=False)
+                            mhc_flurry_prediction_result.to_csv('app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,sample,Class_One_Predictors.MHCflurry,replicate[:-13],allele,replicate), index=False)
 
                 elif replicate[-13:] == '12to20mer.txt':
                     if(method == 'MixMHC2pred'):
-                        command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate), '-a']
-                        for allele in alleles.split(','):
-                            command.append(allele)
-                        command.append('--no_context')
-                        call(command)                    
+                        
+                        for allele in alleles_unformatted.split(','):
+
+                            command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId,sample,replicate[:-14],allele,replicate), '-a']
+                            command.append(getFormattedAlleleByMHCClass(allele, MHC_Class.mhc1))
+                            command.append('--no_context')
+                            call(command)                    
         
             os.chdir(project_root)
 
@@ -359,122 +354,89 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
-                # ANTHEM case
-                if method == 'ANTHEM':
-                    # Looping through all the result files of one replicate in ANTHEM results
-                    for nmer_file in glob.glob('app/static/images/{}/{}/ANTHEM/{}/*.txt'.format(taskId,sample,replicate[:-13])):
-                        # reading nmer file
-                        f = open(nmer_file,'r')
-                        lines = f.read()
-                        f.close()
+                # MHCflurry case
+                if method == Class_One_Predictors.MHCflurry:
 
-                        # Using regex taking out alleles and peptides.
-                        alleles = list()
-                        alleles = re.findall(r'(?P<allele>[A-Z]{3}-[A-Z]\S\d{2}:\d{2}).*[\n] .*[\n]\S*\s*\S*\s*(?P<peptides>(?:.*\.\d*\s)*)',lines)
+                    for allele in alleles.split(','):
 
-                        res_cols = ['Peptide', 'Binder', 'Score']
-
-
-                        # For each allele in one nmer file...
-                        for i in range(len(alleles)):
-
-                            # if coming across new allele, adding it into the result dictionary.
-                            if alleles[i][0] not in alleles_dict.keys():
-                                alleles_dict[alleles[i][0]] = list()
-
-
-                            # for each peptide under one allele...
-                            for peptide in alleles[i][1].split('\n'):
-
-                                # checking if it is a binder
-                                if 'yes' in peptide:
-
-                                    # adding into the results list if a binder
-                                    alleles_dict[alleles[i][0]].append(peptide.split())
-
+                        f = pd.read_csv('app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,
+                                                                                sample,
+                                                                                Class_One_Predictors.MHCflurry,
+                                                                                replicate[:-13],
+                                                                                allele,
+                                                                                replicate))
                         
-                        
-                    # Saving the allele-binders dictionary as text files for ANTHEM case.
+                        f['Binding Level'] = ""
+                        f['Control'] = ""
 
-                    for allele, binders in alleles_dict.items():
-                        
-                        alleles_dict[allele] = pd.DataFrame(binders, columns=res_cols)
-                        
-                        alleles_dict[allele]['Binding Level'] = ""
-                        alleles_dict[allele]['Control'] = ""
-                        
-                        # Keeping strong and weak binders only
-                        # alleles_dict[allele] = alleles_dict[allele][alleles_dict[allele].apply(lambda x : float(x['Score'])<2,axis=1)]
+                        # Need to confirm binding score cutt off score. For now keeping peptides where Presentation score is less than equal to 0.05
+                        f = f[f.apply(lambda x : float(x['presentation_score'])<=0.5,axis=1)]
 
-                        alleles_dict[allele]['Binding Level'] = "B"
+                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                        f['Binding Level'] = f['presentation_score'].apply(lambda x : 'SB' if float(x)<=0.05 else 'WB')
 
                         # Tagging binders present in control group
-                        temp = alleles_dict[allele]
-                        alleles_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+                        f['Control'] = f['peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
 
-                        allele_fromatted = allele[4:].replace("*","").replace(":","")
+                        # Updating the name of binding results column peptide to PlainPeptide
+                        f.rename(columns={'peptide': 'PlainPeptide'}, inplace=True)
 
-                        # Sorting the binders from stong to weak binding level and saving it.
-                        alleles_dict[allele] = alleles_dict[allele].sort_values(by=['Score'],ascending=False)[["Peptide","Score","Binding Level","Control"]]
+                        f\
+                            .sort_values(by=['presentation_score'])[['PlainPeptide','presentation_score','Binding Level','Control']]\
+                            .merge(input_file, on='PlainPeptide',how='left')\
+                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)     
 
-                        # Updating the name of binding results column Peptide to PlainPeptide
-                        alleles_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
-
-                        # Adding the meta-data from the original input file
-                        alleles_dict[allele] = alleles_dict[allele].merge(input_file, on='PlainPeptide',how='left')
-                        t = alleles_dict[allele].drop_duplicates('PlainPeptide')
-                        
-                        print(f'saveBindersData : Number of rows in ANTHEM binder output file: {t.shape[0]}')
-                        print(f"saveBindersData : Number of peptides for which prediction not performed by ANTHEM: {t['Score'].isna().sum()}")
-
-                        t.to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele_fromatted,replicate[:-13],allele_fromatted,method), index=False)
 
                 # MixMHCpred case
                 if method == 'MixMHCpred':
-                    f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/{}'.format(taskId,sample,replicate[:-13],replicate),skiprows=11,sep='\t')
-
-                    f['Binding Level'] = ""
-                    f['Control'] = ""
-                        
-                    # Keeping strong and weak binders only
-                    f = f[f.apply(lambda x : float(x['%Rank_bestAllele'])<=10,axis=1)]
-
-                    # Tagging each binder as SB(Strong binder) or WB(Weak binder)
-                    f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<=2 else 'WB')
-                        
-                    # Tagging binders present in control group
-                    f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-
-                    # Updating the name of binding results column Peptide to PlainPeptide
-                    f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
 
                     for allele in alleles.split(','):
-                        f[f['BestAllele'] == allele]\
+
+                        f = pd.read_csv('app/static/images/{}/{}/MixMHCpred/{}/{}/{}'.format(taskId,sample,replicate[:-13],allele,replicate),skiprows=11,sep='\t')
+
+                        f['Binding Level'] = ""
+                        f['Control'] = ""
+                            
+                        # Keeping strong and weak binders only
+                        f = f[f.apply(lambda x : float(x['%Rank_bestAllele'])<=10,axis=1)]
+
+                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                        f['Binding Level'] = f['%Rank_bestAllele'].apply(lambda x : 'SB' if float(x)<=2 else 'WB')
+                            
+                        # Tagging binders present in control group
+                        f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+
+                        # Updating the name of binding results column Peptide to PlainPeptide
+                        f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
+                        f\
                             .sort_values(by=['%Rank_bestAllele'])[['PlainPeptide','%Rank_bestAllele','Binding Level','Control']]\
                             .merge(input_file, on='PlainPeptide',how='left')\
                             .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)     
 
                 # MixMHC2pred case
                 if method == 'MixMHC2pred':
-                    f = pd.read_csv('app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate),skiprows=19,sep='\t')
-
-                    f['Binding Level'] = ""
-                    f['Control'] = ""
-                        
-                    # Keeping strong and weak binders only
-                    f = f[f.apply(lambda x : float(x['%Rank_best'])<=10,axis=1)]
-
-                    # Tagging each binder as SB(Strong binder) or WB(Weak binder)
-                    f['Binding Level'] = f['%Rank_best'].apply(lambda x : 'SB' if float(x)<=2 else 'WB')
-                        
-                    # Tagging binders present in control group
-                    f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-
-                    # Updating the name of binding results column Peptide to PlainPeptide
-                    f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
 
                     for allele in alleles.split(','):
-                        s = f[f['BestAllele'] == allele]\
+                    
+                        f = pd.read_csv('app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate),skiprows=19,sep='\t')
+
+                        f['Binding Level'] = ""
+                        f['Control'] = ""
+                            
+                        # Keeping strong and weak binders only
+                        f = f[f.apply(lambda x : float(x['%Rank_best'])<=10,axis=1)]
+
+                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                        f['Binding Level'] = f['%Rank_best'].apply(lambda x : 'SB' if float(x)<=2 else 'WB')
+                            
+                        # Tagging binders present in control group
+                        f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+
+                        # Updating the name of binding results column Peptide to PlainPeptide
+                        f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
+                        s = f\
                             .sort_values(by=['%Rank_best'])[['PlainPeptide','Core_best','%Rank_best','Binding Level','Control']]\
                             .merge(input_file, on='PlainPeptide',how='left')
 
@@ -490,79 +452,82 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                 # netMHCpan case
                 if method == 'NetMHCpan':
-                    f = open('app/static/images/{}/{}/NetMHCpan/{}/{}'.format(taskId,sample,replicate[:-13],replicate),'r')
-
-                    # Storing all entries as string
-                    lines = list(f.readlines())
-                    f.close() 
-                    
-                    # Tags in output files of NetMHCpan
-                    border = '---------------------------------------------------------------------------------------------------------------------------\n'
-                    header = ' Pos         MHC        Peptide      Core Of Gp Gl Ip Il        Icore        Identity  Score_EL %Rank_EL BindLevel\n'
-
-                    allele_dict = {}
-
-                    # Reading data of each allele from output files.
-                    for i in range(len(lines)):
-                        if lines[i] == border and lines[i+1] == header:
-                            allele = lines[i+3].split()[1][4:].replace("*","").replace(":","")
-                            allele_dict[allele] = list()
-                            
-                            i = i+3
-
-                            # Adding all data of one allele till the next allele data starts.
-                            while(lines[i]!=border):
-                                allele_dict[allele].append(lines[i])
-                                i = i+1
-                        else:
-                            continue
-                    
-                    # Keeping only required fields
-                    for allele, binders in allele_dict.items():
-                        temp = list()
                         
-                        for binder in binders:
-                            temp.append(binder.split()[:13])
-                            
-                        allele_dict[allele] = temp.copy()
-                        
-                        del temp
+                    for allele_to_locate_binder_file in alleles.split(','):
 
-                    # Furhter filtration of the result files.
-                    for allele,binders in allele_dict.items():
+                        f = open('app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(taskId,sample,replicate[:-13],allele_to_locate_binder_file,replicate),'r')
+
+                        # Storing all entries as string
+                        lines = list(f.readlines())
+                        f.close() 
+                        
+                        # Tags in output files of NetMHCpan
+                        border = '---------------------------------------------------------------------------------------------------------------------------\n'
+                        header = ' Pos         MHC        Peptide      Core Of Gp Gl Ip Il        Icore        Identity  Score_EL %Rank_EL BindLevel\n'
+
+                        allele_dict = {}
+
+                        # Reading data of each allele from output files.
+                        for i in range(len(lines)):
+                            if lines[i] == border and lines[i+1] == header:
+                                allele = lines[i+3].split()[1][4:].replace("*","").replace(":","")
+                                allele_dict[allele] = list()
+                                
+                                i = i+3
+
+                                # Adding all data of one allele till the next allele data starts.
+                                while(lines[i]!=border):
+                                    allele_dict[allele].append(lines[i])
+                                    i = i+1
+                            else:
+                                continue
                         
                         # Keeping only required fields
-                        allele_dict[allele] = pd.DataFrame(binders,columns=header.split()[:13])
-                        
-                        # Making the allele name to same as user input's format
-                        allele_dict[allele]['MHC'] = allele
-                        
-                        temp = allele_dict[allele]
-                        # Keeping strong and weak binders only
-                        allele_dict[allele] = temp[temp.apply(lambda x : float(x['%Rank_EL'])<=2,axis=1)]
-                        
-                        temp = allele_dict[allele]
-                        # Tagging each binder as SB(Strong binder) or WB(Weak binder)
-                        allele_dict[allele]['Binding Level'] = temp['%Rank_EL'].apply(lambda x : 'SB' if float(x)<=0.5 else 'WB')
-                        
-                        # Initialsing the column to show if peptide present in control/blank sample.
-                        allele_dict[allele]['Control'] = ""
+                        for allele, binders in allele_dict.items():
+                            temp = list()
+                            
+                            for binder in binders:
+                                temp.append(binder.split()[:13])
+                                
+                            allele_dict[allele] = temp.copy()
+                            
+                            del temp
 
-                        
-                        # Tagging binders present in control group
-                        temp = allele_dict[allele]
-                        allele_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-                        
-                        # Sorting the binders from stong to weak binding level and saving it.
-                        allele_dict[allele] = allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]]
+                        # Furhter filtration of the result files.
+                        for allele,binders in allele_dict.items():
+                            
+                            # Keeping only required fields
+                            allele_dict[allele] = pd.DataFrame(binders,columns=header.split()[:13])
+                            
+                            # Making the allele name to same as user input's format
+                            allele_dict[allele]['MHC'] = allele
+                            
+                            temp = allele_dict[allele]
+                            # Keeping strong and weak binders only
+                            allele_dict[allele] = temp[temp.apply(lambda x : float(x['%Rank_EL'])<=2,axis=1)]
+                            
+                            temp = allele_dict[allele]
+                            # Tagging each binder as SB(Strong binder) or WB(Weak binder)
+                            allele_dict[allele]['Binding Level'] = temp['%Rank_EL'].apply(lambda x : 'SB' if float(x)<=0.5 else 'WB')
+                            
+                            # Initialsing the column to show if peptide present in control/blank sample.
+                            allele_dict[allele]['Control'] = ""
 
-                        # Updating the name of binding results column Peptide to PlainPeptide
-                        allele_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+                            
+                            # Tagging binders present in control group
+                            temp = allele_dict[allele]
+                            allele_dict[allele]['Control'] = temp['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+                            
+                            # Sorting the binders from stong to weak binding level and saving it.
+                            allele_dict[allele] = allele_dict[allele].sort_values(by=['%Rank_EL'])[["Peptide","%Rank_EL","Binding Level","Control"]]
 
-                        # Adding the meta-data from the original input file
-                        allele_dict[allele] = allele_dict[allele].merge(input_file, on='PlainPeptide',how='left')
+                            # Updating the name of binding results column Peptide to PlainPeptide
+                            allele_dict[allele].rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
 
-                        allele_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
+                            # Adding the meta-data from the original input file
+                            allele_dict[allele] = allele_dict[allele].merge(input_file, on='PlainPeptide',how='left')
+
+                            allele_dict[allele].to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-13],allele,replicate[:-13],allele,method), index=False)
 
 def getPredictionResuslts(taskId,alleles,methods,samples):
 
@@ -645,3 +610,11 @@ def getOverLapData(samples_data):
         overlap[sample] = [replicate[:-4] for replicate, data in replicates.items()]
 
     return overlap
+
+def getFormattedAlleleByMHCClass(allele, mhc_class):
+    # Converting alleles from A0203 format to HLA-A02:03
+    # Appedning in genral format, if mhc class 1 is of interest
+    if mhc_class == MHC_Class.mhc1:
+        return 'HLA-{}:{}'.format(allele[:3],allele[3:])
+    else:
+        return allele              
