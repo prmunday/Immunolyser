@@ -3,6 +3,10 @@ class Class_One_Predictors:
     MHCflurry = "MHCflurry"
     NetMHCpan = "NetMHCpan"
 
+class Class_Two_Predictors:
+    MixMHC2pred = "MixMHC2pred"
+    NetMHCpanII = "NetMHCpanII"
+
 class MHC_Class:
     mhc1 = "mhc1",
     mhc2 = "mhc2"

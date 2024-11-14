@@ -7,6 +7,7 @@ from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
 import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests
 from Bio import SeqIO
+from constants import *
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -61,7 +62,7 @@ def initialiser():
         alleles_unformatted = request.form.get('alleles')
         # Prediction tools selected by the user
         if (mhcclass == 'mhc2'):
-            predictionTools = ['MixMHC2pred']
+            predictionTools = [Class_Two_Predictors.MixMHC2pred, Class_Two_Predictors.NetMHCpanII]
         else :
             predictionTools = request.form.getlist('predictionTools')
 
