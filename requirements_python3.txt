@@ -53,6 +53,7 @@ keras==3.6.0
 kiwisolver==1.4.5
 kombu==5.3.7
 libclang==18.1.1
+logomaker==0.8
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==2.0.1
