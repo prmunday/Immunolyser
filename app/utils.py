@@ -305,7 +305,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method):
                         for allele in alleles_unformatted.split(','):
 
                             command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId,sample,replicate[:-14],allele,replicate), '-a']
-                            command.append(getFormattedAlleleByMHCClass(allele, MHC_Class.mhc1))
+                            command.append(getFormattedAlleleByMHCClass(allele, MHC_Class.mhc2))
                             command.append('--no_context')
                             call(command)                    
         
@@ -419,7 +419,7 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                     for allele in alleles.split(','):
                     
-                        f = pd.read_csv('app/static/images/{}/{}/MixMHC2pred/{}/{}'.format(taskId,sample,replicate[:-14],replicate),skiprows=19,sep='\t')
+                        f = pd.read_csv('app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId,sample,replicate[:-14],allele,replicate),skiprows=19,sep='\t')
 
                         f['Binding Level'] = ""
                         f['Control'] = ""
