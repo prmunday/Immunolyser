@@ -338,7 +338,6 @@ def getExistingReport(taskId):
     # Confirming the project root is correct
     os.chdir(project_root)
 
-    # predictionTools = ['MixMHCpred','ANTHEM','NetMHCpan']
     with open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt")) as f:
         predictionTools = f.readline().split(',')
 
@@ -515,7 +514,7 @@ def getBinders():
 
     print(f'getBinder Post request: tool={tool}, taskId={taskId}, allele={allele}, listonly={listonly}, replicates={replicates}')
 
-    predictionTools = ['ANTHEM','NetMHCpan','MixMHCpred']
+    predictionTools = ['MHCflurry','NetMHCpan','MixMHCpred']
 
     samples = {}
 
