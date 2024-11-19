@@ -38082,42 +38082,42 @@ HLA-DQA10602-DQB10644,HLA-DQA10602-DQB10644,netMHCIIpan 4.3 e,HLA,Two
 HLA-DQA10602-DQB10648,HLA-DQA10602-DQB10648,netMHCIIpan 4.3 e,HLA,Two
 HLA-DQA10602-DQB10652,HLA-DQA10602-DQB10652,netMHCIIpan 4.3 e,HLA,Two
 H-2-Db,H-2-Db,netMHCpan 4.1 b,H-2,One
-H2-Db,H2-Db,mixMHCpred 3.0,H-2,One
+H2-Db,H-2-Db,mixMHCpred 3.0,H-2,One
 H-2-Db,H-2-Db,MHCflurry 2.0,H-2,One
 H-2-IAu,H-2-IAu,netMHCIIpan 4.3 e,H-2,Two
 H2-IAb,H2-IAb,MixMHC2pred-2.0,H-2,Two
 H-2-Dd,H-2-Dd,netMHCpan 4.1 b,H-2,One
-H2-Dd,H2-Dd,mixMHCpred 3.0,H-2,One
+H2-Dd,H-2-Dd,mixMHCpred 3.0,H-2,One
 H-2-Dd,H-2-Dd,MHCflurry 2.0,H-2,One
 H-2-IEd,H-2-IEd,netMHCIIpan 4.3 e,H-2,Two
 H2-IAd,H2-IAd,MixMHC2pred-2.0,H-2,Two
 H-2-Dq,H-2-Dq,netMHCpan 4.1 b,H-2,One
-H2-Dq,H2-Dq,mixMHCpred 3.0,H-2,One
+H2-Dq,H-2-Dq,mixMHCpred 3.0,H-2,One
 H-2-Dq,H-2-Dq,MHCflurry 2.0,H-2,One
 H-2-IEk,H-2-IEk,netMHCIIpan 4.3 e,H-2,Two
 H2-IAf,H2-IAf,MixMHC2pred-2.0,H-2,Two
 H-2-Kb,H-2-Kb,netMHCpan 4.1 b,H-2,One
-H2-Kb,H2-Kb,mixMHCpred 3.0,H-2,One
+H2-Kb,H-2-Kb,mixMHCpred 3.0,H-2,One
 H-2-Kb,H-2-Kb,MHCflurry 2.0,H-2,One
 H-2-IAb,H-2-IAb,netMHCIIpan 4.3 e,H-2,Two
 H2-IAg7,H2-IAg7,MixMHC2pred-2.0,H-2,Two
 H-2-Kd,H-2-Kd,netMHCpan 4.1 b,H-2,One
-H2-Kd,H2-Kd,mixMHCpred 3.0,H-2,One
+H2-Kd,H-2-Kd,mixMHCpred 3.0,H-2,One
 H-2-Kd,H-2-Kd,MHCflurry 2.0,H-2,One
 H-2-IAd,H-2-IAd,netMHCIIpan 4.3 e,H-2,Two
 H2-IAk,H2-IAk,MixMHC2pred-2.0,H-2,Two
 H-2-Kk,H-2-Kk,netMHCpan 4.1 b,H-2,One
-H2-Kk,H2-Kk,mixMHCpred 3.0,H-2,One
+H2-Kk,H-2-Kk,mixMHCpred 3.0,H-2,One
 H-2-Kk,H-2-Kk,MHCflurry 2.0,H-2,One
 H-2-IAq,H-2-IAq,netMHCIIpan 4.3 e,H-2,Two
 H2-IAnb1,H2-IAnb1,MixMHC2pred-2.0,H-2,Two
 H-2-Kq,H-2-Kq,netMHCpan 4.1 b,H-2,One
-H2-Kq,H2-Kq,mixMHCpred 3.0,H-2,One
+H2-Kq,H-2-Kq,mixMHCpred 3.0,H-2,One
 H-2-Kq,H-2-Kq,MHCflurry 2.0,H-2,One
 H-2-IAs,H-2-IAs,netMHCIIpan 4.3 e,H-2,Two
 H2-IAq,H2-IAq,MixMHC2pred-2.0,H-2,Two
 H-2-Ld,H-2-Ld,netMHCpan 4.1 b,H-2,One
-H2-Ld,H2-Ld,mixMHCpred 3.0,H-2,One
+H2-Ld,H-2-Ld,mixMHCpred 3.0,H-2,One
 H-2-Ld,H-2-Ld,MHCflurry 2.0,H-2,One
 H-2-IAk,H-2-IAk,netMHCIIpan 4.3 e,H-2,Two
 H2-IAr,H2-IAr,MixMHC2pred-2.0,H-2,Two
