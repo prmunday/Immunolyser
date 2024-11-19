@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 # Configure logging format and level as needed
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
+# Load Allele dictionary
+ALLELE_DICTIONARY = pd.read_csv(os.path.join(project_root,'app','static','Immunolyser2.0_Allele_Dictionary.csv'))
 
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():
@@ -946,3 +948,24 @@ def croos_check_the_allele(items, file_path):
                 return False, f"Allele '{item}' not found in the file."
 
     return True, "All alleles are present in the file."
+
+@app.route('/get_mhc_classes', methods=['POST'])
+def get_mhc_classes():
+    species = request.json['species']  # Use request.json to access JSON data
+    filtered_classes = ALLELE_DICTIONARY[ALLELE_DICTIONARY['Gene'] == species]['Class'].unique()
+    return jsonify(list(filtered_classes))
+
+@app.route('/get_alleles', methods=['POST'])
+def get_alleles():
+    data = request.json  # Access the JSON payload
+    species = data['species']
+    mhc_class = data['mhc_class']
+    
+    # Filter the DataFrame based on species and MHC class
+    filtered_alleles = ALLELE_DICTIONARY[
+        (ALLELE_DICTIONARY['Gene'] == species) & (ALLELE_DICTIONARY['Class'] == mhc_class)
+    ]['Allele name standardised'].unique()
+    
+    # Return the filtered alleles as a JSON response
+    return jsonify(list(filtered_alleles))
+
