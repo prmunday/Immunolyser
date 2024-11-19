@@ -8,5 +8,5 @@ class Class_Two_Predictors:
     NetMHCpanII = "NetMHCpanII"
 
 class MHC_Class:
-    mhc1 = "mhc1",
-    mhc2 = "mhc2"
+    One = "One"
+    Two = "Two"

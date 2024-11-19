@@ -60,10 +60,10 @@ def initialiser():
     #         filename = secure_filename(file.filename)
     # file_content = file.read()  # R
 
-        mhcclass = request.form.get('MHCClass')
+        mhcclass = request.form.get('mhc_class')
         alleles_unformatted = request.form.get('alleles')
         # Prediction tools selected by the user
-        if (mhcclass == 'mhc2'):
+        if (mhcclass == MHC_Class.Two):
             predictionTools = [Class_Two_Predictors.MixMHC2pred, Class_Two_Predictors.NetMHCpanII]
         else :
             predictionTools = request.form.getlist('predictionTools')
@@ -190,24 +190,21 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     # Samples and file uploaded
     print("Samples and files uploaded", data)
 
-    if (mhcclass == 'mhc2'):
-        valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_Class2_allele_names_unformatted.txt"))
-    else :
-        valid_alleles_present, message = croos_check_the_allele(alleles_unformatted, os.path.join('app', 'references data', "MHC_allele_names_unformatted.txt"))
+    valid_alleles_present, message = cross_check_the_allele(alleles_unformatted, ALLELE_DICTIONARY)
 
     if alleles_unformatted != "" and not valid_alleles_present:
-        return "Valid alleles not passed for the job."
+        raise Exception(f"Valid alleles not passed for the job.")
 
     # saving mhc class selected in a file
     mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
     mhcclass_selected_file.write(mhcclass)
     mhcclass_selected_file.close()
 
-    # saving alleles selected in a file
+    # Saving alleles selected in a file
+    safe_alleles_unformatted = alleles_unformatted.replace(':', '_')  # Replace ':' with '_'
     allele_file = open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt"), "w")
-    allele_file.write(alleles_unformatted)
+    allele_file.write(safe_alleles_unformatted)
     allele_file.close()
-
     
     # saving used prediction tools
     predictiontools = open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt"), "w")
@@ -224,10 +221,10 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                             if sample != 'Control':
 
                                 # Path to store user friendly binders data
-                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele)
+                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele.replace(':', '_'))
 
                                 # Path to store raw binder tool output
-                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4],allele)
+                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4],allele.replace(':', '_'))
                             else:
                                 path = os.path.join('app', 'static', 'images', taskId, sample)
 
@@ -243,21 +240,6 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                                 
                         except FileExistsError:
                             print("Directory already exists {}".format(path))
-
-    # Converting alleles from A0203 format to HLA-A02:03
-    alleles = ''
-    if alleles_unformatted != "":
-        temp = list()
-        for allele in alleles_unformatted.split(','):
-
-            # Appedning in genral format, if mhc class 1 is of interest
-            if mhcclass == 'mhc1':
-                temp.append('HLA-{}:{}'.format(allele[:3],allele[3:]))
-            else:
-                temp.append(allele) 
-
-        alleles = ",".join(temp)
-        del temp
                 
     sample_data = {}
     # control_data = {}
@@ -273,11 +255,11 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     for sample_name, sample in sample_data.items():
         sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
 
-    # Saving 8 to 14 nmers for mhc1 predictions or 12 to 20 for mhc2 predictions
-    if mhcclass == 'mhc1':
+    # Saving 8 to 14 nmers for class one predictions or 12 to 20 for class two predictions
+    if mhcclass == MHC_Class.One:
         minLenForPrediction = 8
         maxLenForPrediction = 14
-    elif mhcclass == 'mhc2':
+    elif mhcclass == MHC_Class.Two:
         minLenForPrediction = 12
         maxLenForPrediction = 20
 
@@ -290,12 +272,12 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     saveNmerData(dirName, sample_data, peptideLength=9, unique=True)
    
     # Generating binding predictions
-    if alleles!="":    
+    if alleles_unformatted!="":    
         for predictionTool in predictionTools:
-            generateBindingPredictions(taskId, alleles_unformatted, predictionTool)
+            generateBindingPredictions(taskId, alleles_unformatted, predictionTool, ALLELE_DICTIONARY)
 
     # Fetching the binders from the results
-    if alleles!="":    
+    if alleles_unformatted!="":    
         for predictionTool in predictionTools:
             saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
     
@@ -405,7 +387,7 @@ def getExistingReport(taskId):
     showSeqLogoandGibbsSection = True
     
     # Do not show Majority Voted option when MHC Class 2 analysis
-    if mhcclass == 'mhc2':
+    if mhcclass == MHC_Class.Two:
         hideMajorityVotedOption = False
 
         if alleles_unformatted == '': # Hiding Motifs and gibbs clustering results when no alleles were selected to run Class 2 analysis
@@ -931,23 +913,33 @@ def validate_sample_name(input_text):
     # If all checks pass, the input is valid
     return True, "Name is valid."
 
-def croos_check_the_allele(items, file_path):
-    with open(file_path, 'r') as file:
-        # Read lines from the file
-        file_content = file.readlines()
+def cross_check_the_allele(items, allele_dict):
+    """
+    Check if each item is present in the 'Allele name standardised' column of the given DataFrame.
 
-        # Remove newline characters from each line
-        file_content = [line.strip() for line in file_content]
+    Args:
+        items (str): A comma-separated string of alleles to check.
+        allele_dict (pd.DataFrame): A DataFrame containing the "Allele name standardised" column.
 
-        # Split the input items into a list
-        input_items = items.split(',')
+    Returns:
+        tuple: (bool, str) indicating if all alleles are found and a relevant message.
+    """
+    # Ensure the required column is present
+    if 'Allele name standardised' not in allele_dict.columns:
+        return False, "'Allele name standardised' column not found in the DataFrame."
 
-        # Check if each item is present in the file
-        for item in input_items:
-            if item not in file_content:
-                return False, f"Allele '{item}' not found in the file."
+    # Get the list of alleles from the DataFrame
+    valid_alleles = allele_dict['Allele name standardised'].tolist()
 
-    return True, "All alleles are present in the file."
+    # Split the input items into a list
+    input_items = [item.strip() for item in items.split(',')]
+
+    # Check if each item is present in the valid_alleles list
+    for item in input_items:
+        if item not in valid_alleles:
+            return False, f"Allele '{item}' not found in the DataFrame."
+
+    return True, "All alleles are present in the DataFrame."
 
 @app.route('/get_mhc_classes', methods=['POST'])
 def get_mhc_classes():

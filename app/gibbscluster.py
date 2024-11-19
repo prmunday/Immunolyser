@@ -1,13 +1,14 @@
 import sys
 import os
 from subprocess import call
+from constants import *
 
 task_id = sys.argv[1]
 data_mount = sys.argv[2]
 mhc_class = sys.argv[3]
 
 # Set -C (perform Single sequence moves at every iteration (default is every -r iterations)) based on mhc class
-arg_C = '-C' if mhc_class == "mhc1" else ''
+arg_C = '-C' if mhc_class == MHC_Class.One else ''
 
 
 for sample in os.listdir('{}/{}'.format(data_mount,task_id)):
