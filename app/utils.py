@@ -308,7 +308,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                         for allele in alleles_unformatted.split(','):
 
                             command = ['./app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId,sample,replicate[:-14],allele.replace(':', '_'),replicate), '-a']
-                            command.append(get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', 'One', ALLELE_DICTIONARY))
+                            command.append(get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', 'Two', ALLELE_DICTIONARY))
                             command.append('--no_context')
                             call(command)    
 
@@ -317,15 +317,29 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                         # Calling for every allele
                         for allele in alleles_unformatted.split(","):
 
-                            f = open('app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,
+                            # f = open('app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,
+                            #                                                       sample, 
+                            #                                                       Class_Two_Predictors.NetMHCpanII, 
+                            #                                                       replicate[:-14],
+                            #                                                       allele.replace(':', '_'),
+                            #                                                       replicate), 'w')
+                            # p = Popen(['./app/tools/netMHCIIpan-4.3/netMHCIIpan', '-inptype', '1', '-f', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', 'Two', ALLELE_DICTIONARY)], stdout=f)
+                            # output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+                            # f.close()   
+
+                            run(
+                                ['./app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls',
+                                '-inptype', '1',
+                                '-f', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate),
+                                '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', 'Two', ALLELE_DICTIONARY),
+                                '-xlsfile', 'app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,
                                                                                   sample, 
                                                                                   Class_Two_Predictors.NetMHCpanII, 
                                                                                   replicate[:-14],
                                                                                   allele.replace(':', '_'),
-                                                                                  replicate), 'w')
-                            p = Popen(['./app/tools/netMHCIIpan-4.3/netMHCIIpan', '-inptype', '1', '-f', '{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', 'One', ALLELE_DICTIONARY)], stdout=f)
-                            output, err = p.communicate(b"input data that is passed to subprocess' stdin")
-                            f.close()     
+                                                                                  replicate)],
+                                stdout=DEVNULL,  # Suppress standard output
+                            )  
 
 
         
@@ -468,6 +482,50 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                         # Saving the predicted core and saving it in 9mer file which will be used for Seq2Logo and GibbsCluster
                         s[['Core_best']]\
                             .drop_duplicates(subset='Core_best')\
+                            .to_csv(os.path.join(data_mount, taskId, sample, replicate[:-14]+'_9mer.txt'), header=False, index=False)
+
+                # NetMHCpanII case
+                if method == Class_Two_Predictors.NetMHCpanII:
+
+                    for allele in alleles.split(','):
+                        f = pd.read_table('app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId,
+                                                                                       sample,
+                                                                                       Class_Two_Predictors.NetMHCpanII,
+                                                                                       replicate[:-14],
+                                                                                       allele.replace(':', '_'),
+                                                                                       replicate), skiprows=1)
+
+                        f['Binding Level'] = ""
+                        f['Control'] = ""
+                    
+                        # Keeping strong and weak binders only
+                        f = f[f.apply(lambda x : float(x['Rank'])<=5,axis=1)]
+                        
+                        f['Binding Level'] = f['Rank'].apply(lambda x : 'SB' if float(x)<=1 else 'WB')
+
+                        # Tagging binders present in control group
+                        f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
+
+                        # Updating the name of binding results column Peptide to PlainPeptide
+                        f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
+
+                        f\
+                            .sort_values(by=['Rank'])[['PlainPeptide','Rank','Binding Level','Control']]\
+                            .merge(input_file, on='PlainPeptide',how='left')\
+                            .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-14],allele.replace(':', '_'),replicate[:-13],allele.replace(':', '_'),method), index=False)
+
+                        s = f\
+                            .sort_values(by=['Rank'])[['PlainPeptide','Core','Rank','Binding Level','Control']]\
+                            .merge(input_file, on='PlainPeptide',how='left')
+
+                        # Adding special column to hold both PlainPeptide and Core_best
+                        s['Peptides : PlainPeptide : Core'] = s['Peptide'] + ' : ' + s['PlainPeptide'] + ' : ' + s['Core']
+
+                        s.to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method,replicate[:-14],allele.replace(':', '_'),replicate[:-14],allele.replace(':', '_'),method), index=False)
+
+                        # Saving the predicted core and saving it in 9mer file
+                        s[['Core']]\
+                            .drop_duplicates(subset='Core')\
                             .to_csv(os.path.join(data_mount, taskId, sample, replicate[:-14]+'_9mer.txt'), header=False, index=False)
 
                 # netMHCpan case
