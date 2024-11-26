@@ -15,7 +15,7 @@
 					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Name of the sample.&#013;Make sure that all the samples have unique names and do NOT contain any special characters."></i>
 				</div>
 				<div class="col-md-6 mb-3">Sample Files 
-					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain 'Peptide', 'Length' and 'Accession' columns.&#013;Select multiple files in case of more than one replicates are needed."></i>
+					<i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="Select input csv file. The file should contain column named 'Peptide'.&#013;Select multiple files in case of more than one replicates are needed."></i>
 				</div>
 			</div>
 			<div id="samples">
@@ -428,7 +428,7 @@
 
 		if(validateAlphanumeric(sample_name)== false){
 			showSpinner(false);
-			alert("Invalid input. Sample name should only contian alphanumeric characters.");
+			alert("Invalid input. Sample name should only contain alphanumeric characters.");
 			return false;
 		}
 		

@@ -353,8 +353,6 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 ]
                                 # Run the command for the compatible allele
                                 run(command, stdout=DEVNULL)  # Suppress standard output
-
-
         
             os.chdir(project_root)
 

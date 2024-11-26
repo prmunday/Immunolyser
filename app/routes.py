@@ -412,6 +412,7 @@ def getExistingReport(taskId):
         for replicate in file_names:
             sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
 
+
     # Loading control data in pandas frames
     # for control_replicate in control:
         # control_data[control_replicate] = pd.read_csv(os.path.join(dirName, "Control", control_replicate))
@@ -449,6 +450,8 @@ def getExistingReport(taskId):
     # Data required to plot upset plot to show peptides overlap
     overlapLayout = {}
     overlapLayout = getOverLapData(sample_data)
+    print('heee------------------*******')
+    print(overlapLayout)
 
     # Assuming 'predictionTools' is a list of Predictor objects
     predictionTools = [tool.short_name for tool in predictionTools]
@@ -682,24 +685,29 @@ def getOverLapPeptides():
 
         peptides = set()
 
-        for replicate in os.listdir('{}/{}/{}'.format(data_mount,taskId,sample)):
-            if replicate[-12:] == '8to14mer.txt' or replicate[-13:]=='12to20mer.txt':
-
-                replicate_name = ""    
-                # Original upload file used to derive all other columns present in the input file
-                if replicate[-12:] == '8to14mer.txt':
-                    replicate_name = replicate[:-13]
-                elif replicate[-13:]=='12to20mer.txt':
-                    replicate_name = replicate[:-14]
-
-                if replicate_name != "":
+        dir_path = '{}/{}/{}'.format(data_mount, taskId, sample)
+        if os.listdir(dir_path):  # Check if the directory is not empty
+            for replicate in os.listdir(dir_path):
+                if replicate[-12:] == '8to14mer.txt' or replicate[-13:] == '12to20mer.txt':
+                    replicate_name = ""    
                     
-                    for i in replicates:
-                        if i.split(';')[0] == sample and i.split(';')[1] == replicate_name:
-                            peptides.update(pd.read_csv('{}/{}/{}/{}'.format(data_mount,taskId,sample,replicate), header=None)[0].to_list())
-                            break
+                    # Determine replicate name
+                    if replicate[-12:] == '8to14mer.txt':
+                        replicate_name = replicate[:-13]
+                    elif replicate[-13:] == '12to20mer.txt':
+                        replicate_name = replicate[:-14]
 
-        res.append({'name':sample,'elems':list(peptides)})
+                    if replicate_name != "":
+                        for i in replicates:
+                            if i.split(';')[0] == sample and i.split(';')[1] == replicate_name:
+                                peptides.update(
+                                    pd.read_csv('{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate), header=None)[0].to_list()
+                                )
+                                break
+
+            # Append result only if the directory has been processed
+            res.append({'name': sample, 'elems': list(peptides)})
+
         
     return jsonify(res)
 
