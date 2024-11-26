@@ -613,6 +613,9 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
             predicted_binders[sample] = {}
             
             for allele in alleles:
+                
+                allele = allele.replace(':', '_')
+
                 predicted_binders[sample][allele] = {}
 
                 for method in methods:
@@ -626,6 +629,8 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
             for replicate in os.listdir(f'{data_mount}/{taskId}/{sample}/'):
                 if replicate[-12:] == '8to14mer.txt':
                     for allele in alleles:
+
+                        allele = allele.replace(':', '_')
                         os.chdir('app/')
                         temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-13]}/binders/{allele}/*.csv')
                         if len(temp) != 0:
@@ -634,6 +639,8 @@ def getPredictionResuslts(taskId,alleles,methods,samples):
 
                 elif replicate[-13:] == '12to20mer.txt':
                     for allele in alleles:
+
+                        allele = allele.replace(':', '_')
                         os.chdir('app/')
                         temp = glob.glob(f'static/images/{taskId}/{sample}/{method}/{replicate[:-14]}/binders/{allele}/*.csv')
                         if len(temp) != 0:
