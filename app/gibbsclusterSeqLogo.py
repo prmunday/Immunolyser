@@ -1,6 +1,7 @@
 import sys
 import os
 from subprocess import call
+# from constants import *
 
 task_id = sys.argv[1]
 data_mount = sys.argv[2]
@@ -12,7 +13,7 @@ cluster = sys.argv[5]
 mhc_class = sys.argv[6]
 
 # Set -C (perform Single sequence moves at every iteration (default is every -r iterations)) based on mhc class
-arg_C = '-C' if mhc_class == "mhc1" else ''
+arg_C = '-C' if mhc_class == "One" else ''
 
 print(os.popen('perl ./app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA_for_seqlogo.pl \
         -f {}/{}/{}/{} \
