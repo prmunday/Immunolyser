@@ -351,6 +351,15 @@ def getExistingReport(taskId):
 
     # Read the allele compatibility matrix
     output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
+
+    # Check if the file exists
+    if not os.path.exists(output_path):
+        # Raise an exception with a custom message
+        raise Exception(
+            "Due to some recent changes, the existing jobs cannot be accessed. The data is still there. "
+            "If it is really important or you cannot submit another job, please email the developer with your job ID to access your job."
+        )
+
     allele_compatibility_matrix = pd.read_csv(output_path, index_col=0)
 
     # Fetch all predictors dynamically
