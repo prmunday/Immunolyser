@@ -420,8 +420,6 @@ def getExistingReport(taskId):
     # Data required to plot upset plot to show peptides overlap
     overlapLayout = {}
     overlapLayout = getOverLapData(sample_data)
-    print('heee------------------*******')
-    print(overlapLayout)
 
     return render_template('analytics.html', overlapLayout=overlapLayout, taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
 
