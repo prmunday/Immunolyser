@@ -63,11 +63,17 @@ def initialiser():
         mhcclass = request.form.get('mhc_class')
         alleles_unformatted = request.form.get('alleles')
         # Prediction tools selected by the user
-        if (mhcclass == MHC_Class.Two):
-            predictionTools = [Class_Two_Predictors.MixMHC2pred, Class_Two_Predictors.NetMHCpanII]
-        else :
-            predictionTools = request.form.getlist('predictionTools')
-
+        if mhcclass == MHC_Class.Two:
+            predictionTools = [
+                Class_Two_Predictors.MixMHC2pred.to_dict(),
+                Class_Two_Predictors.NetMHCpanII.to_dict(),
+            ]
+        else:
+            predictionTools = [
+                Class_One_Predictors.NetMHCpan.to_dict(),
+                Class_One_Predictors.MixMHCpred.to_dict(),
+                Class_One_Predictors.MHCflurry.to_dict(),
+            ]
 
         task = submit_job.delay(samples, mhcclass, alleles_unformatted, predictionTools)
 
@@ -81,6 +87,9 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     minLen = 5
     logger.info('MHC Class of Interest: %s', mhcclass)
     logger.info('alleles_unformatted: %s', alleles_unformatted)
+
+    # Deserialize `predictionTools`
+    predictionTools = [Predictor.from_dict(tool) for tool in predictionTools]
     logger.info('Prediction tools selected: : %s', predictionTools)
 
     total_peptides = 0
@@ -194,22 +203,35 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
 
     if alleles_unformatted != "" and not valid_alleles_present:
         raise Exception(f"Valid alleles not passed for the job.")
-
+        
     # saving mhc class selected in a file
     mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
     mhcclass_selected_file.write(mhcclass)
     mhcclass_selected_file.close()
 
-    # Saving alleles selected in a file
-    safe_alleles_unformatted = alleles_unformatted.replace(':', '_')  # Replace ':' with '_'
-    allele_file = open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt"), "w")
-    allele_file.write(safe_alleles_unformatted)
-    allele_file.close()
-    
-    # saving used prediction tools
-    predictiontools = open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt"), "w")
-    predictiontools.write(','.join(predictionTools))
-    predictiontools.close()
+    # Save allele compatibility matrix based on alleles and MHC class of preference selected.
+    if alleles_unformatted != "":
+        # Split alleles_unformatted into a list
+        alleles = alleles_unformatted.split(',')
+
+        # Convert predictionTools to a list of full names
+        predictionToolNames = [tool.full_name for tool in predictionTools]
+
+        # Create the DataFrame with rows as prediction tools and columns as alleles
+        allele_compatibility_matrix = pd.DataFrame(index=predictionToolNames, columns=alleles)
+
+        # Populate the DataFrame
+        for tool in predictionTools:
+            for allele in alleles:
+                match = ALLELE_DICTIONARY[
+                    (ALLELE_DICTIONARY["Allele name standardised"] == allele) &
+                    (ALLELE_DICTIONARY["Predictor"] == tool.full_name)
+                ]
+                allele_compatibility_matrix.at[tool.full_name, allele] = "Yes" if not match.empty else "No"
+
+        # Save the DataFrame to a CSV file
+        output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
+        allele_compatibility_matrix.to_csv(output_path, index=True)
 
     # Creating directories to store binding prediction results
     for sample, replicates in data.items():
@@ -221,10 +243,10 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                             if sample != 'Control':
 
                                 # Path to store user friendly binders data
-                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4], 'binders',allele.replace(':', '_'))
+                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4], 'binders',allele.replace(':', '_'))
 
                                 # Path to store raw binder tool output
-                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool, replicate[:-4],allele.replace(':', '_'))
+                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4],allele.replace(':', '_'))
                             else:
                                 path = os.path.join('app', 'static', 'images', taskId, sample)
 
@@ -280,6 +302,10 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     if alleles_unformatted!="":    
         for predictionTool in predictionTools:
             saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
+
+    # Store majority voting results
+        if alleles_unformatted!="":
+            a = 1
     
     # Calling script to generate sequence logos
     subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount], shell=False)
@@ -323,8 +349,17 @@ def getExistingReport(taskId):
     # Confirming the project root is correct
     os.chdir(project_root)
 
-    with open(os.path.join('app', 'static', 'images', taskId, "predictiontools.txt")) as f:
-        predictionTools = f.readline().split(',')
+    # Read the allele compatibility matrix
+    output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
+    allele_compatibility_matrix = pd.read_csv(output_path, index_col=0)
+
+    # Fetch all predictors dynamically
+    all_predictors = get_all_predictors()
+
+    # Create predictionTools list by matching full names from the CSV index
+    predictionTools = [
+        predictor for predictor in all_predictors if predictor.full_name in allele_compatibility_matrix.index
+    ]
 
     # MHC Class of Interest
     with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
@@ -336,8 +371,9 @@ def getExistingReport(taskId):
     sample_data = {}
     dirName = os.path.join(data_mount, taskId)
     predicted_binders = None
-    with open(os.path.join('app', 'static', 'images', taskId, "selectedalleles.txt")) as f:
-        alleles_unformatted = f.readline() 
+    
+    # Extract alleles as a comma-separated string
+    alleles_unformatted = ','.join(set(allele_compatibility_matrix.columns))
 
     samples =[ f.name for f in os.scandir(dirName) if f. is_dir()]
 
@@ -405,7 +441,25 @@ def getExistingReport(taskId):
     overlapLayout = {}
     overlapLayout = getOverLapData(sample_data)
 
-    return render_template('analytics.html', overlapLayout=overlapLayout, taskId=taskId, analytics=True, demo=demo, peptide_percent=bar_percent, peptide_density=bar_density, seqlogos =seqlogos, gibbsImages=gibbsImages, upsetLayout=upsetLayout, predicted_binders=predicted_binders,predictionTools=predictionTools, showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, hideMajorityVotedOption=hideMajorityVotedOption)
+    # Assuming 'predictionTools' is a list of Predictor objects
+    predictionTools = [tool.short_name for tool in predictionTools]
+
+    return render_template(
+        'analytics.html', 
+        overlapLayout=overlapLayout, 
+        taskId=taskId, 
+        analytics=True, 
+        demo=demo, 
+        peptide_percent=bar_percent, 
+        peptide_density=bar_density, 
+        seqlogos=seqlogos, 
+        gibbsImages=gibbsImages, 
+        upsetLayout=upsetLayout, 
+        predicted_binders=predicted_binders, 
+        predictionTools=predictionTools,  # List of short_names here
+        showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, 
+        hideMajorityVotedOption=hideMajorityVotedOption
+    )
 
 # Method to manage experiment ID
 def getTaskId():
@@ -506,6 +560,8 @@ def getBinders():
 
     replicates = replicates.split(',')
     
+    # Build a dictionary 'samples' where keys are sample names (entries[1]) 
+    # and values are lists of replicate IDs (entries[2]) that match the specified allele.
     for i in replicates:
         
         entries = i.split(';')
@@ -528,6 +584,8 @@ def getBinders():
     else:
         res = []
         for sample,replicates in samples.items():
+
+            # If tool is equal to an empty string: That is request for majority voted binder from the client side.
             if tool !="":
                 binder_files = []
             else:
@@ -537,6 +595,7 @@ def getBinders():
 
             for replicate in replicates:
                 
+                # If tool string is empty: Fetch resuls for the tools in predictionTools list
                 if tool == "":
 
                     binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods=predictionTools,samples=[sample])
@@ -544,6 +603,7 @@ def getBinders():
                     for method in predictionTools:
 
                         try:
+                            # Appeding to binder_fikes dictionary
                             binder_files[method].append(binding[sample][allele][method][replicate])
                         except KeyError:
                             continue
@@ -551,6 +611,7 @@ def getBinders():
                 else:
                     binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods=[tool],samples=[sample])
                     try:
+                        # Appeding to binder_fikes list
                         binder_files.append(binding[sample][allele][tool][replicate])
                     except KeyError:
                         continue
@@ -559,6 +620,7 @@ def getBinders():
 
             print('getBinder Post request: Binder Files : ', binder_files)
 
+            # If tool is not selected: User asked for majority voted results. In following if, intersections are derived across samples.
             if tool == "":
                 binders = {}
 
@@ -569,17 +631,24 @@ def getBinders():
                     for k in j:
                         binders[i].extend(pd.read_csv(os.path.join('app',k))['Peptide'].to_list())    
 
+
+                # first: Common binder from first and second tool
+                # second: Common binder from second and third tool
+                # first: Common binder from first and third tool
                 first = set(binders[predictionTools[0]]).intersection(set(binders[predictionTools[1]]))
                 second = set(binders[predictionTools[1]]).intersection(set(binders[predictionTools[2]]))
                 third = set(binders[predictionTools[0]]).intersection(set(binders[predictionTools[2]]))
 
+                # binders is list of union of first, second and thirdl
                 binders = first.union(second).union(third)
 
+            # For class 2. Only MixMHC2pred are considered
             elif tool=="MixMHC2pred":	
                 for i in binder_files:	
                     binders.extend(pd.read_csv(os.path.join('app',i))['Peptides : PlainPeptide : Core_best'].dropna().to_list())	
                 binders = set(binders)
                 
+            # Else. For specific prediction tool.
             else:
                 for i in binder_files:
                     binders.extend(pd.read_csv(os.path.join('app',i))['Peptide'].to_list())
