@@ -1,34 +1,4 @@
 Allele name tool specific,Allele name standardised,Predictor,Gene,Class
-H-2-Db,H-2-Db,netMHCpan 4.1 b,H-2,I
-H2-Db,H-2-Db,mixMHCpred 3.0,H-2,I
-H-2-Db,H-2-Db,MHCflurry 2.0,H-2,I
-H-2-Dd,H-2-Dd,netMHCpan 4.1 b,H-2,I
-H2-Dd,H-2-Dd,mixMHCpred 3.0,H-2,I
-H-2-Dd,H-2-Dd,MHCflurry 2.0,H-2,I
-H-2-Dq,H-2-Dq,netMHCpan 4.1 b,H-2,I
-H2-Dq,H-2-Dq,mixMHCpred 3.0,H-2,I
-H-2-Dq,H-2-Dq,MHCflurry 2.0,H-2,I
-H-2-Kb,H-2-Kb,netMHCpan 4.1 b,H-2,I
-H2-Kb,H-2-Kb,mixMHCpred 3.0,H-2,I
-H-2-Kb,H-2-Kb,MHCflurry 2.0,H-2,I
-H-2-Kd,H-2-Kd,netMHCpan 4.1 b,H-2,I
-H2-Kd,H-2-Kd,mixMHCpred 3.0,H-2,I
-H-2-Kd,H-2-Kd,MHCflurry 2.0,H-2,I
-H-2-Kk,H-2-Kk,netMHCpan 4.1 b,H-2,I
-H2-Kk,H-2-Kk,mixMHCpred 3.0,H-2,I
-H-2-Kk,H-2-Kk,MHCflurry 2.0,H-2,I
-H-2-Kq,H-2-Kq,netMHCpan 4.1 b,H-2,I
-H2-Kq,H-2-Kq,mixMHCpred 3.0,H-2,I
-H-2-Kq,H-2-Kq,MHCflurry 2.0,H-2,I
-H-2-Ld,H-2-Ld,netMHCpan 4.1 b,H-2,I
-H2-Ld,H-2-Ld,mixMHCpred 3.0,H-2,I
-H-2-Ld,H-2-Ld,MHCflurry 2.0,H-2,I
-H-2-Lq,H-2-Lq,netMHCpan 4.1 b,H-2,I
-H-2-Lq,H-2-Lq,MHCflurry 2.0,H-2,I
-H-2-Qa1,H-2-Qa1,netMHCpan 4.1 b,H-2,I
-H-2-Qa1,H-2-Qa1,MHCflurry 2.0,H-2,I
-H-2-Qa2,H-2-Qa2,netMHCpan 4.1 b,H-2,I
-H-2-Qa2,H-2-Qa2,MHCflurry 2.0,H-2,I
 HLA-A01:01,HLA-A01:01,netMHCpan 4.1 b,HLA,I
 A0101,HLA-A01:01,mixMHCpred 3.0,HLA,I
 HLA-A01:01,HLA-A01:01,MHCflurry 2.0,HLA,I
@@ -23778,27 +23748,6 @@ DRB5_0228,DRB5_0228,netMHCIIpan 4.3 e,HLA,II
 DRB5_0229,DRB5_0229,netMHCIIpan 4.3 e,HLA,II
 DRB5_0230,DRB5_0230,netMHCIIpan 4.3 e,HLA,II
 DRB5_0231,DRB5_0231,netMHCIIpan 4.3 e,HLA,II
-H2-IAb,H2-IAb,MixMHC2pred-2.0,H-2,II
-H-2-IAb,H-2-IAb,netMHCIIpan 4.3 e,H-2,II
-H2-IAd,H2-IAd,MixMHC2pred-2.0,H-2,II
-H-2-IAd,H-2-IAd,netMHCIIpan 4.3 e,H-2,II
-H2-IAf,H2-IAf,MixMHC2pred-2.0,H-2,II
-H2-IAg7,H2-IAg7,MixMHC2pred-2.0,H-2,II
-H2-IAk,H2-IAk,MixMHC2pred-2.0,H-2,II
-H-2-IAk,H-2-IAk,netMHCIIpan 4.3 e,H-2,II
-H2-IAnb1,H2-IAnb1,MixMHC2pred-2.0,H-2,II
-H2-IAq,H2-IAq,MixMHC2pred-2.0,H-2,II
-H-2-IAq,H-2-IAq,netMHCIIpan 4.3 e,H-2,II
-H2-IAr,H2-IAr,MixMHC2pred-2.0,H-2,II
-H2-IAs,H2-IAs,MixMHC2pred-2.0,H-2,II
-H-2-IAs,H-2-IAs,netMHCIIpan 4.3 e,H-2,II
-H2-IAs2,H2-IAs2,MixMHC2pred-2.0,H-2,II
-H2-IAu,H2-IAu,MixMHC2pred-2.0,H-2,II
-H-2-IAu,H-2-IAu,netMHCIIpan 4.3 e,H-2,II
-H2-IEd,H2-IEd,MixMHC2pred-2.0,H-2,II
-H-2-IEd,H-2-IEd,netMHCIIpan 4.3 e,H-2,II
-H2-IEk,H2-IEk,MixMHC2pred-2.0,H-2,II
-H-2-IEk,H-2-IEk,netMHCIIpan 4.3 e,H-2,II
 DPA1_01_03__DPB1_01_01,HLA-DPA10103_DPB10101,MixMHC2pred-2.0,HLA,II
 DPA1_01_03__DPB1_02_01,HLA-DPA10103_DPB10201,MixMHC2pred-2.0,HLA,II
 DPA1_01_03__DPB1_02_02,HLA-DPA10103_DPB10202,MixMHC2pred-2.0,HLA,II
@@ -38132,3 +38081,54 @@ HLA-DQA10602-DQB10643,HLA-DQA10602-DQB10643,netMHCIIpan 4.3 e,HLA,II
 HLA-DQA10602-DQB10644,HLA-DQA10602-DQB10644,netMHCIIpan 4.3 e,HLA,II
 HLA-DQA10602-DQB10648,HLA-DQA10602-DQB10648,netMHCIIpan 4.3 e,HLA,II
 HLA-DQA10602-DQB10652,HLA-DQA10602-DQB10652,netMHCIIpan 4.3 e,HLA,II
+H-2-Db,H-2-Db,netMHCpan 4.1 b,H-2,I
+H2-Db,H-2-Db,mixMHCpred 3.0,H-2,I
+H-2-Db,H-2-Db,MHCflurry 2.0,H-2,I
+H-2-Dd,H-2-Dd,netMHCpan 4.1 b,H-2,I
+H2-Dd,H-2-Dd,mixMHCpred 3.0,H-2,I
+H-2-Dd,H-2-Dd,MHCflurry 2.0,H-2,I
+H-2-Dq,H-2-Dq,netMHCpan 4.1 b,H-2,I
+H2-Dq,H-2-Dq,mixMHCpred 3.0,H-2,I
+H-2-Dq,H-2-Dq,MHCflurry 2.0,H-2,I
+H-2-Kb,H-2-Kb,netMHCpan 4.1 b,H-2,I
+H2-Kb,H-2-Kb,mixMHCpred 3.0,H-2,I
+H-2-Kb,H-2-Kb,MHCflurry 2.0,H-2,I
+H-2-Kd,H-2-Kd,netMHCpan 4.1 b,H-2,I
+H2-Kd,H-2-Kd,mixMHCpred 3.0,H-2,I
+H-2-Kd,H-2-Kd,MHCflurry 2.0,H-2,I
+H-2-Kk,H-2-Kk,netMHCpan 4.1 b,H-2,I
+H2-Kk,H-2-Kk,mixMHCpred 3.0,H-2,I
+H-2-Kk,H-2-Kk,MHCflurry 2.0,H-2,I
+H-2-Kq,H-2-Kq,netMHCpan 4.1 b,H-2,I
+H2-Kq,H-2-Kq,mixMHCpred 3.0,H-2,I
+H-2-Kq,H-2-Kq,MHCflurry 2.0,H-2,I
+H-2-Ld,H-2-Ld,netMHCpan 4.1 b,H-2,I
+H2-Ld,H-2-Ld,mixMHCpred 3.0,H-2,I
+H-2-Ld,H-2-Ld,MHCflurry 2.0,H-2,I
+H-2-Lq,H-2-Lq,netMHCpan 4.1 b,H-2,I
+H-2-Lq,H-2-Lq,MHCflurry 2.0,H-2,I
+H-2-Qa1,H-2-Qa1,netMHCpan 4.1 b,H-2,I
+H-2-Qa1,H-2-Qa1,MHCflurry 2.0,H-2,I
+H-2-Qa2,H-2-Qa2,netMHCpan 4.1 b,H-2,I
+H-2-Qa2,H-2-Qa2,MHCflurry 2.0,H-2,I
+H2-IAb,H2-IAb,MixMHC2pred-2.0,H-2,II
+H-2-IAb,H-2-IAb,netMHCIIpan 4.3 e,H-2,II
+H2-IAd,H2-IAd,MixMHC2pred-2.0,H-2,II
+H-2-IAd,H-2-IAd,netMHCIIpan 4.3 e,H-2,II
+H2-IAf,H2-IAf,MixMHC2pred-2.0,H-2,II
+H2-IAg7,H2-IAg7,MixMHC2pred-2.0,H-2,II
+H2-IAk,H2-IAk,MixMHC2pred-2.0,H-2,II
+H-2-IAk,H-2-IAk,netMHCIIpan 4.3 e,H-2,II
+H2-IAnb1,H2-IAnb1,MixMHC2pred-2.0,H-2,II
+H2-IAq,H2-IAq,MixMHC2pred-2.0,H-2,II
+H-2-IAq,H-2-IAq,netMHCIIpan 4.3 e,H-2,II
+H2-IAr,H2-IAr,MixMHC2pred-2.0,H-2,II
+H2-IAs,H2-IAs,MixMHC2pred-2.0,H-2,II
+H-2-IAs,H-2-IAs,netMHCIIpan 4.3 e,H-2,II
+H2-IAs2,H2-IAs2,MixMHC2pred-2.0,H-2,II
+H2-IAu,H2-IAu,MixMHC2pred-2.0,H-2,II
+H-2-IAu,H-2-IAu,netMHCIIpan 4.3 e,H-2,II
+H2-IEd,H2-IEd,MixMHC2pred-2.0,H-2,II
+H-2-IEd,H-2-IEd,netMHCIIpan 4.3 e,H-2,II
+H2-IEk,H2-IEk,MixMHC2pred-2.0,H-2,II
+H-2-IEk,H-2-IEk,netMHCIIpan 4.3 e,H-2,II

@@ -52,8 +52,6 @@
 				<h5 class="col-md-6">Species</h5>
 				<select class="col-md-3" name="species" id="species" onchange="updateSelectedMHCClass()">
 					<option value="" disabled selected>Select Species</option>
-					<option value="HLA">Human</option>
-					<option value="H-2">Mouse</option>
 				</select>
 			</div>
 			<br>
@@ -111,6 +109,26 @@
 	// DOM Elements (Cache)
 	const parentDiv = document.getElementById('samples'); // For MutationObserver : When any sample is added or remved
 
+	// Load species and MHC class options automatically on page load
+	function loadSpeciesAndMhcClasses() {
+		// Load species
+		$.ajax({
+			url: '/get_species',  // Adjust with the correct URL for fetching species data
+			type: 'POST',
+			success: function (speciesData) {
+				$('#species').empty().append('<option disabled selected>Select Species</option>');
+				speciesData.forEach(species => {
+					$('#species').append(`<option value="${species}">${species}</option>`);
+				});
+
+				// Automatically select the first species
+				if (speciesData.length > 0) {
+					$('#species').val(speciesData[0]).change();  // Trigger the change event
+				}
+			}
+		});
+	}
+
 	// Event Listeners
 	// Add all event listeners here or within the init function
 	function addEventListeners() {
@@ -134,6 +152,11 @@
 						$('#mhc_class').append(`<option value="${cls}">${cls}</option>`);
 					});
 					$('#mhc_class').prop('disabled', false);
+
+					// Automatically select the first species
+					if (classes.length > 0) {
+						$('#mhc_class').val(classes[0]).change();  // Trigger the change event
+					}
 				}
 			});
 		});
@@ -564,6 +587,8 @@
 	function init() {
 		addEventListeners();
 		// Additional initialization logic if needed
+
+		loadSpeciesAndMhcClasses();
 	}
 
 	// Ensure the DOM is fully loaded before initializing

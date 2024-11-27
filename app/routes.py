@@ -1022,6 +1022,14 @@ def cross_check_the_allele(items, allele_dict):
 
     return True, "All alleles are present in the DataFrame."
 
+@app.route('/get_species', methods=['POST'])
+def get_species():
+    # Get unique species (assuming 'Gene' column contains species names)
+    species_list = ALLELE_DICTIONARY['Gene'].unique()
+    
+    # Return the species list as a JSON response
+    return jsonify(list(species_list))
+
 @app.route('/get_mhc_classes', methods=['POST'])
 def get_mhc_classes():
     species = request.json['species']  # Use request.json to access JSON data
