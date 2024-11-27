@@ -97,6 +97,8 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
 
     taskId = self.request.id
     
+    
+
     dirName = os.path.join(data_mount, taskId)
     try:
         # Create target Directory
@@ -131,6 +133,7 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                 print("Directory Created: ", path_for_logos) 
         except FileExistsError:
             print("Directory already exists")    
+            
 
     # Saving the data and loading into the dictionary
     for sample_name, replicates in samples.items():
@@ -140,19 +143,18 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
             os.mkdir(os.path.join(dirName, sample_name))
             print("Directory Created: ", os.path.join(dirName, sample_name)) 
         except FileExistsError:
-            print("Directory already exists")    
+            print("Directory already exists")
 
         # Not including the control group in data dict 
         # if sample_name != "Control":
         data[sample_name] = list()
-
-        print("replics name : {}".format(replicates))
+        
 
         files_to_save = {}
         # First pass: Accumulate row counts
         for sample_name, replicates in samples.items():
             files_to_save[sample_name] = {}
-            print("replicates name : {}".format(replicates))
+
             for file_filename, file_content_base64 in replicates.items():
                 replicate = base64.b64decode(file_content_base64)
 

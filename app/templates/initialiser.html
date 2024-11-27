@@ -45,6 +45,15 @@
 		</div>
 
 		<br>
+
+		<div class="form-row mb-3" id="motif_length_section" hidden>
+			<h5 class="col-md-6">Preferred length of motifs</h5>
+			<select class="col-md-3" name="motif_length" id="motif_length">
+				<option value="8">8</option>
+				<option value="9" selected>9</option>
+			</select>
+		</div>
+
 		<div>
 			<h4>MHC Binding Predictions</h4>
 			
@@ -602,6 +611,19 @@
 		
 		// Clear selected alleles input text area
 		document.getElementsByName('alleles')[0].value = '';
+
+		// Get the value of the selected MHC Class
+		var mhcClass = document.getElementById("mhc_class").value;
+    
+		// Get the "Preferred length of motifs" section
+		var motifLengthSection = document.getElementById("motif_length_section");
+
+		// Show or hide the "Preferred length of motifs" section based on the MHC Class
+		if (mhcClass === "I") {
+			motifLengthSection.removeAttribute("hidden"); // Show if MHC Class is I
+		} else {
+			motifLengthSection.setAttribute("hidden", true); // Hide if MHC Class is not I
+		}
 	}
 
 	function filterAlleles() {
