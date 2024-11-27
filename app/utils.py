@@ -507,20 +507,6 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                             # Updating the name of binding results column Peptide to PlainPeptide
                             f.rename(columns={'Peptide': 'PlainPeptide'}, inplace=True)
 
-                            s = f\
-                                .sort_values(by=['%Rank_best'])[['PlainPeptide','Core_best','%Rank_best','Binding Level','Control']]\
-                                .merge(input_file, on='PlainPeptide',how='left')
-
-                            # Adding special column to hold both PlainPeptide and Core_best
-                            s['Peptides : PlainPeptide : Core_best'] = s['Peptide'] + ' : ' + s['PlainPeptide'] + ' : ' + s['Core_best']
-
-                            s.to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId,sample,method.short_name,replicate[:-14],allele.replace(':', '_'),replicate[:-14],allele.replace(':', '_'),method.short_name), index=False)
-                            
-                            # Saving the predicted core and saving it in 9mer file which will be used for Seq2Logo and GibbsCluster
-                            s[['Core_best']]\
-                                .drop_duplicates(subset='Core_best')\
-                                .to_csv(os.path.join(data_mount, taskId, sample, replicate[:-14]+'_9mer.txt'), header=False, index=False)
-
                 # NetMHCpanII case
                 if method.short_name == Class_Two_Predictors.NetMHCpanII:
 
