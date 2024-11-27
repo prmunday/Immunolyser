@@ -66,10 +66,31 @@
 			
 			<div class="form-row">
 				<h5 class="col-md-6">Alleles</h5>
-				<select class="col-md-3" name="alleles_list" id="alleles_list" multiple disabled onclick="updateAllele(this)">
-					<option value="" disabled>Select Alleles</option>
-				</select>
+
+				<div class="col-md-3">
+					<input 
+						type="text" 
+						id="alleles_search" 
+						placeholder="Search alleles..." 
+						onkeyup="filterAlleles()" 
+						class="form-control w-100 mb-3"
+					/>
+					
+					<select 
+						name="alleles_list" 
+						id="alleles_list" 
+						multiple 
+						size="10" 
+						disabled 
+						onclick="updateAllele(this)"
+						class="form-control w-100"
+					>
+						<!-- Options can be added dynamically later -->
+					</select>
+				</div>
+				
 			</div>
+			
 			<br>
 			    
 			<div class="form-row">
@@ -581,6 +602,18 @@
 		
 		// Clear selected alleles input text area
 		document.getElementsByName('alleles')[0].value = '';
+	}
+
+	function filterAlleles() {
+		const searchInput = document.getElementById('alleles_search').value.toLowerCase();
+		const selectBox = document.getElementById('alleles_list');
+		const options = selectBox.options;
+
+		for (let i = 0; i < options.length; i++) {
+			const option = options[i];
+			const text = option.text.toLowerCase();
+			option.style.display = text.includes(searchInput) ? '' : 'none';
+		}
 	}
 
 	// Initialization
