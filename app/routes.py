@@ -96,16 +96,14 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
     max_rows = app.config['MAX_TOTAL_PEPTIDES']
 
     taskId = self.request.id
-    
-    
 
     dirName = os.path.join(data_mount, taskId)
     try:
         # Create target Directory
         os.makedirs(dirName)
-        print("Directory " , dirName ,  " Created ") 
+        logger.info("Directory %s Created", dirName) 
     except FileExistsError:
-        print("Directory " , dirName ,  " already exists")
+        logger.info("Directory %s already exists", dirName)
 
 
     data = {}
@@ -117,7 +115,7 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
         is_valid, message = validate_sample_name(sample_name)
 
         if not is_valid:
-            print("Sample name is not valid. " + message)
+            logger.info("Sample name is not valid. %s", message)
 
         # Skipping Control Data
         # if sample_name == "Control":
@@ -130,10 +128,10 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
             if not os.path.exists(path_for_logos):
                 # os.makedirs(directory)
                 Path(path_for_logos).mkdir(parents=True, exist_ok=True)
-                print("Directory Created: ", path_for_logos) 
+                logger.info("Directory Created: %s", path_for_logos) 
         except FileExistsError:
-            print("Directory already exists")    
-            
+            logger.info("Directory already exists: %s", path_for_logos)    
+
 
     # Saving the data and loading into the dictionary
     for sample_name, replicates in samples.items():
@@ -141,14 +139,13 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
         # Creating sub directories to store sample data
         try:
             os.mkdir(os.path.join(dirName, sample_name))
-            print("Directory Created: ", os.path.join(dirName, sample_name)) 
+            logger.info("Directory Created: %s", os.path.join(dirName, sample_name)) 
         except FileExistsError:
-            print("Directory already exists")
+            logger.info("Directory already exists: %s", os.path.join(dirName, sample_name))
 
         # Not including the control group in data dict 
         # if sample_name != "Control":
         data[sample_name] = list()
-        
 
         files_to_save = {}
         # First pass: Accumulate row counts
@@ -161,7 +158,7 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                 if file_filename != "":
                     # Read the CSV content using pandas
                     df = pd.read_csv(io.BytesIO(replicate))
-                    
+
                     # Count rows excluding the header
                     row_count = len(df)
                     total_peptides += row_count
@@ -178,19 +175,18 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
             # Create directories if they do not exist
             try:
                 os.mkdir(os.path.join(dirName, sample_name))
-                print("Directory Created: ", os.path.join(dirName, sample_name))
+                logger.info("Directory Created: %s", os.path.join(dirName, sample_name))
             except FileExistsError:
-                print("Directory already exists")
+                logger.info("Directory already exists: %s", os.path.join(dirName, sample_name))
 
             data[sample_name] = list()
             for file_filename, replicate in replicates.items():
                 # Save the file
                 with open(os.path.join(dirName, sample_name, file_filename), 'wb') as f:
                     f.write(replicate)
-                    
+
                 # Storing the filename in data dictionary
                 data[sample_name].append(file_filename)
-
 
         # If control data is not uploaded, then deleting the sample from the data dictionary
         temp = data.copy()
@@ -199,7 +195,7 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
                 data.pop(sample_name)
 
     # Samples and file uploaded
-    print("Samples and files uploaded", data)
+    logger.info("Samples and files uploaded: %s", data)
 
     valid_alleles_present, message = cross_check_the_allele(alleles_unformatted, ALLELE_DICTIONARY)
 
