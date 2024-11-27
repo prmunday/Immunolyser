@@ -285,7 +285,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                     './app/tools/MixMHCpred/MixMHCpred',
                                     '-i', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
                                     '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}/{}'.format(taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'mixMHCpred 3.0', 'One', ALLELE_DICTIONARY)
+                                    '-a', get_allele_name_tool_specific(allele, 'mixMHCpred 3.0', MHC_Class.One, ALLELE_DICTIONARY)
                                 ])
 
                     elif(method.short_name==Class_One_Predictors.NetMHCpan.short_name):
@@ -297,7 +297,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 run(
                                     ['./app/tools/netMHCpan-4.1/netMHCpan', '-xls', '-p', 
                                     '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', 'One', ALLELE_DICTIONARY),
+                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', MHC_Class.One, ALLELE_DICTIONARY),
                                     '-xlsfile', 'app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)],
                                     stdout=DEVNULL,  # Suppress standard output
                                 )
@@ -312,7 +312,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 # Predict and save the result only for compatible alleles
                                 mhc_flurry_prediction_result = predictor.predict(
                                     peptides=input_peptides,
-                                    alleles=[get_allele_name_tool_specific(allele, 'MHCflurry 2.0', 'One', ALLELE_DICTIONARY)],
+                                    alleles=[get_allele_name_tool_specific(allele, 'MHCflurry 2.0', MHC_Class.One, ALLELE_DICTIONARY)],
                                     verbose=1
                                 )
                                 
@@ -332,7 +332,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 command = [
                                     './app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
                                     '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId, sample, replicate[:-14], allele.replace(':', '_'), replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', 'Two', ALLELE_DICTIONARY),
+                                    '-a', get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', MHC_Class.Two, ALLELE_DICTIONARY),
                                     '--no_context'
                                 ]
                                 # Run the command for the compatible allele
@@ -347,7 +347,7 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 command = [
                                     './app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls', '-inptype', '1',
                                     '-f', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', 'Two', ALLELE_DICTIONARY),
+                                    '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', MHC_Class.Two, ALLELE_DICTIONARY),
                                     '-xlsfile', 'app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId, sample, Class_Two_Predictors.NetMHCpanII,
                                                                                             replicate[:-14], allele.replace(':', '_'), replicate)
                                 ]

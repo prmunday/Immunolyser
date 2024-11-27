@@ -42,5 +42,5 @@ def get_all_predictors() -> List[Predictor]:
     ]
 
 class MHC_Class:
-    One = "One"
-    Two = "Two"
+    One = "I"
+    Two = "II"
