@@ -60,6 +60,7 @@ def initialiser():
     #         filename = secure_filename(file.filename)
     # file_content = file.read()  # R
 
+        motif_length = request.form.get('motif_length')
         mhcclass = request.form.get('mhc_class')
         alleles_unformatted = request.form.get('alleles')
         # Prediction tools selected by the user
@@ -75,16 +76,17 @@ def initialiser():
                 Class_One_Predictors.MHCflurry.to_dict(),
             ]
 
-        task = submit_job.delay(samples, mhcclass, alleles_unformatted, predictionTools)
+        task = submit_job.delay(samples, motif_length, mhcclass, alleles_unformatted, predictionTools)
 
         return redirect(url_for('job_confirmation', task_id=task.id))
 
 @celery.task(name='app.submit_job', bind=True)
-def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):    
+def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predictionTools):    
 
     # Have to take this input from user
     maxLen = 30
     minLen = 5
+    logger.info('Preferred Motif Length: %s', motif_length)
     logger.info('MHC Class of Interest: %s', mhcclass)
     logger.info('alleles_unformatted: %s', alleles_unformatted)
 
@@ -201,35 +203,41 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
 
     if alleles_unformatted != "" and not valid_alleles_present:
         raise Exception(f"Valid alleles not passed for the job.")
-        
+
+    # saving motif length selected in a file
+    motif_length_file = open(os.path.join('app', 'static', 'images', taskId, "motif_length.txt"), "w")
+    motif_length_file.write(motif_length)
+    motif_length_file.close()
+
     # saving mhc class selected in a file
     mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
     mhcclass_selected_file.write(mhcclass)
     mhcclass_selected_file.close()
 
     # Save allele compatibility matrix based on alleles and MHC class of preference selected.
-    if alleles_unformatted != "":
-        # Split alleles_unformatted into a list
-        alleles = alleles_unformatted.split(',')
+    # if alleles_unformatted != "":
+    # Split alleles only if alleles_unformatted is not an empty string
+    alleles = alleles_unformatted.split(',') if alleles_unformatted else []
 
-        # Convert predictionTools to a list of full names
-        predictionToolNames = [tool.full_name for tool in predictionTools]
+    # Convert predictionTools to a list of full names
+    predictionToolNames = [tool.full_name for tool in predictionTools]
 
-        # Create the DataFrame with rows as prediction tools and columns as alleles
-        allele_compatibility_matrix = pd.DataFrame(index=predictionToolNames, columns=alleles)
+    # Create the DataFrame with rows as prediction tools and columns as alleles
+    # If alleles is empty, DataFrame will have no columns
+    allele_compatibility_matrix = pd.DataFrame(index=predictionToolNames, columns=alleles if alleles else [])
 
-        # Populate the DataFrame
-        for tool in predictionTools:
-            for allele in alleles:
-                match = ALLELE_DICTIONARY[
-                    (ALLELE_DICTIONARY["Allele name standardised"] == allele) &
-                    (ALLELE_DICTIONARY["Predictor"] == tool.full_name)
-                ]
-                allele_compatibility_matrix.at[tool.full_name, allele] = "Yes" if not match.empty else "No"
+    # Populate the DataFrame
+    for tool in predictionTools:
+        for allele in alleles:
+            match = ALLELE_DICTIONARY[
+                (ALLELE_DICTIONARY["Allele name standardised"] == allele) &
+                (ALLELE_DICTIONARY["Predictor"] == tool.full_name)
+            ]
+            allele_compatibility_matrix.at[tool.full_name, allele] = "Yes" if not match.empty else "No"
 
-        # Save the DataFrame to a CSV file
-        output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
-        allele_compatibility_matrix.to_csv(output_path, index=True)
+    # Save the DataFrame to a CSV file
+    output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
+    allele_compatibility_matrix.to_csv(output_path, index=True)
 
     # Creating directories to store binding prediction results
     for sample, replicates in data.items():
@@ -306,10 +314,10 @@ def submit_job(self, samples, mhcclass, alleles_unformatted, predictionTools):
             a = 1
     
     # Calling script to generate sequence logos
-    subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount], shell=False)
+    subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)
 
     # Calling script to generate gibbsclusters
-    subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass], shell=False)
+    subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass, motif_length], shell=False)
 
 @app.route("/analytics")
 def analytics():
@@ -498,6 +506,10 @@ def createGibbsBar():
 
     print(f'generateGibbs : Passed params : Cluster={cluster}, taskId={taskId}, replicate={replicate}, sample={sample}')
 
+    # Motif length
+    with open(os.path.join('app', 'static', 'images', taskId, "motif_length.txt")) as f:
+        motif_length = f.readline()
+
     # MHC Class of Interest
     with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
         mhcclass = f.readline()
@@ -514,7 +526,7 @@ def createGibbsBar():
         if os.path.exists(dirpath) and os.path.isdir(dirpath):
             shutil.rmtree(dirpath)
 
-        subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate], shell=False)
+        subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate, motif_length], shell=False)
 
         barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
@@ -536,7 +548,7 @@ def createGibbsBar():
         seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
         if len(seqClusters) != int(cluster):
-            subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster, mhcclass], shell=False)
+            subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster, mhcclass, motif_length], shell=False)
             seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
     # Adding information regarding number of peptides in the core
