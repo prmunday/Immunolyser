@@ -174,7 +174,7 @@
           }
 
           sortable.sort(function(a, b) {
-              return b[1] - a[1];
+              return b[1][0] - a[1][0];  // Sort by peptide count (value[0])
           });
           
           for (const [key, value] of sortable) {
