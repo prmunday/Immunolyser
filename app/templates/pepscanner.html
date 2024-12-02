@@ -266,7 +266,7 @@
 
             colseread = reader.result.split('\n')[0].replace('\r','').split(',');
 
-
+            colseread = colseread.map(col => col.replace(/^"|"$/g, ''));
 
             for (i=0;i<cols.length;i++){
 
