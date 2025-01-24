@@ -14,7 +14,7 @@ RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
 WORKDIR /app/Immunolyser
 
 # Checkout the develop branch
-RUN git checkout develop
+RUN git checkout feature/docker_setup
 
 # Create a virtual environment
 RUN python3 -m venv lenv
@@ -28,8 +28,16 @@ RUN /bin/bash -c "source lenv/bin/activate && \
 # Run the hotfix script
 RUN /bin/bash -c "source lenv/bin/activate && python hotfix_package_files.py"
 
-# Expose the port that Flask will run on
+# Expose Flask and Celery ports
 EXPOSE 5000
+EXPOSE 5555
 
-# Set the entrypoint to activate the virtual environment and run Flask
-ENTRYPOINT ["/bin/bash", "-c", "source lenv/bin/activate && flask run --host=0.0.0.0 --port=5000"]
+# Set a default environment variable for IMMUNOLYSER_DATA
+ENV IMMUNOLYSER_DATA=/app/data
+
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
