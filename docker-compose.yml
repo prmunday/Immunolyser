@@ -7,9 +7,10 @@ services:
     ports:
       - "5001:5000"
     environment:
-      - IMMUNOLYSER_DATA=/Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker
-      # - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://localhost:6379/0}  # Use environment variable with default fallback
+      - IMMUNOLYSER_DATA=/data
       - IS_DOCKER=true
+    volumes:
+      - /Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker:/data
     command: ["flask"]
     depends_on:
       - redis
@@ -18,9 +19,10 @@ services:
     build: .
     container_name: celery_worker
     environment:
-      - IMMUNOLYSER_DATA=/Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker
-      # - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://localhost:6379/0}  # Use environment variable with default fallback
+      - IMMUNOLYSER_DATA=/data
       - IS_DOCKER=true
+    volumes:
+      - /Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker:/data
     command: ["celery"]
     depends_on:
       - redis
