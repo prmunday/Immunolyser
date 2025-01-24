@@ -14,7 +14,7 @@ RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
 WORKDIR /app/Immunolyser
 
 # Checkout the develop branch
-RUN git checkout feature/docker_setup
+RUN git fetch --all && git checkout feature/docker_setup
 
 # Create a virtual environment
 RUN python3 -m venv lenv
