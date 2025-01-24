@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  flask:
+    build: .
+    container_name: flask_app
+    ports:
+      - "5001:5000"
+    environment:
+      - IMMUNOLYSER_DATA=/Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker
+      # - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://localhost:6379/0}  # Use environment variable with default fallback
+      - IS_DOCKER=true
+    command: ["flask"]
+    depends_on:
+      - redis
+
+  celery:
+    build: .
+    container_name: celery_worker
+    environment:
+      - IMMUNOLYSER_DATA=/Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker
+      # - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://localhost:6379/0}  # Use environment variable with default fallback
+      - IS_DOCKER=true
+    command: ["celery"]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
