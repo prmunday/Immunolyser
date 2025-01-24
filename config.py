@@ -9,7 +9,11 @@ class Config(object):
     # Task id of demo job
     DEMO_TASK_ID = os.environ.get('DEMO_TASK_ID')
 
-    CELERY_BROKER_URL='redis://localhost:6379/0'
+    # Dynamically set the CELERY_BROKER_URL based on the environment
+    if os.environ.get('IS_DOCKER') == 'true':
+        CELERY_BROKER_URL = 'redis://redis:6379/0'  # Use redis container name in Docker
+    else:
+        CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use localhost on the server
     CELERY_RESULT_BACKEND='db+sqlite:///results.sqlite'  # SQLite
     CELERY_DEFAULT_QUEUE='celery'  # Ensure all tasks are routed to 'celery' queue
     DEBUG = True
