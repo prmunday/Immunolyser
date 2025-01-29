@@ -16,7 +16,7 @@ replicate += '_9mer.txt'
 arg_l = f'-l {motif_length}'
 
 # Set additional parameters based on mhc_class
-if mhc_class == "One":
+if mhc_class == "I":
     arg_C = '-C'
     arg_r = ''
     arg_s = ''
