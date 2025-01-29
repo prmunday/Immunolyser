@@ -29,9 +29,6 @@ WORKDIR /app/Immunolyser
 # Checkout the develop branch
 RUN git fetch --all && git checkout feature/docker_setup
 
-# Make images under static folder
-RUN mkdir -p /app/Immunolyser/app/static/images
-
 # Copy the seq2logo tar.gz file from the local tools folder to the container
 COPY /tools/seq2logo-2.1.all.tar.gz /app/Immunolyser/app/tools/
 
