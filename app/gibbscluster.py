@@ -1,7 +1,7 @@
 import sys
 import os
 from subprocess import call
-from constants import *
+# from constants import *
 
 task_id = sys.argv[1]
 data_mount = sys.argv[2]
@@ -9,7 +9,7 @@ mhc_class = sys.argv[3]
 motif_length = int(sys.argv[4])
 
 # Set -C (perform Single sequence moves at every iteration (default is every -r iterations)) based on mhc class
-arg_C = '-C' if mhc_class == MHC_Class.One else ''
+arg_C = '-C' if mhc_class == "I" else ""
 
 # Argument to specify the motif length
 arg_l = f'-l {motif_length}'
