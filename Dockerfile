@@ -3,7 +3,7 @@ FROM python:3.12-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install build tools and other required dependencies
+# Install build tools, R, and other required dependencies
 RUN apt-get update && apt-get install -y \
     git \
     tar \
@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y \
     libbz2-dev \
     libreadline-dev \
     libsqlite3-dev \
-    zlib1g-dev && \
+    zlib1g-dev \
+    r-base \
+    && \
     wget https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs926/ghostscript-9.26.tar.gz && \
     tar -xzf ghostscript-9.26.tar.gz && \
     cd ghostscript-9.26 && \
@@ -21,7 +23,7 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Clone the repository
-RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
+RUN rm -rf /app/Immunolyser && git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
 
 # Change to the repository directory
 WORKDIR /app/Immunolyser
@@ -37,6 +39,17 @@ RUN mkdir -p /app/Immunolyser/app/tools && \
     tar -xzf /app/Immunolyser/app/tools/seq2logo-2.1.all.tar.gz -C /app/Immunolyser/app/tools && \
     rm /app/Immunolyser/app/tools/seq2logo-2.1.all.tar.gz
 
+# Copy the gibbscluster tar.gz file to the container
+COPY /tools/gibbscluster-2.0f.Linux.tar.gz /app/Immunolyser/app/tools/
+
+# Extract gibbscluster tar.gz
+RUN mkdir -p /app/Immunolyser/app/tools && \
+    tar -xvf /app/Immunolyser/app/tools/gibbscluster-2.0f.Linux.tar.gz -C /app/Immunolyser/app/tools && \
+    rm /app/Immunolyser/app/tools/gibbscluster-2.0f.Linux.tar.gz
+
+# Update GIBBS path in the gibbscluster file
+RUN sed -i 's|setenv\s*GIBBS .*|setenv GIBBS /app/Immunolyser/app/tools/gibbscluster-2.0|' /app/Immunolyser/app/tools/gibbscluster-2.0/gibbscluster
+
 # Create a virtual environment for Python 3
 RUN python3 -m venv lenv
 
@@ -45,8 +58,9 @@ RUN /bin/bash -c "source lenv/bin/activate && \
     pip install -r requirements_python2.txt && \
     pip install -r requirements_python3.txt"
 
-# Install Celery
+# Install Celery, sqlacheny
 RUN /bin/bash -c "pip install celery"
+RUN /bin/bash -c "pip install SQLAlchemy==2.0.31"
 
 # Run the hotfix script
 RUN /bin/bash -c "python hotfix_package_files.py"
@@ -81,6 +95,9 @@ ENV IMMUNOLYSER_DATA=/app/data
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Create the results.sqlite file
+RUN touch /results.sqlite
 
 # Set the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
