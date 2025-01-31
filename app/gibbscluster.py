@@ -12,7 +12,7 @@ motif_length = int(sys.argv[4])
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
 # Set -C argument based on MHC class
-arg_C = '-C' if mhc_class == "One" else ''
+arg_C = '-C' if mhc_class == "I" else ''
 
 # Argument to specify the motif length
 arg_l = f'-l {motif_length}'
