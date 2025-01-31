@@ -175,6 +175,8 @@ def getSeqLogosImages(samples_data):
     return seqlogos
 
 def getGibbsImages(logger, taskId, samples_data):
+    logger.info(f'getGibbsImages method called with taskId: {taskId} and {len(samples_data)} samples.')
+    
     gibbsImages = {}
 
     os.chdir(project_root)
