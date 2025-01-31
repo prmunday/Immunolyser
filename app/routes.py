@@ -429,7 +429,7 @@ def getExistingReport(taskId):
     bar_density = plot_lenght_distribution(sample_data, hist='density')
     
     seqlogos = getSeqLogosImages(sample_data)
-    gibbsImages = getGibbsImages(taskId, sample_data)
+    gibbsImages = getGibbsImages(logger, taskId, sample_data)
     # seqlogos = {}
     # gibbsImages = {}
 
