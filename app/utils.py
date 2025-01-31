@@ -174,30 +174,28 @@ def getSeqLogosImages(samples_data):
 
     return seqlogos
 
-def getGibbsImages(taskId, samples_data):
-
+def getGibbsImages(logger, taskId, samples_data):
     gibbsImages = {}
 
     os.chdir(project_root)
 
-    # This approach has to be modified as the cluster are picked from the files(JPG) present in results.
+    # This approach has to be modified as the cluster is picked from the files(JPG) present in results.
     # It should be linked with gibbscluster directly to get the results.
-    for sample,replicates in dict(sorted(samples_data.items())).items():
-        # seqlogos[sample] = [replicate[:-4]+'-001.jpg' for replicate in replicates.keys()]
-        
+    for sample, replicates in dict(sorted(samples_data.items())).items():
         gibbsImages[sample] = dict()
 
         for replicate in sorted(replicates.keys()):
 
-            print('Path for Barplots', f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')
+            logger.info(f'Path for Barplots: app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')
 
             bar_plot = [os.path.basename(x) for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')]
             
             # Processing only if Bar Plot was generated for the input
-            if len(bar_plot) == 0 :
+            if len(bar_plot) == 0:
+                logger.warning(f'No bar plot found at the directory for sample {sample}, replicate {replicate}')
                 continue
 
-            print('Bar plot found at the directory', bar_plot)
+            logger.info(f'Bar plot found at the directory: {bar_plot}')
             
             # Finding the best cluster
             bestCluster = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/gibbs.KLDvsClusters.tab')
@@ -208,12 +206,8 @@ def getGibbsImages(taskId, samples_data):
             # Finding the number of records used for the cluster
             findNumberOfPeptidesInCore(clusters, taskId, sample, replicate)
 
-            # print(clusters)
             gibbsImages[sample][replicate[:-4]] = dict()
             gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
-            # print(gibbsImages)
-
-            # gibbsImages[sample][replicate][bar_plot] = clusters
 
     return gibbsImages
 
