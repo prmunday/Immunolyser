@@ -37,7 +37,6 @@ for sample in os.listdir(task_path):
                 f'-k {os.cpu_count()} '
                 f'-T {arg_C} {arg_l} '
                 f'-R {project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-9]}'
-                f'-P "" '
             )
             
             print("Gibbs Command:", gibbs_command)
