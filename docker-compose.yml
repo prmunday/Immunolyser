@@ -10,7 +10,9 @@ services:
       - IMMUNOLYSER_DATA=/data
       - IS_DOCKER=true
     volumes:
-      - /Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker:/data
+      - ./data_files:/data
+      - ./tools:/tools
+      - ./data_files_2:/app/Immunolyser/app/static/images  # <== Added bind mount
     command: ["flask"]
     depends_on:
       - redis
@@ -22,7 +24,9 @@ services:
       - IMMUNOLYSER_DATA=/data
       - IS_DOCKER=true
     volumes:
-      - /Users/prmunday/Documents/Workspace/Immuno_data_point_for_docker:/data
+      - ./data_files:/data
+      - ./tools:/tools
+      - ./data_files_2:/app/Immunolyser/app/static/images  # <== Added bind mount
     command: ["celery"]
     depends_on:
       - redis

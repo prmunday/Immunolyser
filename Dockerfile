@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Clone the repository
-RUN rm -rf /app/Immunolyser && git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
+RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
 
 # Change to the repository directory
 WORKDIR /app/Immunolyser
@@ -49,6 +49,13 @@ RUN mkdir -p /app/Immunolyser/app/tools && \
 
 # Update GIBBS path in the gibbscluster file
 RUN sed -i 's|setenv\s*GIBBS .*|setenv GIBBS /app/Immunolyser/app/tools/gibbscluster-2.0|' /app/Immunolyser/app/tools/gibbscluster-2.0/gibbscluster
+
+# Comment out the line containing '$resdir .= "/$prefix";' in GibbsCluster-2.0e_SA.pl; command update for seq2logo and gibbs
+RUN sed -i \
+    -e 's|^\(\s*\$resdir .= "/\$prefix";\)|# \1  # Comment or remove this line|' \
+    -e 's|^\(my \$barplot = "\$resdir/images/\$prefix.gibbs.KLDvsCluster.barplot.png";\)|my \$barplot = "\$resdir/images/gibbs.KLDvsCluster.barplot.JPG";|' \
+    -e 's|\(\s*\$cmd .= "\$seq2logo -f \$corefile -o \$logofile\).*";|\1 -I 2 --format [JPEG] -b \$wlc -C 2 -S 2 -t \$title &>/dev/null;";|' \
+    /app/Immunolyser/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
 
 # Create a virtual environment for Python 3
 RUN python3 -m venv lenv
