@@ -66,9 +66,9 @@ COPY /tools/netMHCpan-4.1b.Linux.tar.gz /app/Immunolyser/app/tools/
 # Uncompress and untar the netMHCpan package
 RUN mkdir -p /app/Immunolyser/app/tools && \
     cat /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz | gunzip | tar xvf - -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz && \
+    rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz
     # Generate the compressed man page
-    man -d /app/Immunolyser/app/tools/netMHCpan/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan/netMHCpan.Z
+    # man -d /app/Immunolyser/app/tools/netMHCpan/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan/netMHCpan.Z
 
 # Download and untar the data.tar.gz file from the CBS website
 RUN wget https://services.healthtech.dtu.dk/services/NetMHCpan-4.1/data.tar.gz -P /app/Immunolyser/app/tools/netMHCpan-4.1 && \
@@ -76,12 +76,12 @@ RUN wget https://services.healthtech.dtu.dk/services/NetMHCpan-4.1/data.tar.gz -
     rm /app/Immunolyser/app/tools/netMHCpan-4.1/data.tar.gz
 
 # Copy the netMHCIIpan tar.gz file to the container
-COPY /tools/netMHCIIpan-4.3.Linux.tar.gz /app/Immunolyser/app/tools/
+COPY /tools/netMHCIIpan-4.3e.Linux.tar.gz /app/Immunolyser/app/tools/
 
 # Uncompress and untar the netMHCIIpan package
 RUN mkdir -p /app/Immunolyser/app/tools && \
-    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3.Linux.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3.Linux.tar.gz
+    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz -C /app/Immunolyser/app/tools && \
+    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz
 
 # Update netMHCIIpan configuration to use the correct NMHOME path
 RUN sed -i 's|setenv\s*NMHOME\s*/tools/src/netMHCIIpan-4.3|setenv NMHOME ${PWD}/app/tools/netMHCIIpan-4.3|' \
