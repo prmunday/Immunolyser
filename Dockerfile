@@ -15,12 +15,15 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     zlib1g-dev \
     r-base \
+    man-db \
+    ncompress \
     && \
     wget https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs926/ghostscript-9.26.tar.gz && \
     tar -xzf ghostscript-9.26.tar.gz && \
     cd ghostscript-9.26 && \
     ./configure && make && make install && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Clone the repository
 RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
@@ -53,9 +56,59 @@ RUN sed -i 's|setenv\s*GIBBS .*|setenv GIBBS /app/Immunolyser/app/tools/gibbsclu
 # Comment out the line containing '$resdir .= "/$prefix";' in GibbsCluster-2.0e_SA.pl; command update for seq2logo and gibbs
 RUN sed -i \
     -e 's|^\(\s*\$resdir .= "/\$prefix";\)|# \1  # Comment or remove this line|' \
-    -e 's|^\(my \$barplot = "\$resdir/images/\$prefix.gibbs.KLDvsCluster.barplot.png";\)|my \$barplot = "\$resdir/images/gibbs.KLDvsCluster.barplot.JPG";|' \
-    -e 's|\(\s*\$cmd .= "\$seq2logo -f \$corefile -o \$logofile\).*";|\1 -I 2 --format [JPEG] -b \$wlc -C 2 -S 2 -t \$title &>/dev/null;";|' \
+    -e 's|^\(my \$barplot = "\$resdir/images/\$prefix.gibbs.KLDvsCluster.barplot.png";\)|my \$barplot = "\$resdir/images/gibbsKLDvsCluster.barplot.JPG";|' \
+    -e '530s@.*@$cmd .= "$seq2logo -f $corefile -o $logofile -I 2 --format [JPEG] -b $wlc -C 2 -t $title \&>/dev/null; ";@' \
     /app/Immunolyser/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
+
+# Copy the netMHCpan tar.gz file to the container
+COPY /tools/netMHCpan-4.1b.Linux.tar.gz /app/Immunolyser/app/tools/
+
+# Uncompress and untar the netMHCpan package
+RUN mkdir -p /app/Immunolyser/app/tools && \
+    cat /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz | gunzip | tar xvf - -C /app/Immunolyser/app/tools && \
+    rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz && \
+    # Generate the compressed man page
+    man -d /app/Immunolyser/app/tools/netMHCpan/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan/netMHCpan.Z
+
+# Download and untar the data.tar.gz file from the CBS website
+RUN wget https://services.healthtech.dtu.dk/services/NetMHCpan-4.1/data.tar.gz -P /app/Immunolyser/app/tools/netMHCpan-4.1 && \
+    tar -xvf /app/Immunolyser/app/tools/netMHCpan-4.1/data.tar.gz -C /app/Immunolyser/app/tools/netMHCpan-4.1 && \
+    rm /app/Immunolyser/app/tools/netMHCpan-4.1/data.tar.gz
+
+# Copy the netMHCIIpan tar.gz file to the container
+COPY /tools/netMHCIIpan-4.3.Linux.tar.gz /app/Immunolyser/app/tools/
+
+# Uncompress and untar the netMHCIIpan package
+RUN mkdir -p /app/Immunolyser/app/tools && \
+    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3.Linux.tar.gz -C /app/Immunolyser/app/tools && \
+    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3.Linux.tar.gz
+
+# Update netMHCIIpan configuration to use the correct NMHOME path
+RUN sed -i 's|setenv\s*NMHOME\s*/tools/src/netMHCIIpan-4.3|setenv NMHOME ${PWD}/app/tools/netMHCIIpan-4.3|' \
+    /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan
+
+# Update netMHCpan configuration to use the correct NMHOME and TMPDIR paths
+RUN sed -i \
+    -e 's|setenv\s*NMHOME\s*/net/sund-nas.win.dtu.dk/storage/services/www/packages/netMHCpan/4.1/netMHCpan-4.1|setenv NMHOME ${PWD}/app/tools/netMHCpan-4.1|' \
+    -e 's|setenv\s*TMPDIR\s*/tmp|setenv TMPDIR $NMHOME/tmp|' \
+    /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan
+
+# Clone MixMHCpred repository
+RUN git clone https://github.com/GfellerLab/MixMHCpred.git /app/Immunolyser/app/tools/MixMHCpred && \
+    chmod +x /app/Immunolyser/app/tools/MixMHCpred/MixMHCpred
+
+RUN wget https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -P /app/Immunolyser/app/tools && \
+    unzip -o /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip -d /app/Immunolyser/app/tools/MixMHCpred && \
+    rm /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip
+
+# Download Alleles_list_Mouse.txt and put it in PWMdef directory
+RUN wget http://ec2-18-188-210-66.us-east-2.compute.amazonaws.com:4000/data/Alleles_lists/Alleles_list_Mouse.txt -P /app/Immunolyser/app/tools/MixMHC2pred-2.0/PWMdef
+
+# Install mhcflurry
+RUN pip install mhcflurry
+
+# Fetch mhcflurry downloads
+RUN mhcflurry-downloads fetch
 
 # Create a virtual environment for Python 3
 RUN python3 -m venv lenv
