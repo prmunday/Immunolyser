@@ -11,7 +11,7 @@
 
 ### 1. **Download the Dockerfile**
 
-- [Download the Dockerfile here](https://github.com/prmunday/Immunolyser/blob/develop/Dockerfile) and save it to your local directory.
+- <a href="https://raw.githubusercontent.com/prmunday/Immunolyser/develop/Dockerfile" download="Dockerfile">Download the Dockerfile here</a>
 
 ### 2. **Create Required Folders**
 
