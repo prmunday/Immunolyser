@@ -12,6 +12,7 @@
 ### 1. **Download the Dockerfile**
 
 - <a href="https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile" download="Dockerfile" target="_blank">Download the Dockerfile here</a>
+<p>To save the Dockerfile, right-click on the link and select "Save As", or press <strong>Ctrl+S</strong> (Windows) / <strong>Cmd+S</strong> (Mac). Make sure the file is saved without the `.txt` extension.</p>
 
 ### 2. **Create Required Folders**
 
