@@ -67,7 +67,8 @@ COPY /tools/netMHCpan-4.1b.Linux.tar.gz /app/Immunolyser/app/tools/
 RUN mkdir -p /app/Immunolyser/app/tools && \
     cat /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz | gunzip | tar xvf - -C /app/Immunolyser/app/tools && \
     rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz && \
-    man -d /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.Z
+    man -d /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.Z && \
+    mkdir -p /app/Immunolyser/app/tools/netMHCpan-4.1/tmp
 
 # Download and untar the data.tar.gz file from the CBS website
 RUN wget https://services.healthtech.dtu.dk/services/NetMHCpan-4.1/data.tar.gz -P /app/Immunolyser/app/tools/netMHCpan-4.1 && \
