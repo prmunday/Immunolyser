@@ -1,4 +1,4 @@
-# Immunolyser Setup Guide
+# Immunolyser 2.0 Local version Setup Guide
 
 ## Prerequisites
 
