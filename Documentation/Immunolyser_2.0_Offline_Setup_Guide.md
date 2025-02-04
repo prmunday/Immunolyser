@@ -62,6 +62,7 @@ After you've set up the tools, you can build and run the Docker container. Follo
 
 - Docker will take **5 to 10 minutes** to build the container, depending on your system.
 - Make sure you have enough disk space for the build process.
+- Once the container is running, you can access the app at http://localhost:5001/.
 
 ### 5. **Check for Errors**
 
