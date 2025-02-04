@@ -3,7 +3,7 @@ FROM python:3.12-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install build tools, R, and other required dependencies
+# Install build tools, R, tcsh, and other required dependencies
 RUN apt-get update && apt-get install -y \
     git \
     tar \
@@ -17,13 +17,13 @@ RUN apt-get update && apt-get install -y \
     r-base \
     man-db \
     ncompress \
+    tcsh \
     && \
     wget https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs926/ghostscript-9.26.tar.gz && \
     tar -xzf ghostscript-9.26.tar.gz && \
     cd ghostscript-9.26 && \
     ./configure && make && make install && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
 
 # Clone the repository
 RUN git clone https://github.com/prmunday/Immunolyser /app/Immunolyser
@@ -66,9 +66,8 @@ COPY /tools/netMHCpan-4.1b.Linux.tar.gz /app/Immunolyser/app/tools/
 # Uncompress and untar the netMHCpan package
 RUN mkdir -p /app/Immunolyser/app/tools && \
     cat /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz | gunzip | tar xvf - -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz
-    # Generate the compressed man page
-    # man -d /app/Immunolyser/app/tools/netMHCpan/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan/netMHCpan.Z
+    rm /app/Immunolyser/app/tools/netMHCpan-4.1b.Linux.tar.gz && \
+    man -d /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.1 | compress > /app/Immunolyser/app/tools/netMHCpan-4.1/netMHCpan.Z
 
 # Download and untar the data.tar.gz file from the CBS website
 RUN wget https://services.healthtech.dtu.dk/services/NetMHCpan-4.1/data.tar.gz -P /app/Immunolyser/app/tools/netMHCpan-4.1 && \
@@ -81,7 +80,8 @@ COPY /tools/netMHCIIpan-4.3e.Linux.tar.gz /app/Immunolyser/app/tools/
 # Uncompress and untar the netMHCIIpan package
 RUN mkdir -p /app/Immunolyser/app/tools && \
     tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz
+    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz && \
+    man -d /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.1 | compress > /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.Z
 
 # Update netMHCIIpan configuration to use the correct NMHOME path
 RUN sed -i 's|setenv\s*NMHOME\s*/tools/src/netMHCIIpan-4.3|setenv NMHOME ${PWD}/app/tools/netMHCIIpan-4.3|' \
@@ -98,7 +98,7 @@ RUN git clone https://github.com/GfellerLab/MixMHCpred.git /app/Immunolyser/app/
     chmod +x /app/Immunolyser/app/tools/MixMHCpred/MixMHCpred
 
 RUN wget https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -P /app/Immunolyser/app/tools && \
-    unzip -o /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip -d /app/Immunolyser/app/tools/MixMHCpred && \
+    unzip -o /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip -d /app/Immunolyser/app/tools/MixMHC2pred-2.0 && \
     rm /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip
 
 # Download Alleles_list_Mouse.txt and put it in PWMdef directory
