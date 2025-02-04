@@ -293,12 +293,10 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                             if compatibility_matrix.at[method.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
                                 # Run the command for compatible alleles
                                 run(
-                                    [
-                                        f'{project_root}/app/tools/netMHCpan-4.1/netMHCpan', '-xls', '-p',
-                                        f'{data_mount}/{taskId}/{sample}/{replicate}',
-                                        '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', MHC_Class.One, ALLELE_DICTIONARY),
-                                        '-xlsfile', f'{project_root}/app/static/images/{taskId}/{sample}/NetMHCpan/{replicate[:-13]}/{allele.replace(":", "_")}/{replicate}'
-                                    ],
+                                    ['{}/app/tools/netMHCpan-4.1/netMHCpan'.format(project_root), '-xls', '-p', 
+                                    '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
+                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', MHC_Class.One, ALLELE_DICTIONARY),
+                                    '-xlsfile', '{}/app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(project_root,taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)],
                                     stdout=DEVNULL,  # Suppress standard output
                                 )
 
