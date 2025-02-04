@@ -277,12 +277,14 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                             # Check if the allele is compatible with the current tool
                             if compatibility_matrix.at[method.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
                                 # Run the command for compatible alleles
-                                call([
-                                    './app/tools/MixMHCpred/MixMHCpred',
-                                    '-i', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-o', 'app/static/images/{}/{}/MixMHCpred/{}/{}/{}'.format(taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'mixMHCpred 3.0', MHC_Class.One, ALLELE_DICTIONARY)
-                                ])
+                                call(
+                                    [
+                                        f'{project_root}/app/tools/MixMHCpred/MixMHCpred',
+                                        '-i', f'{data_mount}/{taskId}/{sample}/{replicate}',
+                                        '-o', f'{project_root}/app/static/images/{taskId}/{sample}/MixMHCpred/{replicate[:-13]}/{allele.replace(":", "_")}/{replicate}',
+                                        '-a', get_allele_name_tool_specific(allele, 'mixMHCpred 3.0', MHC_Class.One, ALLELE_DICTIONARY)
+                                    ]
+                                )
 
                     elif(method.short_name==Class_One_Predictors.NetMHCpan.short_name):
 
@@ -291,10 +293,12 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                             if compatibility_matrix.at[method.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
                                 # Run the command for compatible alleles
                                 run(
-                                    ['./app/tools/netMHCpan-4.1/netMHCpan', '-xls', '-p', 
-                                    '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', MHC_Class.One, ALLELE_DICTIONARY),
-                                    '-xlsfile', 'app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)],
+                                    [
+                                        f'{project_root}/app/tools/netMHCpan-4.1/netMHCpan', '-xls', '-p',
+                                        f'{data_mount}/{taskId}/{sample}/{replicate}',
+                                        '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.1 b', MHC_Class.One, ALLELE_DICTIONARY),
+                                        '-xlsfile', f'{project_root}/app/static/images/{taskId}/{sample}/NetMHCpan/{replicate[:-13]}/{allele.replace(":", "_")}/{replicate}'
+                                    ],
                                     stdout=DEVNULL,  # Suppress standard output
                                 )
 
@@ -313,9 +317,8 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 )
                                 
                                 # Save the prediction result
-                                result_path = 'app/static/images/{}/{}/{}/{}/{}/{}'.format(
-                                    taskId, sample, Class_One_Predictors.MHCflurry.short_name, replicate[:-13], allele.replace(':', '_'), replicate
-                                )
+                                # Define result path
+                                result_path = f'{project_root}/app/static/images/{taskId}/{sample}/{Class_One_Predictors.MHCflurry.short_name}/{replicate[:-13]}/{allele.replace(":", "_")}/{replicate}'
                                 mhc_flurry_prediction_result.to_csv(result_path, index=False)
 
                 elif replicate[-13:] == '12to20mer.txt':
@@ -325,9 +328,11 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                             # Check if the allele is compatible with MixMHC2pred
                             if compatibility_matrix.at[Class_Two_Predictors.MixMHC2pred.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
                                 # Prepare the command to run MixMHC2pred for compatible alleles
+                                # Run MixMHC2pred-2.0 command
                                 command = [
-                                    './app/tools/MixMHC2pred-2.0/MixMHC2pred_unix', '-i', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-o', 'app/static/images/{}/{}/MixMHC2pred/{}/{}/{}'.format(taskId, sample, replicate[:-14], allele.replace(':', '_'), replicate),
+                                    f'{project_root}/app/tools/MixMHC2pred-2.0/MixMHC2pred_unix',
+                                    '-i', f'{data_mount}/{taskId}/{sample}/{replicate}',
+                                    '-o', f'{project_root}/app/static/images/{taskId}/{sample}/MixMHC2pred/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}',
                                     '-a', get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', MHC_Class.Two, ALLELE_DICTIONARY),
                                     '--no_context'
                                 ]
@@ -341,12 +346,12 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                             if compatibility_matrix.at[Class_Two_Predictors.NetMHCpanII.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
                                 # Prepare the command to run NetMHCpanII for compatible alleles
                                 command = [
-                                    './app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls', '-inptype', '1',
+                                    f'{project_root}/app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls', '-inptype', '1',
                                     '-f', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
                                     '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', MHC_Class.Two, ALLELE_DICTIONARY),
-                                    '-xlsfile', 'app/static/images/{}/{}/{}/{}/{}/{}'.format(taskId, sample, Class_Two_Predictors.NetMHCpanII,
-                                                                                            replicate[:-14], allele.replace(':', '_'), replicate)
+                                    '-xlsfile', f'{project_root}/app/static/images/{taskId}/{sample}/{Class_Two_Predictors.NetMHCpanII}/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}'
                                 ]
+
                                 # Run the command for the compatible allele
                                 run(command, stdout=DEVNULL)  # Suppress standard output
         
