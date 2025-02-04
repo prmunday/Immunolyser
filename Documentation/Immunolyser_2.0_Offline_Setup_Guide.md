@@ -11,7 +11,7 @@
 
 ### 1. **Download the Dockerfile**
 
-- <a href="https://raw.githubusercontent.com/prmunday/Immunolyser/develop/Dockerfile" download="Dockerfile">Download the Dockerfile here</a>
+- <a href="https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile" download="Dockerfile" target="_blank">Download the Dockerfile here</a>
 
 ### 2. **Create Required Folders**
 
