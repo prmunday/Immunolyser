@@ -9,10 +9,19 @@
 
 ## Setup Instructions
 
-### 1. **Download the Dockerfile**
+### 1. **Download Required Files**
 
-- <a href="https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile" download="Dockerfile" target="_blank">Download the Dockerfile here</a>
-<p>To save the Dockerfile, right-click on the link and select "Save As", or press <strong>Ctrl+S</strong> (Windows) / <strong>Cmd+S</strong> (Mac). Make sure the file is saved without the `.txt` extension.</p>
+You need to download the following files:
+
+- **Dockerfile**: [Download Dockerfile](https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile)  
+- **docker-compose.yml**: [Download docker-compose.yml](https://github.com/prmunday/Immunolyser/raw/develop/docker-compose.yml)  
+- **entrypoint.sh**: [Download entrypoint.sh](https://github.com/prmunday/Immunolyser/raw/develop/entrypoint.sh)  
+
+#### Saving the Files:
+To save the files, right-click on each link and select **"Save As"**, or press **Ctrl+S** (Windows) / **Cmd+S** (Mac). Ensure that:
+- `Dockerfile` is saved without a `.txt` extension.  
+- `entrypoint.sh` is saved with the `.sh` extension.  
+- `docker-compose.yml` is saved with the `.yml` extension.  
 
 ### 2. **Create Required Folders**
 
