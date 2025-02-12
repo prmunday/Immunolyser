@@ -39,8 +39,8 @@
                     statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${encodeURIComponent(data.traceback)}')">Click to see trace</button>`;
                 } else if (data.status === 'pending') {
                     btn.classList.add('btn-warning');
-                    btn.innerText = 'Progressing';
-                    statusMessage.innerText = 'Status: Progressing';
+                    btn.innerText = 'Processing';
+                    statusMessage.innerText = 'Status: Processing';
                 } else {
                     statusMessage.innerText = `Status: ${data.status}`;
                 }
