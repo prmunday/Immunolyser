@@ -21,8 +21,10 @@
             .then(data => {
                 const btn = document.getElementById('checkStatusBtn');
                 const statusMessage = document.getElementById('statusMessage');
+                
+                btn.classList.remove('btn-primary', 'btn-success', 'btn-danger', 'btn-warning'); // Ensure old classes are removed
+                
                 if (data.status === 'success') {
-                    btn.classList.remove('btn-primary');
                     btn.classList.add('btn-success');
                     btn.innerText = 'Success';
                     statusMessage.innerHTML = `
@@ -30,17 +32,20 @@
                         <button class="btn btn-primary" onclick="copyToClipboard('${window.location.origin}/${jobId}')">Copy Link</button>
                     `;
                 } else if (data.status === 'failure') {
-                    btn.classList.remove('btn-primary');
                     btn.classList.add('btn-danger');
                     btn.innerText = 'Failure';
-
+                    
                     // Directly pass the traceback to the modal, ensuring it is URL-encoded
                     statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${encodeURIComponent(data.traceback)}')">Click to see trace</button>`;
+                } else if (data.status === 'pending') {
+                    btn.classList.add('btn-warning');
+                    btn.innerText = 'Progressing';
+                    statusMessage.innerText = 'Status: Progressing';
                 } else {
                     statusMessage.innerText = `Status: ${data.status}`;
                 }
             });
-    }
+}
 
     function openReport(jobId) {
         window.open(`/${jobId}`, '_blank');

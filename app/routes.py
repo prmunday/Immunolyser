@@ -337,6 +337,8 @@ def check_status(job_id):
         return jsonify({'status': 'success'}), 200
     elif job.state == 'FAILURE':
         return jsonify({'status': 'failure', 'traceback': str(job.traceback)}), 200
+    elif job.state == 'PENDING':
+        return jsonify({'status': 'pending', 'traceback': str(job.traceback)}), 200
     else:
         return jsonify({'status': job.state}), 200
 
