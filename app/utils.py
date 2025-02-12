@@ -415,11 +415,11 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                             f['Binding Level'] = ""
                             f['Control'] = ""
 
-                            # Filtering peptides with affinity (nM) less than or equal to 500
-                            f = f[f.apply(lambda x : float(x['affinity']) <= 500, axis=1)]
+                            # Filtering peptides with presentation_percentile (%) less than or equal to 2
+                            f = f[f.apply(lambda x : float(x['presentation_percentile']) <= 2, axis=1)]
 
                             # Tagging each binder as SB (Strong binder) or WB (Weak binder)
-                            f['Binding Level'] = f['affinity'].apply(lambda x : 'SB' if float(x) <= 50 else 'WB')
+                            f['Binding Level'] = f['presentation_percentile'].apply(lambda x : 'SB' if float(x) <= 0.2 else 'WB')
 
                             # Tagging binders present in control group
                             f['Control'] = f['peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
@@ -429,7 +429,7 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                             # Saving the filtered and tagged binders to a CSV
                             f\
-                                .sort_values(by=['affinity'])[['PlainPeptide', 'affinity', 'Binding Level', 'Control']]\
+                                .sort_values(by=['presentation_percentile'])[['PlainPeptide', 'presentation_percentile', 'Binding Level', 'Control']]\
                                 .merge(input_file, on='PlainPeptide', how='left')\
                                 .to_csv('app/static/images/{}/{}/{}/{}/binders/{}/{}_{}_{}_binders.csv'.format(taskId, sample, method.short_name,
                                                                                                         replicate[:-13], allele.replace(':', '_'),
