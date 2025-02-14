@@ -7,6 +7,12 @@
    - **Download Docker Desktop**: [Docker Desktop Download](https://www.docker.com/products/docker-desktop)
    - **System Requirements**: Windows (10/11), macOS, or Linux. You will need administrator privileges to run Docker.
 
+2. **Disk Space**\
+   Docker requires disk space for storing container images, volumes, and other related files. Make sure you have enough space available on your system:
+   - For the **Immunolyser** Docker setup, the combined disk space used by the required images is approximately **29 GB**.
+   - It’s recommended to have at least **50 GB** of free space to ensure smooth operation, as Docker images, container logs, and temporary files can take up additional space.
+   - You can monitor the disk usage in Docker Desktop under the **Settings > Resources > Disk** tab.
+
 ## Setup Instructions
 
 ### 1. **Download Required Files**
@@ -18,7 +24,7 @@ You need to download the following files:
 - **entrypoint.sh**: [Download entrypoint.sh](https://github.com/prmunday/Immunolyser/raw/develop/entrypoint.sh)  
 
 #### Saving the Files:
-To save the files, right-click on each link and select **"Save As"**, or press **Ctrl+S** (Windows) / **Cmd+S** (Mac). Ensure that:
+To save the files, right-click on each link and select **"Save Link As"**, or press **Ctrl+S** (Windows) / **Cmd+S** (Mac). Ensure that:
 - `Dockerfile` is saved without a `.txt` extension.  
 - `entrypoint.sh` is saved with the `.sh` extension.  
 - `docker-compose.yml` is saved with the `.yml` extension.  
