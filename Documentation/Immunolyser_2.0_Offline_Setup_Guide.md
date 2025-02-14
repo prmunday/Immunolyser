@@ -61,7 +61,9 @@ To make the Docker setup work, you'll need to download several tools and place t
 
 After downloading the tools, your `tools` directory should be structured as shown below:
 
-![Tools Folder Structure](Documentation/Screenshots/Local Version Directory Screenshot.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/prmunday/Immunolyser/main/Documentation/Screenshots/Local%20Version%20Directory%20Screenshot.png" alt="Tools Folder Structure" />
+</p>
 
 ### 4. **Build and Run Docker**
 
