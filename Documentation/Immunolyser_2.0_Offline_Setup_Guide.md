@@ -4,7 +4,7 @@
 
 1. **Docker Desktop**\
    You’ll need Docker Desktop installed on your machine. Docker is used to run applications in containers, ensuring compatibility across systems.
-   - **Download Docker Desktop**: [Docker Desktop Download](https://www.docker.com/products/docker-desktop)
+   - **Download Docker Desktop**: <a href="https://www.docker.com/products/docker-desktop" target="_blank">Docker Desktop Download</a>
    - **System Requirements**: Windows (10/11), macOS, or Linux. You will need administrator privileges to run Docker.
 
 2. **Disk Space**\
@@ -19,9 +19,9 @@
 
 You need to download the following files:
 
-- **Dockerfile**: [Download Dockerfile](https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile)  
-- **docker-compose.yml**: [Download docker-compose.yml](https://github.com/prmunday/Immunolyser/raw/develop/docker-compose.yml)  
-- **entrypoint.sh**: [Download entrypoint.sh](https://github.com/prmunday/Immunolyser/raw/develop/entrypoint.sh)  
+- **Dockerfile**: <a href="https://github.com/prmunday/Immunolyser/raw/develop/Dockerfile" target="_blank">Download Dockerfile</a>  
+- **docker-compose.yml**: <a href="https://github.com/prmunday/Immunolyser/raw/develop/docker-compose.yml" target="_blank">Download docker-compose.yml</a>  
+- **entrypoint.sh**: <a href="https://github.com/prmunday/Immunolyser/raw/develop/entrypoint.sh" target="_blank">Download entrypoint.sh</a>  
 
 #### Saving the Files:
 To save the files, right-click on each link and select **"Save Link As"**, or press **Ctrl+S** (Windows) / **Cmd+S** (Mac). Ensure that:
@@ -43,24 +43,24 @@ To make the Docker setup work, you'll need to download several tools and place t
 
 - **Seq2Logo**:
 
-  - [Download Seq2Logo 2.0](https://services.healthtech.dtu.dk/services/Seq2Logo-2.0/).
+  - <a href="https://services.healthtech.dtu.dk/services/Seq2Logo-2.0/" target="_blank">Download Seq2Logo 2.0</a>.
   - Click on the "Download" tab and select version 2.1.
   - Download the `.gz` file and save it in the `tools` folder, next to the Dockerfile.
 
 - **GibbsCluster 2.0f**:
 
-  - [Download GibbsCluster 2.0f](https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=gibbscluster\&version=2.0\&packageversion=2.0f\&platform=Linux).
+  - <a href="https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=gibbscluster&version=2.0&packageversion=2.0f&platform=Linux" target="_blank">Download GibbsCluster 2.0f</a>.
   - Save the `.gz` file in the `tools` folder.
 
 - **NetMHCpan 4.1b**:
 
-  - [Download NetMHCpan 4.1b](https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=netMHCpan\&version=4.1\&packageversion=4.1b\&platform=Linux).
+  - <a href="https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=netMHCpan&version=4.1&packageversion=4.1b&platform=Linux" target="_blank">Download NetMHCpan 4.1b</a>.
   - Save the `.gz` file in the `tools` folder.
   - Ensure the file is named `netMHCpan-4.1b.Linux.tar.gz` (remove any extra numbers added by the system).
 
 - **NetMHCIIpan 4.3e**:
 
-  - [Download NetMHCIIpan 4.3e](https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=netMHCIIpan\&version=4.3\&packageversion=4.3e\&platform=Linux).
+  - <a href="https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=netMHCIIpan&version=4.3&packageversion=4.3e&platform=Linux" target="_blank">Download NetMHCIIpan 4.3e</a>.
   - Save the `.gz` file in the `tools` folder as `netMHCIIpan-4.3e.Linux.tar.gz`.
 
 ### **Folder Structure**  
