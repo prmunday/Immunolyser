@@ -4,7 +4,7 @@
 
 1. **Docker Desktop**\
    You’ll need Docker Desktop installed on your machine. Docker is used to run applications in containers, ensuring compatibility across systems.
-   - **Download Docker Desktop**: <a href="https://www.docker.com/products/docker-desktop" target="_blank">Docker Desktop Download</a>
+   - **Download Docker Desktop**: <a href="https://www.docker.com/products/docker-desktop" target="_blank" rel="noopener noreferrer">Docker Desktop Download</a>
    - **System Requirements**: Windows (10/11), macOS, or Linux. You will need administrator privileges to run Docker.
 
 2. **Disk Space**\
