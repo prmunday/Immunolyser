@@ -57,6 +57,12 @@ To make the Docker setup work, you'll need to download several tools and place t
   - [Download NetMHCIIpan 4.3e](https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=netMHCIIpan\&version=4.3\&packageversion=4.3e\&platform=Linux).
   - Save the `.gz` file in the `tools` folder as `netMHCIIpan-4.3e.Linux.tar.gz`.
 
+### **Folder Structure**  
+
+After downloading the tools, your `tools` directory should be structured as shown below:
+
+![Tools Folder Structure](Documentation/Screenshots/Local%20Version%20Directory%20Screenshot.png)
+
 ### 4. **Build and Run Docker**
 
 After you've set up the tools, you can build and run the Docker container. Follow these steps:
