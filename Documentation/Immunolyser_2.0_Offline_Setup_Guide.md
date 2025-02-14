@@ -1,10 +1,22 @@
 # Immunolyser 2.0 Local Version Setup Guide
 
+**Why Docker?**\
+Using Docker ensures that all the tools and dependencies are correctly set up in a container, so you don't need to worry about installing them individually on your system. It guarantees compatibility and simplifies the process of setting up Immunolyser 2.0.
+
+### Notes:
+
+- **Supported Systems**:\
+  This guide supports the following operating systems:
+
+  - **Windows** (10/11)
+  - **macOS**
+  - **Linux**
+
 ## Prerequisites
 
 1. **Docker Desktop**\
    You’ll need Docker Desktop installed on your machine. Docker is used to run applications in containers, ensuring compatibility across systems.
-   - **Download Docker Desktop**: <a href="https://www.docker.com/products/docker-desktop" target="_blank" rel="noopener noreferrer">Docker Desktop Download</a>
+   - **Download Docker Desktop**: [Docker Desktop Download](https://www.docker.com/products/docker-desktop) 
    - **System Requirements**: Windows (10/11), macOS, or Linux. You will need administrator privileges to run Docker.
 
 2. **Disk Space**\
@@ -43,8 +55,7 @@ To make the Docker setup work, you'll need to download several tools and place t
 
 - **Seq2Logo**:
 
-  - <a href="https://services.healthtech.dtu.dk/services/Seq2Logo-2.0/" target="_blank">Download Seq2Logo 2.0</a>.
-  - Click on the "Download" tab and select version 2.1.
+  - <a href="https://services.healthtech.dtu.dk/cgi-bin/sw_request?software=seq2logo&version=2.1&packageversion=2.1&platform=all" target="_blank">Download Seq2Logo 2.1</a>.
   - Download the `.gz` file and save it in the `tools` folder, next to the Dockerfile.
 
 - **GibbsCluster 2.0f**:
@@ -80,12 +91,15 @@ After you've set up the tools, you can build and run the Docker container. Follo
 3. Run the following commands:
    ```sh
    docker-compose build
-   docker-compose up
    ```
 
-- Docker will take **5 to 10 minutes** to build the container, depending on your system.
+- Docker will take **10 to 30 minutes** to build the container, depending on your system.
 - Make sure you have enough disk space for the build process.
-- Once the container is running, you can access the app at http://localhost:5001/.
+4. Once the build is complete, run the following command to start the container:
+   ```sh
+   docker-compose up
+   ```
+5. Once the container is running, you can access the app at http://localhost:5001/.
 
 ### 5. **Check for Errors**
 
@@ -103,20 +117,8 @@ This command will delete all stopped containers, networks, and dangling images. 
 
 ---
 
-### Additional Notes:
-
-- **Supported Systems**:\
-  This guide supports the following operating systems:
-
-  - **Windows** (10/11)
-  - **macOS**
-  - **Linux**
-
 - **Troubleshooting**:\
   If you encounter issues, check the [Docker Troubleshooting Guide](https://docs.docker.com/get-docker/) for help with installation or configuration.
 
----
 
-**Why Docker?**\
-Using Docker ensures that all the tools and dependencies are correctly set up in a container, so you don't need to worry about installing them individually on your system. It guarantees compatibility and simplifies the process of setting up Immunolyser 2.0.
 
