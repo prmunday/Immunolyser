@@ -196,20 +196,25 @@ def getGibbsImages(logger, taskId, samples_data):
             if len(bar_plot) == 0:
                 logger.warning(f'No bar plot found at the directory for sample {sample}, replicate {replicate}')
                 continue
-
-            logger.info(f'Bar plot found at the directory: {bar_plot}')
             
             # Finding the best cluster
+            logger.warning(f"Reading the best cluster data for taskId: {taskId}, sample: {sample}, replicate: {replicate}")
             bestCluster = pd.read_table(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/gibbs.KLDvsClusters.tab')
             bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
+            logger.warning(f"Best cluster identified: {bestCluster}")
 
             clusters = [[os.path.basename(x), "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/gibbs_logos_*of{bestCluster}*.jpg'))]
-            
+            logger.warning(f"Found {len(clusters)} Gibbs logo(s) for bestCluster: {bestCluster}")
+
             # Finding the number of records used for the cluster
+            logger.warning(f"Finding the number of peptides for taskId: {taskId}, sample: {sample}, replicate: {replicate}")
             findNumberOfPeptidesInCore(clusters, taskId, sample, replicate)
 
+            # Updating gibbsImages
+            logger.warning(f"Updating gibbsImages for sample: {sample}, replicate: {replicate[:-4]}")
             gibbsImages[sample][replicate[:-4]] = dict()
             gibbsImages[sample][replicate[:-4]][bar_plot[0]] = clusters
+            logger.warning(f"Cluster data added to gibbsImages for sample: {sample}, replicate: {replicate[:-4]}")
 
     return gibbsImages
 

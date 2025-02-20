@@ -441,8 +441,8 @@ def getExistingReport(taskId):
     if mhcclass == MHC_Class.Two:
         hideMajorityVotedOption = False
 
-        if alleles_unformatted == '': # Hiding Motifs and gibbs clustering results when no alleles were selected to run Class 2 analysis
-            showSeqLogoandGibbsSection = False 
+        # if alleles_unformatted == '': # Hiding Motifs and gibbs clustering results when no alleles were selected to run Class 2 analysis
+        #     showSeqLogoandGibbsSection = False 
 
     else :
         hideMajorityVotedOption = True
