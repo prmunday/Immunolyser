@@ -525,10 +525,10 @@ def createGibbsBar():
 
         # Deleting previous meta files present
         dirpath = f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}'
-        if os.path.exists(dirpath) and os.path.isdir(dirpath):
-            shutil.rmtree(dirpath)
+        # if os.path.exists(dirpath) and os.path.isdir(dirpath):
+        #     shutil.rmtree(dirpath)
 
-        subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate, motif_length, mhcclass], shell=False)
+        # subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterBarGraph.py'), taskId, data_mount, sample, replicate, motif_length, mhcclass], shell=False)
 
         barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsCluster.barplot.JPG')
 
@@ -550,13 +550,13 @@ def createGibbsBar():
         seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
         if len(seqClusters) != int(cluster):
-            subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster, mhcclass, motif_length], shell=False)
+            # subprocess.check_call(['python3', os.path.join('app', 'gibbsclusterSeqLogo.py'), taskId, data_mount, sample, replicate, cluster, mhcclass, motif_length], shell=False)
             seqClusters = [[x[4:], "Could not be calculated"] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*.jpg'))]
 
     # Adding information regarding number of peptides in the core
     findNumberOfPeptidesInCore(seqClusters, taskId, sample, replicate+'.txt')
 
-    return {barLocation:seqClusters}
+    return {barLocation: seqClusters}
 
 # This method is used to get the found binders in different combinations
 @app.route("/api/getBinders", methods=["POST"])
