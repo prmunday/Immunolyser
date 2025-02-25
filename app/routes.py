@@ -1,7 +1,7 @@
 from app import app, celery
 from flask import render_template, request, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData, saveMajorityVotedBinders
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
@@ -309,9 +309,9 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
         for predictionTool in predictionTools:
             saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
 
-    # Store majority voting results
-        if alleles_unformatted!="":
-            a = 1
+        # Store majority voting results
+        # Calling method to generate csv file with Majority Voted binders
+        saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
     
     # Calling script to generate sequence logos
     subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)

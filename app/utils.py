@@ -15,6 +15,7 @@ from os.path import basename
 from app import app
 from constants import *
 from mhcflurry import Class1PresentationPredictor
+from pathlib import Path
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 data_mount = app.config['IMMUNOLYSER_DATA']
@@ -669,3 +670,26 @@ def get_allele_name_tool_specific(allele, predictor, class_, df):
     else:
         print(f"No match found for allele: {allele}, predictor: {predictor}, class: {class_}")
         return None
+
+def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY):
+
+     # Creating directories to store majority binding prediction results
+    for sample, replicates in data.items():
+        for predictionTool in predictionTools:
+            for replicate in replicates:
+                if alleles_unformatted != "":
+                    for allele in alleles_unformatted.split(','):
+                        try:
+                            if sample != 'Control':
+
+                                # Path to store user friendly binders data
+                                path = os.path.join('app', 'static', 'images', taskId, sample, 'majority_voted_binders', replicate[:-4], allele.replace(':', '_'))    
+
+                            if not os.path.exists(path):
+                                # os.makedirs(directory)
+                                Path(path).mkdir(parents=True, exist_ok=True)
+                                print("Directory Created : {}".format(path))
+                                
+                        except FileExistsError:
+                            print("Directory already exists {}".format(path))
+    return taskId
