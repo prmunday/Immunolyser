@@ -295,9 +295,6 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
 
     for i in range(minLenForPrediction,maxLenForPrediction+1):
         saveNmerData(dirName, sample_data, peptideLength=i, unique = True)
-
-    # Saving 9mers in both mhc 1 and mhc 2 class of analysis to be used for seqlogo and gibbs plot
-    saveNmerData(dirName, sample_data, peptideLength=9, unique=True)
    
     # Generating binding predictions
     if alleles_unformatted!="":    
@@ -313,8 +310,11 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
         # Calling method to generate csv file with Majority Voted binders
         saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
     
-    # Calling script to generate sequence logos
-    subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)
+
+    # Do not generate Seq2Logo for Class II, if not Allele is selected
+    if mhcclass == MHC_Class.One or (mhcclass == MHC_Class.Two and alleles_unformatted != ''):
+        # Calling script to generate sequence logos
+        subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)
 
     # Calling script to generate gibbsclusters
     subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass, motif_length], shell=False)
