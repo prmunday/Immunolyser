@@ -18,7 +18,6 @@ task_path = os.path.join(data_mount, task_id)
 
 # Default settings for both classes
 num_clusters = '1-5'
-motif_length = '9'
 mc_temperature = '1.5'
 num_temp_steps = '20'
 num_iterations = '10'
