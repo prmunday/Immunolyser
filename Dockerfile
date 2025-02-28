@@ -57,7 +57,7 @@ RUN sed -i 's|setenv\s*GIBBS .*|setenv GIBBS /app/Immunolyser/app/tools/gibbsclu
 RUN sed -i \
     -e 's|^\(\s*\$resdir .= "/\$prefix";\)|# \1  # Comment or remove this line|' \
     -e 's|^\(my \$barplot = "\$resdir/images/\$prefix.gibbs.KLDvsCluster.barplot.png";\)|my \$barplot = "\$resdir/images/gibbsKLDvsCluster.barplot.JPG";|' \
-    -e '530s@.*@$cmd .= "$seq2logo -f $corefile -o $logofile -I 2 --format [JPEG] -b $wlc -C 2 -t $title \&>/dev/null; ";@' \
+    -e '530s@.*@$cmd .= "$seq2logo -f $corefile -o $logofile -I 2 --format [JPEG] -b $wlc -C 2 -S 2 -t $title \&>/dev/null; ";@' \
     /app/Immunolyser/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
 
 # Copy the netMHCpan tar.gz file to the container
