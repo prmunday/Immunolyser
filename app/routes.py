@@ -308,7 +308,7 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
 
         # Store majority voting results
         # Calling method to generate csv file with Majority Voted binders
-        saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
+        # saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
     
 
     # Do not generate Seq2Logo for Class II, if not Allele is selected
