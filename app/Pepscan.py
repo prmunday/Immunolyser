@@ -60,6 +60,15 @@ class PepScan:
         #clean_frame["Peptide"] = clean_frame["Peptide"].str.replace(r'\(.*\.\d*\)', '')
         clean_frame["Peptide"] = clean_frame["Peptide"].str.replace(r'\(.{4,7}\)', '')
         clean_frame = clean_frame.dropna(subset = ["Accession"]).reset_index(drop = True)
+
+        # Calculate the initial number of rows
+        initial_count = len(clean_frame)
+        clean_frame = clean_frame[~clean_frame['Accession'].str.contains('CONTAM|DECOY', na=False)].reset_index(drop=True)
+        # Calculate the number of rows dropped
+        rows_dropped = initial_count - len(clean_frame)
+        # Print the number of rows dropped
+        print(f"Number of rows dropped where Accession had 'CONTAN' or 'DECOY' marked,: {rows_dropped}")
+
         self.peptide_frame = clean_frame
 
     def get_locs(self):
