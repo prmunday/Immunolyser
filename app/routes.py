@@ -1,7 +1,7 @@
 from app import app, celery
 from flask import render_template, request, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData
+from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData, saveMajorityVotedBinders
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
@@ -308,7 +308,11 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
 
         # Store majority voting results
         # Calling method to generate csv file with Majority Voted binders
+<<<<<<< HEAD
         # saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
+=======
+        saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
+>>>>>>> upgrade/download-majority-voted-binders
     
 
     # Do not generate Seq2Logo for Class II, if not Allele is selected
