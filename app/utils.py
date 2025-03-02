@@ -16,6 +16,7 @@ from app import app
 from constants import *
 from mhcflurry import Class1PresentationPredictor
 from pathlib import Path
+from collections import defaultdict
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 data_mount = app.config['IMMUNOLYSER_DATA']
@@ -697,4 +698,82 @@ def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted,
                                 
                         except FileExistsError:
                             print("Directory already exists {}".format(path))
-    return taskId
+
+    # Creating CSV files to store majority binding prediction results
+
+    # Load the allele compatibility matrix (assuming it's a CSV file)
+    compatibility_matrix_path = os.path.join('app', 'static', 'images', taskId, 'allele_compatibility_matrix.csv')
+    compatibility_matrix = pd.read_csv(compatibility_matrix_path, index_col=0)
+
+    for sample, replicates in data.items():
+
+        for replicate in replicates:
+
+            # Iterating selected alleles
+            for allele in compatibility_matrix.columns:
+
+                    # Filter tools that say "Yes" for this allele
+                    compatible_tools = compatibility_matrix.index[compatibility_matrix[allele] == "Yes"].tolist()
+
+                    binder_files = []
+                    for predictionTool in compatible_tools:
+
+                        # Store the short name in a variable
+                        predictor_short_name = get_short_name(predictionTool)
+                        # Remove : from allele name
+                        allele = allele.replace(':', '_')
+
+                        search_path = f'app/static/images/{taskId}/{sample}/{predictor_short_name}/{replicate[:-4]}/binders/{allele}/*.csv'
+                        print(f"Searching binders is: {search_path}")  # Print where it's searching
+                        
+                        files = glob.glob(search_path)
+
+                        binder_files.extend(files)  
+
+                    print(f"  Found files: {binder_files}")  # Print found files
+
+                    # Dictionary to hold the peptide occurrences across files
+                    peptide_counts = defaultdict(int)
+                    all_data = []
+                    # Perform majority voting based and save in files
+                    # Iterate over all files in the list
+                    for binder_file in binder_files:
+                        # Read the CSV file into a DataFrame
+                        df = pd.read_csv(binder_file)
+                        
+                        # Remove unwanted columns between 'PlainPeptide' and 'Control'
+                        columns_to_remove = df.columns[df.columns.get_loc('PlainPeptide')+1 : df.columns.get_loc('Control')]
+                        df.drop(columns=columns_to_remove, inplace=True)
+                        
+                        # Add data from the file to the all_data list
+                        all_data.append(df)
+                        
+                        # Track peptide occurrences
+                        for peptide in df['PlainPeptide']:
+                            peptide_counts[peptide] += 1
+                    
+                    # Determine majority threshold (e.g., for 3 files, threshold is 2)
+                    majority_threshold = len(binder_files) // 2
+
+                    # Filter peptides that meet the majority voting rule
+                    majority_peptides = [peptide for peptide, count in peptide_counts.items() if count > majority_threshold]
+                    
+                    # Concatenate the data from all files
+                    combined_df = pd.concat(all_data, ignore_index=True)
+                    
+                    # Filter the rows to keep only the majority peptides
+                    filtered_df = combined_df[combined_df['PlainPeptide'].isin(majority_peptides)]
+                    
+                    # Write the filtered data to a new CSV file
+                    filtered_df.to_csv(f'{project_root}/app/static/images/{taskId}/{sample}/Majority_Voted/{replicate[:-4]}/binders/{allele.replace(":", "_")}/{replicate[:-4]}_{allele.replace(":", "_")}_majority_voted_binders.csv', index=False)
+
+                # Collect Tools based on MHC Class: 3 or 2 tools for Class I or II respectively,
+                    # For every Replicate : Collect 3 or 2 files for Class I or II respectively
+                        # For every Allele : Check Compatible Tools : Will be 1, 2 or all 3 tools for Class I
+                            # If Allele compatible with one tools : Should be present in that tool's file
+                            # If Allele compatible with two tools : Should be present in both tools' files
+                            # If Allele compatible with all three tools : Should be present in atleast two tools' files
+                        # OR
+                        # For every Allele : Check Compatible Tools : Will be 1 or 2 tools for Class II
+                            # If Allele compatible with one tools : Should be present in that tool's file
+                            # If Allele compatible with two tools : Should be present in both tools' files

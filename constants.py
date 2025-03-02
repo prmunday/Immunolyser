@@ -41,6 +41,13 @@ def get_all_predictors() -> List[Predictor]:
         if isinstance(getattr(Class_Two_Predictors, attr), Predictor)
     ]
 
+def get_short_name(full_name: str) -> str:
+    """Find the short name of a predictor based on its full name."""
+    for predictor in get_all_predictors():
+        if predictor.full_name == full_name:
+            return predictor.short_name
+    return None  # Return None if no match is found
+
 class MHC_Class:
     One = "I"
     Two = "II"
