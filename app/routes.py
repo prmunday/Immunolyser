@@ -435,16 +435,17 @@ def getExistingReport(taskId):
     # seqlogos = {}
     # gibbsImages = {}
 
-    showSeqLogoandGibbsSection = True
+    showSeqLogoSection = True
+    showGibbsSection = True
     
     # Do not show Majority Voted option when MHC Class 2 analysis
     if mhcclass == MHC_Class.Two:
         hideMajorityVotedOption = False
 
-        # if alleles_unformatted == '': # Hiding Motifs and gibbs clustering results when no alleles were selected to run Class 2 analysis
-        #     showSeqLogoandGibbsSection = False 
+        if alleles_unformatted == '': # Hiding Motifs results when no alleles was selected to run Class 2 analysis
+            showSeqLogoSection = False 
 
-    else :
+    else : # Need fixing as it is should be visible for Class 2
         hideMajorityVotedOption = True
 
     if alleles_unformatted != '':
@@ -472,7 +473,8 @@ def getExistingReport(taskId):
         upsetLayout=upsetLayout, 
         predicted_binders=predicted_binders, 
         predictionTools=predictionTools,  # List of short_names here
-        showSeqLogoandGibbsSection=showSeqLogoandGibbsSection, 
+        showSeqLogoSection=showSeqLogoSection,
+        showGibbsSection=showGibbsSection, 
         hideMajorityVotedOption=hideMajorityVotedOption
     )
 
