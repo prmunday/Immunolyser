@@ -24,7 +24,7 @@
 					<input id="sample_name-1" name="sample-1" required type="text" value="" class="col-md-6 mb-3">
 					<br>
 					<label for="sample_file-1" hidden>Peptide File</label> 
-					<input id="sample_file-1" multiple name="sample-1" required type="file" class="col-md-6 mb-3" onchange="calculateNumberOfPeptidesInCsv(event)">    
+					<input id="sample_file-1" multiple name="sample-1" required type="file" class="col-md-6 mb-3" onchange="calculateNumberOfPeptidesInCsv(event)" required accept=".csv">    
 				</div>
 			</div>
 			<input id="add_sample" name="add_sample" type="button" value="Add Sample" onclick="addSample()">
@@ -40,7 +40,7 @@
 				<input id="control_name-1" name="control-1" type="text" value="Control" class="col-md-3 mb-3" hidden>
 				<br>
 				<label for="control" hidden>Peptide File </label>
-				<input id="control" multiple name="control-1" type="file" class="col-md-6 mb-3">	
+				<input id="control" multiple name="control-1" type="file" class="col-md-6 mb-3" required accept=".csv">	
 			</div>
 		</div>
 

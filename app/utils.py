@@ -559,9 +559,14 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                                 .merge(input_file, on='PlainPeptide', how='left') \
                                 .to_csv(f'{project_root}/app/static/images/{taskId}/{sample}/{method.short_name}/{replicate[:-13]}/binders/{allele.replace(":", "_")}/{replicate[:-13]}_{allele.replace(":", "_")}_{method.short_name}_binders.csv', index=False)
 
-def getPredictionResuslts(taskId,alleles,methods,samples):
+def getPredictionResuslts(taskId,alleles,methods_passed,samples):
 
     alleles = alleles.split(',')
+
+    # Using a method local copy as object is not udpated. Hence not conflicting with other funcatinlitites.
+    methods = methods_passed.copy()
+    # Adding Majority Voted Binder as a method. Easy to fetch from UI
+    methods.append('Majority_Voted')
 
     predicted_binders = {}
 
@@ -683,7 +688,7 @@ def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted,
                             if sample != 'Control':
 
                                 # Path to store user friendly binders data
-                                path = os.path.join('app', 'static', 'images', taskId, sample, 'majority_voted_binders', replicate[:-4], allele.replace(':', '_'))    
+                                path = os.path.join('app', 'static', 'images', taskId, sample, 'Majority_Voted', replicate[:-4], 'binders', allele.replace(':', '_'))    
 
                             if not os.path.exists(path):
                                 # os.makedirs(directory)
