@@ -619,7 +619,7 @@ def getBinders():
                 # If tool string is empty: Fetch resuls for the tools in predictionTools list
                 if tool == "":
 
-                    binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods=predictionTools,samples=[sample])
+                    binding = getPredictionResuslts(alleles=allele,taskId=taskId,methods_passed=predictionTools,samples=[sample])
 
                     for method in predictionTools:
 

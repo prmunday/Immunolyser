@@ -762,7 +762,7 @@ def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted,
                     combined_df = pd.concat(all_data, ignore_index=True)
                     
                     # Filter the rows to keep only the majority peptides
-                    filtered_df = combined_df[combined_df['PlainPeptide'].isin(majority_peptides)]
+                    filtered_df = combined_df[combined_df['PlainPeptide'].isin(majority_peptides)].drop_duplicates(subset=['PlainPeptide'])
                     
                     # Write the filtered data to a new CSV file
                     filtered_df.to_csv(f'{project_root}/app/static/images/{taskId}/{sample}/Majority_Voted/{replicate[:-4]}/binders/{allele.replace(":", "_")}/{replicate[:-4]}_{allele.replace(":", "_")}_majority_voted_binders.csv', index=False)
