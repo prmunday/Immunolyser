@@ -1,7 +1,7 @@
 from app import app, celery
 from flask import render_template, request, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
-from app.utils import plot_lenght_distribution, filterPeaksFile, saveNmerData, getSeqLogosImages, getGibbsImages, generateBindingPredictions, saveBindersData, getPredictionResuslts, getPredictionResusltsForUpset, findNumberOfPeptidesInCore, getOverLapData, saveMajorityVotedBinders
+from app.utils import *
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
@@ -63,6 +63,8 @@ def initialiser():
         motif_length = request.form.get('motif_length')
         mhcclass = request.form.get('mhc_class')
         alleles_unformatted = request.form.get('alleles')
+        species = request.form.get('species')
+
         # Prediction tools selected by the user
         if mhcclass == MHC_Class.Two:
             predictionTools = [
@@ -76,12 +78,12 @@ def initialiser():
                 Class_One_Predictors.MHCflurry.to_dict(),
             ]
 
-        task = submit_job.delay(samples, motif_length, mhcclass, alleles_unformatted, predictionTools)
+        task = submit_job.delay(samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species)
 
         return redirect(url_for('job_confirmation', task_id=task.id))
 
 @celery.task(name='app.submit_job', bind=True)
-def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predictionTools):    
+def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species):    
 
     # Have to take this input from user
     maxLen = 30
@@ -89,6 +91,7 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
     logger.info('Preferred Motif Length: %s', motif_length)
     logger.info('MHC Class of Interest: %s', mhcclass)
     logger.info('alleles_unformatted: %s', alleles_unformatted)
+    logger.info('Species: %s', species)
 
     # Deserialize `predictionTools`
     predictionTools = [Predictor.from_dict(tool) for tool in predictionTools]
@@ -318,6 +321,10 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
 
     # Calling script to generate gibbsclusters
     subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass, motif_length], shell=False)
+
+    # Run HLA-Clust to generate heatmap
+    if mhcclass == MHC_Class.One:
+        runHLAClust(taskId, data, alleles_unformatted=alleles_unformatted, species=species, logger=logger)
 
 @app.route("/analytics")
 def analytics():
