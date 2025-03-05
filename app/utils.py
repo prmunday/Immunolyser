@@ -679,7 +679,7 @@ def get_allele_name_tool_specific(allele, predictor, class_, df):
 
 def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY):
 
-     # Creating directories to store majority binding prediction results
+    # Creating directories to store majority binding prediction results
     for sample, replicates in data.items():
         for predictionTool in predictionTools:
             for replicate in replicates:
@@ -763,17 +763,92 @@ def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted,
                     
                     # Filter the rows to keep only the majority peptides
                     filtered_df = combined_df[combined_df['PlainPeptide'].isin(majority_peptides)].drop_duplicates(subset=['PlainPeptide'])
-                    
+
                     # Write the filtered data to a new CSV file
                     filtered_df.to_csv(f'{project_root}/app/static/images/{taskId}/{sample}/Majority_Voted/{replicate[:-4]}/binders/{allele.replace(":", "_")}/{replicate[:-4]}_{allele.replace(":", "_")}_majority_voted_binders.csv', index=False)
 
-                # Collect Tools based on MHC Class: 3 or 2 tools for Class I or II respectively,
-                    # For every Replicate : Collect 3 or 2 files for Class I or II respectively
-                        # For every Allele : Check Compatible Tools : Will be 1, 2 or all 3 tools for Class I
-                            # If Allele compatible with one tools : Should be present in that tool's file
-                            # If Allele compatible with two tools : Should be present in both tools' files
-                            # If Allele compatible with all three tools : Should be present in atleast two tools' files
-                        # OR
-                        # For every Allele : Check Compatible Tools : Will be 1 or 2 tools for Class II
-                            # If Allele compatible with one tools : Should be present in that tool's file
-                            # If Allele compatible with two tools : Should be present in both tools' files
+def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None):
+
+    logger.info(f'Running HLA Clust for task {taskId}.')
+
+    # Species
+    if alleles_unformatted != "":    
+        # File paths
+        allele_matrix_path = f"{project_root}/app/static/images/{taskId}/allele_compatibility_matrix.csv"
+        hla_mapping_path = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/hla_immunolyser_to_hla_clust_mapping.csv"
+
+        # Read allele compatibility matrix
+        allele_matrix = pd.read_csv(allele_matrix_path, index_col=0)
+        allele_list = allele_matrix.columns.tolist()  # Extract header as list
+
+        # Read HLA mapping file
+        hla_mapping = pd.read_csv(hla_mapping_path)
+
+        # Create a mapping dictionary {HLA: formatted_HLA}
+        hla_dict = dict(zip(hla_mapping["HLA"], hla_mapping["formatted_HLA"]))
+
+        # Convert alleles to formatted_HLA and determine species
+        formatted_hla_list = []
+
+        for allele in allele_list:
+            if allele in hla_dict:
+                formatted_hla_list.append(hla_dict[allele])
+
+        # Convert formatted_HLA list to the required format
+        formatted_hla_str = ",".join(formatted_hla_list)
+        if formatted_hla_str == "":
+            formatted_hla_str = None
+    
+    else:
+        formatted_hla_str = None
+
+    if species == "Human":
+        ref_file = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/Gibbs_motifs_human/output_matrices_human"
+    elif species == "Mouse":
+        ref_file = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/Gibbs_motifs_mouse/output_matrices"
+
+    # Creating directories to store majority binding prediction results
+    for sample, replicates in data.items():
+        for replicate in replicates:
+                    try:
+                        if sample != 'Control':
+
+                            # Path to store user friendly binders data
+                            path = os.path.join('app', 'static', 'images', taskId, sample, 'hla_clust_output', replicate[:-4])    
+
+                            # Running the tool for every replicate
+                            input_file = os.path.join(project_root, 'app', 'static', 'images', taskId, sample, 'gibbscluster', replicate[:-4])
+                            ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data', 'Gibbs_motifs_human', 'output_matrices_human')
+                            ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data', 'Gibbs_motifs_mouse', 'output_matrices')
+                            output_dir = path
+
+                            run_clust_search(input_file=input_file, ref_file=ref_file, output_dir=output_dir, hla=formatted_hla_str)
+
+                        if not os.path.exists(path):
+                            # os.makedirs(directory)
+                            Path(path).mkdir(parents=True, exist_ok=True)
+                            logger.info(f'Directory Created : {path}')
+                            
+                    except FileExistsError:
+                        logger.info(f'Directory already exists {path}')
+
+def run_clust_search(input_file, ref_file, output_dir, hla=None):
+    try:
+        # Construct base command
+        command = [
+            f"{project_root}/app/tools/HLA-PepClust/hlapepclust-env/bin/clust-search",
+            input_file,
+            ref_file,
+            "--output", output_dir,
+            "--processes", str(os.cpu_count())
+        ]
+
+        # Add HLA types argument if provided
+        if hla:  # Checks if hla is not None and not an empty string
+            command.extend(["--hla_types", hla])
+
+        # Run the command
+        call(command)
+
+    except Exception as e:
+        return {"error": str(e)}
