@@ -467,6 +467,9 @@ def getExistingReport(taskId):
     # Assuming 'predictionTools' is a list of Predictor objects
     predictionTools = [tool.short_name for tool in predictionTools]
 
+    bindingImages = getHLAClustResults(taskId, data)
+    print(bindingImages)
+
     return render_template(
         'analytics.html', 
         overlapLayout=overlapLayout, 
@@ -482,7 +485,8 @@ def getExistingReport(taskId):
         predictionTools=predictionTools,  # List of short_names here
         showSeqLogoSection=showSeqLogoSection,
         showGibbsSection=showGibbsSection, 
-        hideMajorityVotedOption=hideMajorityVotedOption
+        hideMajorityVotedOption=hideMajorityVotedOption,
+        bindingImages=bindingImages
     )
 
 # Method to manage experiment ID

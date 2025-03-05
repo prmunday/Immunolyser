@@ -852,3 +852,29 @@ def run_clust_search(input_file, ref_file, output_dir, hla=None):
 
     except Exception as e:
         return {"error": str(e)}
+    
+def getHLAClustResults(taskId, data):
+    print(f'getMajorityBindingImages method called with taskId: {taskId}')
+
+    bindingImages = {}
+
+    for sample, replicates in data.items():
+        if sample == 'Control':
+            continue
+
+        bindingImages[sample] = {}
+
+        for replicate in replicates:
+            path = os.path.join('app', 'static', 'images', taskId, sample, 'hla_clust_output', replicate[:-4])
+            
+            # Collect PNG images
+            png_files = sorted(glob.glob(os.path.join(path, '**', '*.png'), recursive=True))
+            png_files = [os.path.relpath(f, 'app/static') for f in png_files]  # Relative paths
+
+            if not png_files:
+                print(f'No PNG files found for sample {sample}, replicate {replicate}')
+                continue
+
+            bindingImages[sample][replicate[:-4]] = png_files
+
+    return bindingImages

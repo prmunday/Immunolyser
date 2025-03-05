@@ -161,7 +161,35 @@
      
     {% endif %}
 
-       
+    <br>
+    <h3>HLA-PepClust</h3>
+    <br>
+
+    <div class="hla_clust">
+        {% for sample, replicates in bindingImages.items() %}
+            <h4>{{ sample }}</h4>
+            <div>
+                <ul>
+                    {% for replicate, files in replicates.items() %}
+                        {% for file in files %}
+                            <li>
+                                <a href="{{ url_for('static', filename=file) }}" target="_blank">
+                                    {{ sample }} - {{ replicate }} - {{ file.split('/')[-2] }} - {{ file.split('/')[-1] }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+
+    <p class="text-justify">
+        Text describing the HLA-PepClust analysis.
+    </p>
+    <br>
+
     <script>
         function temp(taskId,sample,replicate,checked){
             
