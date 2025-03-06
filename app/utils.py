@@ -775,7 +775,7 @@ def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None)
     if alleles_unformatted != "":    
         # File paths
         allele_matrix_path = f"{project_root}/app/static/images/{taskId}/allele_compatibility_matrix.csv"
-        hla_mapping_path = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/hla_immunolyser_to_hla_clust_mapping.csv"
+        hla_mapping_path = f"{project_root}/app/tools/HLA-PepClust/data/hla_mapping_for_hla_pep_clust.csv"
 
         # Read allele compatibility matrix
         allele_matrix = pd.read_csv(allele_matrix_path, index_col=0)
@@ -822,7 +822,7 @@ def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None)
                             ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data', 'Gibbs_motifs_mouse', 'output_matrices')
                             output_dir = path
 
-                            run_clust_search(input_file=input_file, ref_file=ref_file, output_dir=output_dir, hla=formatted_hla_str)
+                            run_clust_search(input_file=input_file, ref_file=ref_file, output_dir=output_dir, hla=formatted_hla_str, logger=logger)
 
                         if not os.path.exists(path):
                             # os.makedirs(directory)
@@ -832,7 +832,7 @@ def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None)
                     except FileExistsError:
                         logger.info(f'Directory already exists {path}')
 
-def run_clust_search(input_file, ref_file, output_dir, hla=None):
+def run_clust_search(input_file, ref_file, output_dir, hla=None, logger=None):
     try:
         # Construct base command
         command = [
@@ -846,6 +846,9 @@ def run_clust_search(input_file, ref_file, output_dir, hla=None):
         # Add HLA types argument if provided
         if hla:  # Checks if hla is not None and not an empty string
             command.extend(["--hla_types", hla])
+
+        # Log the command
+        logger.info(f"Running HLA Clust with command: {' '.join(command)}")
 
         # Run the command
         call(command)
