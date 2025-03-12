@@ -324,7 +324,7 @@ def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predi
 
     # Run HLA-Clust to generate heatmap
     if mhcclass == MHC_Class.One:
-        runHLAClust(taskId, data, alleles_unformatted=alleles_unformatted, species=species, logger=logger)
+        runHLAClust(taskId, data, species=species, logger=logger)
 
 @app.route("/analytics")
 def analytics():

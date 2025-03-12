@@ -767,45 +767,9 @@ def saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted,
                     # Write the filtered data to a new CSV file
                     filtered_df.to_csv(f'{project_root}/app/static/images/{taskId}/{sample}/Majority_Voted/{replicate[:-4]}/binders/{allele.replace(":", "_")}/{replicate[:-4]}_{allele.replace(":", "_")}_majority_voted_binders.csv', index=False)
 
-def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None):
+def runHLAClust(taskId, data, species=None, logger=None):
 
     logger.info(f'Running HLA Clust for task {taskId}.')
-
-    # Species
-    if alleles_unformatted != "":    
-        # File paths
-        allele_matrix_path = f"{project_root}/app/static/images/{taskId}/allele_compatibility_matrix.csv"
-        hla_mapping_path = f"{project_root}/app/tools/HLA-PepClust/data/hla_mapping_for_hla_pep_clust.csv"
-
-        # Read allele compatibility matrix
-        allele_matrix = pd.read_csv(allele_matrix_path, index_col=0)
-        allele_list = allele_matrix.columns.tolist()  # Extract header as list
-
-        # Read HLA mapping file
-        hla_mapping = pd.read_csv(hla_mapping_path)
-
-        # Create a mapping dictionary {HLA: formatted_HLA}
-        hla_dict = dict(zip(hla_mapping["HLA"], hla_mapping["formatted_HLA"]))
-
-        # Convert alleles to formatted_HLA and determine species
-        formatted_hla_list = []
-
-        for allele in allele_list:
-            if allele in hla_dict:
-                formatted_hla_list.append(hla_dict[allele])
-
-        # Convert formatted_HLA list to the required format
-        formatted_hla_str = ",".join(formatted_hla_list)
-        if formatted_hla_str == "":
-            formatted_hla_str = None
-    
-    else:
-        formatted_hla_str = None
-
-    if species == "Human":
-        ref_file = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/Gibbs_motifs_human/output_matrices_human"
-    elif species == "Mouse":
-        ref_file = f"{project_root}/app/tools/HLA-PepClust/data/ref_data/Gibbs_motifs_mouse/output_matrices"
 
     # Creating directories to store majority binding prediction results
     for sample, replicates in data.items():
@@ -818,11 +782,10 @@ def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None)
 
                             # Running the tool for every replicate
                             input_file = os.path.join(project_root, 'app', 'static', 'images', taskId, sample, 'gibbscluster', replicate[:-4])
-                            ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data', 'Gibbs_motifs_human', 'output_matrices_human')
-                            ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data', 'Gibbs_motifs_mouse', 'output_matrices')
+                            ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data')
                             output_dir = path
 
-                            run_clust_search(input_file=input_file, ref_file=ref_file, output_dir=output_dir, hla=formatted_hla_str, logger=logger)
+                            run_clust_search(input_file=input_file, ref_file=ref_file, output_dir=output_dir, species=species,logger=logger)
 
                         if not os.path.exists(path):
                             # os.makedirs(directory)
@@ -832,23 +795,31 @@ def runHLAClust(taskId, data, alleles_unformatted="", species=None, logger=None)
                     except FileExistsError:
                         logger.info(f'Directory already exists {path}')
 
-def run_clust_search(input_file, ref_file, output_dir, hla=None, logger=None):
+def run_clust_search(input_file, ref_file, output_dir, species, logger=None):
     try:
+        # Validate species and set the corresponding flag
+        species_flag = None
+        if species.lower() == "mouse":
+            species_flag = "--species mouse"
+        elif species.lower() == "human":
+            species_flag = "--species human"
+        else:
+            raise ValueError("Invalid species. Choose either 'mouse' or 'human'.")
+
         # Construct base command
         command = [
             f"{project_root}/app/tools/HLA-PepClust/hlapepclust-env/bin/clust-search",
             input_file,
             ref_file,
+            "-im",
             "--output", output_dir,
-            "--processes", str(os.cpu_count())
+            "--processes", str(os.cpu_count()),
+            species_flag
         ]
 
-        # Add HLA types argument if provided
-        if hla:  # Checks if hla is not None and not an empty string
-            command.extend(["--hla_types", hla])
-
         # Log the command
-        logger.info(f"Running HLA Clust with command: {' '.join(command)}")
+        if logger:
+            logger.info(f"Running HLA Clust with command: {' '.join(command)}")
 
         # Run the command
         call(command)
