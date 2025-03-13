@@ -17,7 +17,7 @@ seq2logo_path = os.path.join(project_root, "app/tools/seq2logo-2.1/Seq2Logo.py")
 task_path = os.path.join(data_mount, task_id)
 
 # Default settings for both classes
-num_clusters = '1-5'
+num_clusters = '1-6'
 mc_temperature = '1.5'
 num_temp_steps = '20'
 num_iterations = '10'
