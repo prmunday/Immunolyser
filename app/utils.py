@@ -1,15 +1,10 @@
-import plotly
+import plotly, json, re, os, glob, shutil, subprocess
 import plotly.graph_objs as go
-import json
-import re
 import pandas as pd
 from numpy import std, mean
 from statistics import stdev
-import os
-import glob
 from subprocess import call, Popen, run, DEVNULL
 from distutils.dir_util import copy_tree
-import shutil
 from zipfile import ZipFile
 from os.path import basename
 from app import app
@@ -778,7 +773,7 @@ def runHLAClust(taskId, data, species=None, logger=None):
                         if sample != 'Control':
 
                             # Path to store user friendly binders data
-                            path = os.path.join('app', 'static', 'images', taskId, sample, 'hla_clust_output', replicate[:-4])    
+                            path = os.path.join(project_root, 'app', 'static', 'images', taskId, sample, 'hla_clust_output', replicate[:-4])    
 
                             # Running the tool for every replicate
                             input_file = os.path.join(project_root, 'app', 'static', 'images', taskId, sample, 'gibbscluster', replicate[:-4])
@@ -798,11 +793,11 @@ def runHLAClust(taskId, data, species=None, logger=None):
 def run_clust_search(input_file, ref_file, output_dir, species, logger=None):
     try:
         # Validate species and set the corresponding flag
-        species_flag = None
+        species_flag = []
         if species.lower() == "mouse":
-            species_flag = "--species mouse"
+            species_flag = ["-s", "mouse"]
         elif species.lower() == "human":
-            species_flag = "--species human"
+            species_flag = ["-s", "human"]
         else:
             raise ValueError("Invalid species. Choose either 'mouse' or 'human'.")
 
@@ -812,17 +807,23 @@ def run_clust_search(input_file, ref_file, output_dir, species, logger=None):
             input_file,
             ref_file,
             "-im",
+            "--n_clusters", "6",  # Fixed incorrect concatenation
             "--output", output_dir,
-            "--processes", str(os.cpu_count()),
-            species_flag
-        ]
+            "--processes", str(os.cpu_count())
+        ] + species_flag  # Append species flag if applicable
 
         # Log the command
         if logger:
             logger.info(f"Running HLA Clust with command: {' '.join(command)}")
 
         # Run the command
-        call(command)
+        result = subprocess.run(command, capture_output=True, text=True)
+
+        # Check for errors
+        if result.returncode != 0:
+            raise RuntimeError(f"Command failed: {result.stderr}")
+
+        return {"success": "Clustering completed", "output": result.stdout}
 
     except Exception as e:
         return {"error": str(e)}
@@ -842,7 +843,7 @@ def getHLAClustResults(taskId, data):
             path = os.path.join('app', 'static', 'images', taskId, sample, 'hla_clust_output', replicate[:-4])
             
             # Collect PNG images
-            png_files = sorted(glob.glob(os.path.join(path, '**', '*.png'), recursive=True))
+            png_files = sorted(glob.glob(os.path.join(path, '**', '*result.html'), recursive=True))
             png_files = [os.path.relpath(f, 'app/static') for f in png_files]  # Relative paths
 
             if not png_files:
