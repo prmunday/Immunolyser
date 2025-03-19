@@ -80,8 +80,8 @@ COPY /tools/netMHCIIpan-4.3e.Linux.tar.gz /app/Immunolyser/app/tools/
 
 # Uncompress and untar the netMHCIIpan package
 RUN mkdir -p /app/Immunolyser/app/tools && \
-    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3e.Linux.tar.gz && \
+    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3f.Linux.tar.gz -C /app/Immunolyser/app/tools && \
+    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3f.Linux.tar.gz && \
     man -d /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.1 | compress > /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.Z
 
 # Update netMHCIIpan configuration to use the correct NMHOME path
