@@ -807,7 +807,6 @@ def run_clust_search(input_file, ref_file, output_dir, species, logger=None):
             input_file,
             ref_file,
             "-im",
-            "--n_clusters", "6",  # Fixed incorrect concatenation
             "--output", output_dir,
             "--processes", str(os.cpu_count())
         ] + species_flag  # Append species flag if applicable
