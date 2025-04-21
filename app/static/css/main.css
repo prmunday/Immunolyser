@@ -180,3 +180,25 @@ footer {
     }
   }
   
+.tooltip-motif-image {
+    position: fixed;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 4px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.tooltip-motif-image img {
+    max-width: 200px;
+    height: auto;
+}
+
+.motif-ref {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    position: relative;
+}
