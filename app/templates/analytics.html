@@ -234,41 +234,59 @@
             }
             if (this.status == 200) {
                     var data = JSON.parse(this.responseText);
-                    // we get the returned data
 
                     bar = Object.keys(data)[0];
                     seqLogos = data[bar];
 
                     var div = document.createElement("div");
+                    div.className = "your-class";
+                    div.id = sample.concat('_').concat(replicate);
 
-                    barElement = document.createElement('img');
-                    barElement.setAttribute('src',bar);
-                    barElement.setAttribute('alt',"");
+                    // Bar plot image
+                    var barElement = document.createElement('img');
+                    barElement.setAttribute('src', bar);
+                    barElement.setAttribute('alt', "");
+                    barElement.setAttribute('width', 10); // set to 10 to match your HTML
                     div.appendChild(barElement);
 
-                    for (i = 0; i < seqLogos.length; i++){
-                        seqElement = document.createElement('img');
-                        seqElement.setAttribute('src',seqLogos[i][0]);
-                        seqElement.setAttribute('title',"Sample size : ".concat(seqLogos[i][1]));
-                        seqElement.setAttribute('alt',"");
-                        div.appendChild(seqElement);
+                    // Create image containers for each cluster
+                    for (var i = 0; i < seqLogos.length; i++) {
+                        var cluster = seqLogos[i];
+
+                        var container = document.createElement('div');
+                        container.className = "image-container";
+
+                        var img = document.createElement('img');
+                        img.setAttribute('src', cluster[0]);
+                        img.setAttribute('alt', "");
+                        img.setAttribute('title', "Sample size : " + cluster[1]);
+                        img.setAttribute('width', "100%");
+                        container.appendChild(img);
+
+                        var caption = document.createElement('p');
+                        caption.style.textAlign = "center";
+                        caption.innerHTML = `${cluster[2]} : ${cluster[3]} <span class="motif-ref" data-image="${cluster[4]}">(${cluster[2]} ref)</span>`;
+                        container.appendChild(caption);
+
+                        div.appendChild(container);
                     }
 
+                    // Replace old element
                     var oldGibbs = document.getElementById(sample.concat('_').concat(replicate));
-                    
-                    div.id = sample.concat('_').concat(replicate);
-                    oldGibbs.parentNode.replaceChild(div, oldGibbs);
+                    if (oldGibbs && oldGibbs.parentNode) {
+                        oldGibbs.parentNode.replaceChild(div, oldGibbs);
+                    }
 
-                    div.className = "your-class";
-
-                    $('#'.concat(sample).concat('_').concat(replicate)).slick({
-                    dots: true,
-                    infinite: true,
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    arrows:false
+                    // Initialize slick slider
+                    $('#' + sample + '_' + replicate).slick({
+                        dots: true,
+                        infinite: true,
+                        slidesToShow: 3,
+                        slidesToScroll: 1,
+                        arrows: false
                     });
 
+                    // Hide loading spinner or similar element
                     select.nextElementSibling.hidden = true;
                 }
             });
@@ -705,23 +723,27 @@
         // Tooltip functionality for motif references
         // This code will show the tooltip with the image when hovering over the motif reference
         // and hide it when the mouse leaves.
-        document.querySelectorAll('.motif-ref').forEach(function(refElement) {
-        const tooltip = document.getElementById('tooltip-motif-image');
-        const tooltipImg = document.getElementById('tooltip-motif-img');
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.classList.contains('motif-ref')) {
+                const refElement = e.target;
+                const tooltip = document.getElementById('tooltip-motif-image');
+                const tooltipImg = document.getElementById('tooltip-motif-img');
 
-        refElement.addEventListener('mouseenter', function() {
-            tooltipImg.src = refElement.getAttribute('data-image');
-            tooltip.style.display = 'block';
+                tooltipImg.src = refElement.getAttribute('data-image');
+                tooltip.style.display = 'block';
 
-            const rect = refElement.getBoundingClientRect();
-            tooltip.style.left = `${rect.right + 10}px`;
-            tooltip.style.top = `${rect.top}px`;
+                const rect = refElement.getBoundingClientRect();
+                tooltip.style.left = `${rect.right + 10}px`;
+                tooltip.style.top = `${rect.top}px`;
+            }
         });
 
-        refElement.addEventListener('mouseleave', function() {
-            tooltip.style.display = 'none';
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.classList.contains('motif-ref')) {
+                const tooltip = document.getElementById('tooltip-motif-image');
+                tooltip.style.display = 'none';
+            }
         });
-    });
 
     </script>
 {% endblock %}
