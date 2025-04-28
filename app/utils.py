@@ -12,6 +12,8 @@ from constants import *
 from mhcflurry import Class1PresentationPredictor
 from pathlib import Path
 from collections import defaultdict
+from ProtPeptigram.DataProcessor import PeptideDataProcessor
+from ProtPeptigram.viz import ImmunoViz
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 data_mount = app.config['IMMUNOLYSER_DATA']
@@ -894,3 +896,46 @@ def getHLAClustResults(taskId, data):
             bindingImages[sample][replicate[:-4]] = png_files
 
     return bindingImages
+
+def generate_peptigram(csv_path, fasta_path, protein_ids, output_dir, output_filename="protein_visualization.png"):
+    """
+    Generate and save a peptigram visualization for given proteins.
+
+    Parameters:
+        csv_path (str): Path to the CSV file with peptide peaks.
+        fasta_path (str): Path to the FASTA file with protein sequences.
+        protein_ids (list): List of protein accession IDs to visualize.
+        output_dir (str): Directory to save the output PNG file.
+        output_filename (str): Output file name (default: 'protein_visualization.png').
+    """
+
+    # Ensure output directory exists
+    if not os.path.isdir(output_dir):
+        raise FileNotFoundError(f"Output directory does not exist: {output_dir}")
+
+    # Initialize and load data
+    processor = PeptideDataProcessor()
+    processor.load_peaks_data(csv_path)
+    processor.load_protein_sequences(fasta_path)
+
+    # Process data
+    formatted_data = processor.filter_and_format_data(
+        filter_contaminants=True,
+        intensity_threshold=0,
+        min_samples=1
+    )
+
+    # Create visualizations
+    viz = ImmunoViz(formatted_data)
+    fig, _ = viz.plot_peptigram(
+        protein_ids=protein_ids,
+        group_by="Sample",
+        color_by="protein",
+        protein_cmap="Set1",
+        title="HLA peptide source protein visualization with highlighted highest density regions",
+    )
+
+    # Save output
+    output_path = os.path.join(output_dir, output_filename)
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    print(f"Peptigram saved to: {output_path}")
