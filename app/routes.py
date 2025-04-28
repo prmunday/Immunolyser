@@ -894,6 +894,8 @@ def generatePepscanner(demo=False):
     metadata['taskId'] = taskId
     metadata['fileName'] = fileName
 
+    generate_peptigram(peptides_file, ref_proteome, ["P20152", "P32261"], os.path.join(project_root,'app','static','images',taskId))
+
     return jsonify(metadata)
 
 def validate_fasta(file_contents):
