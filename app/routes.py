@@ -832,13 +832,14 @@ def generatePepscanner(demo=False):
 
     print(demo == "true")
     if (demo== "true"):
-        peptides = ''  
-        fileName = 'elutiondata.csv'
+        protiens = ''  
+        fileName = 'Liver Set1 DDA.csv'
+        run_prot_peptigram = True
 
         # Input peptide file
         peptides_file = os.path.join(project_root,'app','static',fileName)
         # Background human proteome
-        ref_proteome = os.path.join(project_root,'app','references data','uniprot-proteome_UP000005640.fasta')
+        ref_proteome = os.path.join(project_root,'app','references data','uniprotkb_proteome_UP000000589_2024_08_14.fasta')
 
     else: 
 
