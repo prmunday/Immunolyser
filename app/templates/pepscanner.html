@@ -73,7 +73,15 @@
         </div>
         <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select the background fasta file.&#013;This is the file you would download from UniProt as proteome from any species. If you don't upload this, the human proteome with proteins reviewed by UniProt (Swiss-Prot reviewed) will be used as the background."></i>
     </div>
-
+    <div style="padding-left: 18px;" class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="runProtPeptigram" checked>
+      <label class="form-check-label" for="runProtPeptigram">
+        Run ProtPeptigram
+      </label>
+      <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Tick this checkbox to run ProtPeptigram analysis. Uncheck to skip."></i>
+    </div>
+    
+  
     <div class="col" style="padding-left: 18px;">
         <div style="display: flex; align-items: center;">
             <input type="text" class="form-control" id="proteinInput" placeholder="Type protein ID and press Enter" style="flex: 1; margin-right: 10px;">
@@ -134,7 +142,8 @@
           if (background.files.length > 0) {
               form.append("background", background.files[0], background.value);
           }
-          form.append("peptides", protiens);
+          form.append("protiens", protiens);
+          form.append("runProtPeptigram", document.getElementById('runProtPeptigram').checked);
         }
         else {
           form.append("demo", true);
@@ -236,73 +245,93 @@
     }
 
     var col_warning = false
+    var col_warning_2 = false
     cols = ['Peptide','Accession'];
     colsnotpresent = [];
     var name = '';
 
     function validatePeptideFile(){
-		var peptidefile = document.getElementById('file');
+      var peptidefile = document.getElementById('file');
+      var runProtPeptigram = document.getElementById('runProtPeptigram');
 
-		if(peptidefile.value == ''){
-      showSpinner(false);
-			alert('Please upload the peptide file.')
-            return false;
-		}
+      if(peptidefile.value == ''){
+        showSpinner(false);
+        alert('Please upload the peptide file.')
+              return false;
+      }
 
-        // for(i=0;i<sample_files.files.length;i++){
+      // for(i=0;i<sample_files.files.length;i++){
 
-        name = peptidefile.files[0].name;
+      name = peptidefile.files[0].name;
 
-        if(name.substr(-4)!='.csv'){
-            showSpinner(false);
-            alert('Cannot accept ' + name + ' file as it is not a csv file.');
-            return false;
+      if(name.substr(-4)!='.csv'){
+          showSpinner(false);
+          alert('Cannot accept ' + name + ' file as it is not a csv file.');
+          return false;
+      }
+
+      let reader = new FileReader();
+      reader.readAsText(peptidefile.files[0]);
+
+      reader.onload = function() {
+
+        colseread = reader.result.split('\n')[0].replace('\r','').split(',');
+
+        colseread = colseread.map(col => col.replace(/^"|"$/g, ''));
+
+        for (i=0;i<cols.length;i++){
+
+            flag = false;
+
+            for (j=0;j<colseread.length;j++){
+                if(colseread[j] !== cols[i]){
+                    continue;
+                }
+                else{
+                    flag = true;
+                }
+            }
+
+            if(!flag){
+                colsnotpresent.push(cols[i]);
+            }
+
+        }
+        if(colsnotpresent.length != 0) {
+            col_warning = true;
         }
 
-        let reader = new FileReader();
-        reader.readAsText(peptidefile.files[0]);
+        // Also look for columns starting with 'Intensity_'
+        let hasIntensity = colseread.some(col => col.startsWith('Intensity_'));
+        if (!hasIntensity) {
+            col_warning_2 = true;
+        }   
 
-        reader.onload = function() {
+       
+      };
 
-            colseread = reader.result.split('\n')[0].replace('\r','').split(',');
+      if (col_warning){
+          col_warning=false;
+          showSpinner(false);
+          alert(name + ' does not contains following column(s): '+ colsnotpresent.join(', '));
+          colsnotpresent = [];
+          return false;
+      }
 
-            colseread = colseread.map(col => col.replace(/^"|"$/g, ''));
+      // Check for Intensity_ columns only if checkbox is ticked
+      if (runProtPeptigram.checked && col_warning_2) {
+        
+        col_warning_2 = false;
+        showSpinner(false);
+        alert(name + ' does not contain any column starting with "Intensity_". Uncheck "Run ProtPeptigram" option to proceed.');
+        return false;
+    
+      }
 
-            for (i=0;i<cols.length;i++){
+      // }
 
-                flag = false;
-
-                for (j=0;j<colseread.length;j++){
-                    if(colseread[j] !== cols[i]){
-                        continue;
-                    }
-                    else{
-                        flag = true;
-                    }
-                }
-
-                if(!flag){
-                    colsnotpresent.push(cols[i]);
-                }
-
-            }
-            if(colsnotpresent.length != 0) {
-                col_warning = true;
-            }
-        };
-
-        if (col_warning){
-            col_warning=false;
-            showSpinner(false);
-            alert(name + ' does not contains following column(s): '+ colsnotpresent.join(', '));
-            colsnotpresent = [];
-            return false;
-        }
-
-        // }
-
-        return true;
-	}
+      return true;
+    }
 
     peptidewarning = true;
 
