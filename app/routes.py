@@ -830,7 +830,6 @@ def generatePepscanner(demo=False):
 
     demo = request.form.get('demo')
 
-    print(demo == "true")
     if (demo== "true"):
         protiens = ''  
         fileName = 'Liver Set1 DDA.csv'
@@ -846,7 +845,7 @@ def generatePepscanner(demo=False):
         # Extracting passed file, background, and the peptides list
         uploaded_file = request.files['file']
         uploaded_background_file = request.files.get('background')  # Use get() to handle the case where 'background' might not be present
-        protiens = request.form['protiens']
+        protiens = request.form['protein_ids']
         fileName = uploaded_file.filename.replace('C:\\fakepath\\', "")
 
         # Input peptide file
@@ -883,7 +882,7 @@ def generatePepscanner(demo=False):
     if protiens != '':
         # Getting the list of protiens entered (and preprocessing, e.g., removing empty strings)
         protiens = protiens.replace(' ','').split(',')
-        while("" in peptides) :
+        while("" in protiens) :
             protiens.remove("")
     else:
         protiens = list(metadata['top_protiens'].keys())
@@ -899,8 +898,9 @@ def generatePepscanner(demo=False):
     metadata['fileName'] = fileName
 
     # Run ProtPeptigram only if opted by the user
-    if run_prot_peptigram:
-        generate_peptigram(peptides_file, ref_proteome, protiens, os.path.join(project_root,'app','static','images',taskId))
+    if run_prot_peptigram == "true":
+        generate_peptigram(peptides_file, ref_proteome, protiens, os.path.join(project_root,'app','static','images',taskId),"protein_visualization.png")
+        metadata['peptigram'] = os.path.join('static','images',taskId,'protein_visualization.png')
 
     return jsonify(metadata)
 
@@ -961,15 +961,16 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
         accessionIds = Counter(accessionIds).most_common(metadata['unique_peptides'])
 
     # Reading mapping file
-    mapping = pd.read_csv(os.path.join(project_root,'app','references data','proteinmapping.csv'))
+    mapping = pd.read_csv(os.path.join(project_root,'app','references data','proteinmapping_2.csv'))
         
     odict = OrderedDict(accessionIds)
 
     for key, value in odict.items():
         
-        if (len (mapping[mapping['Protein'] == key])>0):
-            gn = mapping.loc[mapping['Protein'] == key, "GN"].iloc[0]
-            species = mapping.loc[mapping['Protein'] == key, "Species"].iloc[0]
+        if (len (mapping[mapping['Accession'] == key])>0):
+            gn = mapping.loc[mapping['Accession'] == key, "GN"].iloc[0]
+            species = mapping.loc[mapping['Accession'] == key, "Species"].iloc[0]
+            protien = mapping.loc[mapping['Accession'] == key, "Protein"].iloc[0]
         else:
             # Fetch from UniProt if not found in local file
             uniprot_url = f"https://www.uniprot.org/uniprot/{key}.txt"
@@ -979,25 +980,30 @@ def findMostOccuringAccessionIds(inputFile, taskId, inputFileName):
                 data = response.text
                 gn = ""
                 species = ""
+                protien = ""
 
                 # Parsing the UniProt text data
                 for line in data.split('\n'):
-                    if line.startswith("GN   Name="):
-                        gn = line.split('=')[1].split(' ')[0].strip(';')
-                    if line.startswith("OS   "):
+                    if line.startswith("GN   Name=") and not gn:
+                        gn = line.split('=')[1].split(';')[0].strip()
+                    elif line.startswith("OS   ") and not species:
                         species = line[5:].strip()
-                        break
+                    elif line.startswith("DE   RecName: Full=") and not protein:
+                        protein = line.split('=')[1].strip(';').strip()
 
                 # If GN and Species not found in UniProt data
                 if not gn:
                     gn = "Unknown"
                 if not species:
                     species = "Unknown"
+                if not protien:
+                    protien = "Unknown"
             else:
                 gn = "Unknown"
                 species = "Unknown"
+                protien = "Unknown"
 
-        odict[key]= [value, gn, species]
+        odict[key]= [value, gn, species, protien]
 
     metadata['top_protiens'] = odict
 

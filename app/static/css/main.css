@@ -202,3 +202,61 @@ footer {
     cursor: pointer;
     position: relative;
 }
+
+/* General table enhancements */
+#topprotiens td,
+#topprotiens th {
+  word-wrap: break-word;
+  white-space: normal;
+  vertical-align: top;
+  padding: 6px 8px;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+/* Header-specific tweaks */
+#topprotiens th {
+  white-space: nowrap;
+  font-weight: 500;
+  background-color: #f8f9fa; /* light gray background for headers */
+}
+
+/* Make the table scrollable without distorting layout */
+.table-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Improve link visibility in Peptide Count column */
+#topprotiens a {
+  color: #0d6efd; /* Bootstrap primary color */
+  text-decoration: none;
+}
+
+#topprotiens a:hover {
+  text-decoration: underline;
+}
+
+/* Zebra-striping for better row distinction */
+#topprotiens tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Optional: Add a slight shadow to card */
+.card {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+}
+
+/* Make image responsive and styled */
+#pepscannerimage {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+    font-size: 0.9em;
+}

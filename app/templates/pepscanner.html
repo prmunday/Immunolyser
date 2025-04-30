@@ -2,55 +2,57 @@
 
 {% block content %}
 <br>
-<h3>Pepscanner</h3>
-<!-- <img src="{{ url_for('pepscanner') }}"> -->
-<div class="row" style="text-align: center; align-items: center;">
-    <img id="pepscannerimage" src="static/others/blankpepscanner.png" alt="" style="display: inline-block; margin:0 auto; width:max-content; height: max-content;">
-    
 
-    <!-- <div style="  float:right; width:auto; padding-right: 20%; padding-top: 10%;"> -->
-        
-        <div class="card" style="width: 28rem; position: relative; margin-right: 40px;">
-            <div class="card-body">
-              <h5 class="card-title">File metadata</h5>
-              <h6 class="card-subtitle mb-2 text-muted">Statistics of proteins found in the Accession column</h6>
-              <br>
-              <p class="card-text" style="text-align: left;" id="uniquepeptides">Unique proteins: </p>
-            
-              <table class="table" style="table-layout: initial; width: 100%; overflow-y: auto;">
-                <thead style="display: block;">
-                  <tr>
-                    <th scope="col">Protein</th>
-                    <th scope="col">Peptide count</th>
-                    <th scope="col">Gene name</th>
-                    <th scope="col">Species</th>
-                  </tr>
-                </thead>
-                <tbody id="topprotiens" style="display: block;">
-                  <!-- <tr>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>
-                  <tr>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                  </tr>
-                  <tr>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                  </tr> -->
-                </tbody>
-              </table>
+<div class="col">
 
-              <!-- <div id='topprotiens'>
+  <!-- Section: Pepscanner -->
+  <h3 class="mb-4">Pepscanner</h3>
 
-              </div> -->
-            </div>
+  <div class="row align-items-start mb-5">
+    <!-- Left: Heatmap or Image -->
+    <div class="col-md-7 mb-3 mb-md-0">
+      <img id="pepscannerimage" src="static/others/blankpepscanner.png" alt="Pepscanner heatmap" class="img-fluid rounded border">
+    </div>
+
+    <!-- Right: Metadata Table -->
+    <div class="col-md-5">
+      <div class="card w-100 h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">File metadata</h5>
+          <h6 class="card-subtitle mb-3 text-muted">Statistics of proteins found in the Accession column</h6>
+
+          <p class="card-text text-start" id="uniquepeptides"><strong>Unique proteins:</strong></p>
+
+          <div class="table-container">
+            <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
+              <thead>
+                <tr>
+                  <th scope="col">Accession</th>
+                  <th scope="col">Peptide count</th>
+                  <th scope="col">Gene name</th>
+                  <th scope="col">Species</th>
+                  <th scope="col">Protein</th>
+                </tr>
+              </thead>
+              <tbody id="topprotiens">
+                <!-- Dynamic rows go here -->
+              </tbody>
+            </table>
           </div>
-    <!-- </div>  -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: ProtPeptigram -->
+  <h3 class="mb-4">ProtPeptigram</h3>
+
+  <div class="row justify-content-center">
+    <div class="col-auto text-center">
+      <img id="protpeptigramimage" src="static/others/blankpepscanner.png" alt="ProtPeptigram visualization" class="img-fluid rounded border">
+    </div>
+  </div>
 
 </div>
 
@@ -91,6 +93,7 @@
     <div class="col" style="padding-left: 18px;">
         <div style="display: flex; align-items: center;">
             <input type="text" class="form-control" id="proteinInput" placeholder="Type protein ID and press Enter" style="flex: 1; margin-right: 10px;">
+            <input type="hidden" name="protein_ids" id="proteinHiddenInput">
             <button class="btn btn-primary" id="addProteinBtn">Add Protein ID</button>
         </div>
         <small class="form-text text-muted">Example: A0A024QYW1</small>
@@ -98,7 +101,7 @@
         <div class="mt-3 text-danger" id="validationMessage"></div>
     </div>
 
-
+    
     <input style="float: right; margin-right: 20px;" id="submit" name="submit" type="submit" class="btn btn-outline-secondary" value="Submit">
             
 </form>
@@ -134,7 +137,7 @@
             return false;
           }
 
-          protiens = document.getElementById('proteinList').textContent;
+          protiens = document.getElementById('proteinHiddenInput').value;
 
           peptidevalidation = validatePeptides();
           if(peptidevalidation==false){
@@ -148,7 +151,7 @@
           if (background.files.length > 0) {
               form.append("background", background.files[0], background.value);
           }
-          form.append("protiens", protiens);
+          form.append("protein_ids", protiens);
           form.append("runProtPeptigram", document.getElementById('runProtPeptigram').checked);
         }
         else {
@@ -172,8 +175,10 @@
 
           taskId = res['taskId']
           fileName = res['fileName']
+          peptigram = res['peptigram'];
 
           document.getElementById('pepscannerimage').src = "static/images/"+ taskId +"/pepscanner.png";
+          document.getElementById('protpeptigramimage').src = peptigram;
 
           console.log(res);
 
@@ -217,6 +222,11 @@
               cell4.style.width = "25%";
               cell4.innerHTML = value[2];
               row.appendChild(cell4);
+
+              var cell5 = document.createElement("td");
+              cell5.style.width = "25%";
+              cell5.innerHTML = `<span title="${value[3]}">${value[3]}</span>`;
+              row.appendChild(cell5);
 
               top_protiens.append(row);
               
@@ -422,8 +432,42 @@
       }
 
       function updateProteinList() {
-          proteinListDiv.textContent = proteinList.join(', ');
+          proteinListDiv.innerHTML = ''; // Clear current list
+
+          proteinList.forEach((protein, index) => {
+              const badge = document.createElement('span');
+              badge.className = 'badge badge-secondary mr-2';
+              badge.style.cursor = 'default';
+              badge.style.display = 'inline-flex';
+              badge.style.alignItems = 'center';
+
+              const textSpan = document.createElement('span');
+              textSpan.textContent = protein;
+
+              const removeBtn = document.createElement('span');
+              removeBtn.innerHTML = '&nbsp;&times;';
+              removeBtn.style.marginLeft = '8px';
+              removeBtn.style.color = 'red';
+              removeBtn.style.cursor = 'pointer';
+
+              removeBtn.addEventListener('click', () => {
+                  proteinList.splice(index, 1);
+                  updateProteinList();
+              });
+
+              badge.appendChild(textSpan);
+              badge.appendChild(removeBtn);
+              proteinListDiv.appendChild(badge);
+          });
+
+          // Update hidden input with real protein list
+          const hiddenInput = document.getElementById('proteinHiddenInput');
+          if (hiddenInput) {
+              hiddenInput.value = proteinList.join(',');
+          }
       }
+
+
 
       function addProtein() {
           const protein = input.value.trim().toUpperCase();
