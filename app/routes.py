@@ -807,6 +807,9 @@ def pepscanner():
 def generatePepscanner(demo=False):
 
     taskId = getTaskId()
+    run_prot_peptigram = request.form.get('runProtPeptigram')
+
+    print('run_prot_peptigram:', run_prot_peptigram)
 
     dirName = os.path.join('app', 'static', 'images', taskId,'protienandepeptides')
     try:
@@ -842,7 +845,7 @@ def generatePepscanner(demo=False):
         # Extracting passed file, background, and the peptides list
         uploaded_file = request.files['file']
         uploaded_background_file = request.files.get('background')  # Use get() to handle the case where 'background' might not be present
-        peptides = request.form['peptides']
+        protiens = request.form['protiens']
         fileName = uploaded_file.filename.replace('C:\\fakepath\\', "")
 
         # Input peptide file
@@ -876,25 +879,27 @@ def generatePepscanner(demo=False):
 
     scanner.search_proteome(peptide_file=peptides_file, proteome_file=ref_proteome)
 
-    if peptides != '':
-        # Getting the list of peptides entered (and preprocessing, e.g., removing empty strings)
-        peptides = peptides.replace(' ','').split(',')
+    if protiens != '':
+        # Getting the list of protiens entered (and preprocessing, e.g., removing empty strings)
+        protiens = protiens.replace(' ','').split(',')
         while("" in peptides) :
-            peptides.remove("")
+            protiens.remove("")
     else:
-        peptides = list(metadata['top_protiens'].keys())
+        protiens = list(metadata['top_protiens'].keys())
 
-        if len(peptides) > 5:
-            peptides = peptides[:5]
+        if len(protiens) > 5:
+            protiens = protiens[:5]
 
-    print('Peptides passed for pepscanner: {}'.format(peptides))
+    print('Proteins passed for pepscanner: {}'.format(protiens))
 
-    scanner.peptide_dist(peptides, taskId)
+    scanner.peptide_dist(protiens, taskId)
 
     metadata['taskId'] = taskId
     metadata['fileName'] = fileName
 
-    generate_peptigram(peptides_file, ref_proteome, ["P20152", "P32261"], os.path.join(project_root,'app','static','images',taskId))
+    # Run ProtPeptigram only if opted by the user
+    if run_prot_peptigram:
+        generate_peptigram(peptides_file, ref_proteome, protiens, os.path.join(project_root,'app','static','images',taskId))
 
     return jsonify(metadata)
 
