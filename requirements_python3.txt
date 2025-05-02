@@ -79,6 +79,7 @@ plotly==5.18.0
 pooch==1.8.2
 prompt_toolkit==3.0.47
 protobuf==4.25.5
+ProtPeptigram==1.0.1
 psutil==6.0.0
 ptyprocess==0.7.0
 pure_eval==0.2.3
