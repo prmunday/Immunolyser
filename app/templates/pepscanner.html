@@ -108,9 +108,13 @@
 <br>
 <br>
 <br>
+    <p class="text-justify" style="padding-right: 20px;">
+      <strong>Pepscanner</strong> is a tool which can be used to visualise the location of peptides present in the proteins of interest. It takes a CSV (comma separated values) file as an input along with the proteins of interest (optional). The uploaded file should have 'Peptide' and 'Accession' columns present in it. Pepscanner first extracts the protein sequences from a reference human proteome file and then plots the location of all the peptides (from the 'Peptide' column) on the selected proteins. Users also have an option to upload their choice of FASTA file which will be used as the background if uploaded.<br>If the proteins are not entered, the top occurring five proteins present in the 'Accession' column are selected automatically. A demo output using the 'Liver Set1 DDA.csv' file in our demo datasets has been generated to demonstrate the usage of Pepscanner. It can be accessed by using <a id="myLink" action="{{ url_for('pepscanner') }}" href="#" onclick="return pepscannerDemo();">this link.</a>
+    </p>
 
-    <p class="text-justify" style="padding-right: 20px;">Pepscanner is a tool which can be used to visualise the location of peptides present in the proteins of interest. It takes a csv (comma separated values) file as an input along with the proteins of interest (optional). The uploaded file should have 'Peptide' and 'Accession' columns present in it. Pepscanner first extracts the protein sequences from a reference human proteome file and then plots the location of all the peptides (from the 'Peptide' column) on the selected proteins.  Users also have an option to upload there choice of fasta file which will be used as background if uploaded.<br>If the proteins are not entered, top occuring five proteins present in 'Accession' column are selected automatically. A demo output using the 'Liver Set1 DDA.csv' file in our demo datasets has been generated to demonstrate the usage of Pepscanner. It can be accessed by using <a id="myLink" action="{{ url_for('pepscanner') }}" href="#" onclick="return pepscannerDemo();">this link.</a>
-    </p> 
+    <p class="text-justify" style="padding-right: 20px;">
+      <strong>ProtPeptigram</strong> provides a comprehensive visualization platform for mapping immunopeptides to their source proteins across different biological samples. This tool enables users to identify peptide coverage patterns, analyze density distributions, and compare peptide presentations between experimental conditions.
+    </p>
 
     <br>
 
@@ -353,7 +357,7 @@
 
     function validatePeptides(){
 
-      protiens = document.getElementById('proteinList').textContent;
+      let protiens = document.getElementById('proteinList').textContent;
 
       if(protiens == ''){
 

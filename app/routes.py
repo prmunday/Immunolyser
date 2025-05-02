@@ -807,7 +807,7 @@ def pepscanner():
 def generatePepscanner(demo=False):
 
     taskId = getTaskId()
-    run_prot_peptigram = request.form.get('runProtPeptigram')
+    run_prot_peptigram = request.form.get('runProtPeptigram', '').lower() == 'true'
 
     print('run_prot_peptigram:', run_prot_peptigram)
 
@@ -898,7 +898,7 @@ def generatePepscanner(demo=False):
     metadata['fileName'] = fileName
 
     # Run ProtPeptigram only if opted by the user
-    if run_prot_peptigram == "true":
+    if run_prot_peptigram == True:
         generate_peptigram(peptides_file, ref_proteome, protiens, os.path.join(project_root,'app','static','images',taskId),"protein_visualization.png")
         metadata['peptigram'] = os.path.join('static','images',taskId,'protein_visualization.png')
 
