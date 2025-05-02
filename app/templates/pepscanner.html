@@ -48,11 +48,7 @@
   <!-- Section: ProtPeptigram -->
   <h3 class="mb-4">ProtPeptigram</h3>
 
-  <div class="row justify-content-center">
-    <div class="col-auto text-center">
-      <img id="protpeptigramimage" src="static/others/blankpepscanner.png" alt="ProtPeptigram visualization" class="img-fluid rounded border">
-    </div>
-  </div>
+  <div id="protpeptigram-container" class="mt-3"></div>
 
 </div>
 
@@ -182,7 +178,52 @@
           peptigram = res['peptigram'];
 
           document.getElementById('pepscannerimage').src = "static/images/"+ taskId +"/pepscanner.png";
-          document.getElementById('protpeptigramimage').src = peptigram;
+          
+          let container = document.getElementById('protpeptigram-container');
+          container.innerHTML = '';
+
+          if (Array.isArray(peptigram) && peptigram.length > 0) {
+              let tabList = document.createElement('ul');
+              tabList.className = 'nav nav-tabs justify-content-center mb-3';
+              tabList.id = 'peptigramTab';
+              tabList.setAttribute('role', 'tablist');
+
+              let tabContent = document.createElement('div');
+              tabContent.className = 'tab-content';
+
+              peptigram.forEach((imgPath, index) => {
+                  // Extract protein name from filename (e.g. "protein_visualization_PROT1.png")
+                  let match = imgPath.match(/protein_visualization_(.+)\.png$/);
+                  let proteinName = match ? match[1] : `Protein ${index + 1}`;
+                  let safeId = `prot-tab-${index}`;
+
+                  // Create tab link
+                  let tab = document.createElement('li');
+                  tab.className = 'nav-item';
+                  tab.innerHTML = `
+                      <a class="nav-link ${index === 0 ? 'active' : ''}" id="${safeId}-tab" data-toggle="tab" href="#${safeId}" role="tab" aria-controls="${safeId}" aria-selected="${index === 0}">
+                          ${proteinName}
+                      </a>`;
+                  tabList.appendChild(tab);
+
+                  // Create tab pane
+                  let content = document.createElement('div');
+                  content.className = `tab-pane fade ${index === 0 ? 'show active' : ''}`;
+                  content.id = safeId;
+                  content.setAttribute('role', 'tabpanel');
+                  content.setAttribute('aria-labelledby', `${safeId}-tab`);
+                  content.innerHTML = `
+                      <div class="row justify-content-center">
+                          <div class="col-auto text-center">
+                              <img src="${imgPath}" class="img-fluid rounded border" alt="ProtPeptigram Image for ${proteinName}">
+                          </div>
+                      </div>`;
+                  tabContent.appendChild(content);
+              });
+
+              container.appendChild(tabList);
+              container.appendChild(tabContent);
+          }
 
           console.log(res);
 
