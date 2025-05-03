@@ -1,11 +1,12 @@
 from app import app, celery
-from flask import render_template, request, jsonify, redirect, url_for
+from flask import render_template, request, jsonify, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import NotFound
 from app.utils import *
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
-import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests, zipfile
 from Bio import SeqIO
 from constants import *
 
@@ -434,8 +435,8 @@ def getExistingReport(taskId):
         sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
 
 
-    bar_percent = plot_lenght_distribution(sample_data, hist='percent')
-    bar_density = plot_lenght_distribution(sample_data, hist='density')
+    bar_percent = plot_lenght_distribution(sample_data, hist='percent', taskId=taskId)
+    bar_density = plot_lenght_distribution(sample_data, hist='density', taskId=taskId)
     
     seqlogos = getSeqLogosImages(sample_data)
     gibbsImages = getGibbsImages(logger, taskId, sample_data)
@@ -470,6 +471,9 @@ def getExistingReport(taskId):
     bindingImages = getHLAClustResults(taskId, data)
     print(bindingImages)
 
+    zip_path = zip_job_exports(taskId)
+    zip_filename = os.path.basename(zip_path)
+
     return render_template(
         'analytics.html', 
         overlapLayout=overlapLayout, 
@@ -486,7 +490,8 @@ def getExistingReport(taskId):
         showSeqLogoSection=showSeqLogoSection,
         showGibbsSection=showGibbsSection, 
         hideMajorityVotedOption=hideMajorityVotedOption,
-        bindingImages=bindingImages
+        bindingImages=bindingImages,
+        zip_filename=zip_filename
     )
 
 # Method to manage experiment ID
@@ -1099,3 +1104,39 @@ def get_alleles():
     # Return the filtered alleles as a JSON response
     return jsonify(list(filtered_alleles))
 
+def zip_job_exports(taskId):
+    export_folder = os.path.join(
+        project_root, "app", "static", "images", taskId, "export"
+    )
+    zip_path = os.path.join(
+        project_root, "app", "static", "images", taskId, f"export_files_{taskId}.zip"
+    )
+
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for root, _, files in os.walk(export_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Arcname should be relative to export_folder
+                arcname = os.path.relpath(file_path, export_folder)
+                zipf.write(file_path, arcname=arcname)
+
+    return zip_path
+
+@app.route("/download-peptide-zip/<taskId>/<filename>")
+def download_job_data_files_zip(taskId, filename):
+    # Define a safe base directory where files are stored
+    safe_base_dir = os.path.join(project_root, "app", "static", "images", taskId)
+    
+    # Prevent directory traversal by joining the path and normalizing it
+    safe_filename = os.path.normpath(filename)  # Normalize the path to prevent traversal
+    full_path = os.path.join(safe_base_dir, safe_filename)
+
+    # Ensure the file is inside the base directory
+    if not full_path.startswith(safe_base_dir):
+        return "Forbidden", 403
+
+    # Check if the file exists
+    if os.path.exists(full_path):
+        return send_file(full_path, as_attachment=True)
+    else:
+        return NotFound("File not found")

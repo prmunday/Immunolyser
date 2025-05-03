@@ -20,81 +20,64 @@ data_mount = app.config['IMMUNOLYSER_DATA']
 regex_find_cureved_brackets = '\(.*?\)'
 regex_find_square_brackets = '\[.*?\]'
 
-# The following method reutrns a histogram of list passed in JSON form.
-def plot_lenght_distribution(samples, hist="percent"):
-
-    # Initializing plotly figure
+def plot_lenght_distribution(samples, hist="percent", taskId=None):
     fig = go.Figure()
+    export_dir = os.path.join(project_root, "app" ,"static", "images", taskId,  "export", "peptide_length_distribution")
+    os.makedirs(export_dir, exist_ok=True)  # Make sure the folder exists
 
-    # Appeding all samples
-    for sample_name,sample in samples.items():
-
-        # len_data = sample.getCombniedData()['Length']
-
-        data = []
-        
-        for replicateData in sample.values():
-            data.append(replicateData)
-        
+    for sample_name, sample in samples.items():
         peptideProportion = {}
 
-        if hist=='percent':
-            # Storing the proportions of each n-mer
+        if hist == 'percent':
             for replicate, data in sample.items():
-                peptideProportion[replicate] = data.groupby('Length').count()['Peptide']/data.shape[0]*100
-
+                peptideProportion[replicate] = data.groupby('Length').count()['Peptide'] / data.shape[0] * 100
             title = 'The relative frequency distribution of the peptide lengths'
             yaxis_label = '% Peptides'
         else:
             for replicate, data in sample.items():
                 peptideProportion[replicate] = data.groupby('Length').count()['Peptide']
-
             title = 'The frequency distribution of the peptide lengths'
             yaxis_label = 'Number of Peptides'
 
-        bardatacombined = pd.concat(peptideProportion, axis=1).apply(lambda x : mean(x), axis=1)
-        bardatacombined = bardatacombined.to_frame().reset_index().rename(columns= {0: 'Count'})
-        
-        # Calculating stdev only if replicates more than 1
-        if (len(peptideProportion)>1):
+        bardatacombined = pd.concat(peptideProportion, axis=1).apply(lambda x: mean(x), axis=1)
+        bardatacombined = bardatacombined.to_frame().reset_index().rename(columns={0: 'Count'})
 
-            # Combining arrays to further calculate the standard deviation
-            # errors = pd.concat(peptideProportion, axis=1).apply(lambda x : stdev(x), axis=1)
+        # Save CSV
+        csv_filename = f"{sample_name}_{hist}.csv"
+        csv_path = os.path.join(export_dir, csv_filename)
+        bardatacombined.to_csv(csv_path, index=False)
 
+        # Optional: calculate error bars
+        if len(peptideProportion) > 1:
+            # Uncomment if using error bars later
+            # errors = pd.concat(peptideProportion, axis=1).apply(lambda x: stdev(x), axis=1)
             fig.add_trace(go.Bar(
-                                x = bardatacombined['Length'], 
-                                y =bardatacombined['Count'],
-                                name = sample_name,
-                                error_y= dict( 
-                                    type='data', 
-                                    # array=sample.getPeptideLengthError()/2,
-                                    # array=errors,
-                                    color='green', 
-                                    thickness=1, 
-                                    width=3, 
-                                )
-                            )
-                        )
-        
+                x=bardatacombined['Length'],
+                y=bardatacombined['Count'],
+                name=sample_name,
+                error_y=dict(
+                    type='data',
+                    # array=errors,  # Optional
+                    color='green',
+                    thickness=1,
+                    width=3,
+                )
+            ))
         else:
             fig.add_trace(go.Bar(
-                                x = bardatacombined['Length'], 
-                                y =bardatacombined['Count'],
-                                name = sample_name
-                            )
-                        )
+                x=bardatacombined['Length'],
+                y=bardatacombined['Count'],
+                name=sample_name
+            ))
 
-    # Adding labels in the chart
     fig.update_layout(
-            title= title,
-            xaxis = dict(title='<i>Length</i>'),
-            yaxis = dict(title='<i>'+ yaxis_label +'</i>')
-        )
-    
+        title=title,
+        xaxis=dict(title='<i>Length</i>'),
+        yaxis=dict(title=f'<i>{yaxis_label}</i>')
+    )
+
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
     return graphJSON
-
     
 # The following method filters the data to remove contamination.
 # This method is specific to a PEAKS output file for peptides.
