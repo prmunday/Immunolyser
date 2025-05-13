@@ -8,26 +8,39 @@
   <!-- Section: Pepscanner -->
   <h3 class="mb-4">Pepscanner</h3>
 
-  <div class="row align-items-start mb-5">
-    <!-- Left: Heatmap or Image -->
-    <div class="col-md-7 mb-3 mb-md-0">
-      <img id="pepscannerimage" src="static/others/blankpepscanner.png" alt="Pepscanner heatmap" class="img-fluid rounded border">
+  <!-- Heatmap Image -->
+  <div class="row mb-4">
+    <div class="col-md-8 col-lg-6 mx-auto">
+      <img id="pepscannerimage" src="static/others/blankpepscanner.png"
+          alt="Pepscanner heatmap"
+          class="img-fluid rounded border w-100">
     </div>
+  </div>
 
-    <!-- Right: Metadata Table -->
-    <div class="col-md-5">
-      <div class="card w-100 h-100 shadow-sm">
+  <!-- Section: ProtPeptigram -->
+  <h3 class="mb-4">ProtPeptigram</h3>
+
+  <!-- Protpetigram -->
+  <div class="row mb-4">
+    <div class="col">
+      <div id="protpeptigram-container" class="mt-3"></div>
+    </div>
+  </div>
+
+  <!-- Metadata Table -->
+  <div class="row mb-5">
+    <div class="col">
+      <div class="card w-100 shadow-sm">
         <div class="card-body">
           <h5 class="card-title">File metadata</h5>
-          <h6 class="card-subtitle mb-3 text-muted">Statistics of proteins found in the Accession column</h6>
-
+          <h6 class="card-subtitle mb-3 text-muted">Statistics or other relevant details</h6>
           <p class="card-text text-start" id="uniquepeptides"><strong>Unique proteins:</strong></p>
 
           <div class="table-container">
             <table class="table table-sm table-hover" style="table-layout: fixed; width: 100%;">
               <thead>
                 <tr>
-                  <th scope="col" style="width: 26%;">Accession</th>
+                  <th scope="col">Accession</th>
                   <th scope="col">Peptide count</th>
                   <th scope="col">Gene name</th>
                   <th scope="col">Species</th>
@@ -39,16 +52,10 @@
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Section: ProtPeptigram -->
-  <h3 class="mb-4">ProtPeptigram</h3>
-
-  <div id="protpeptigram-container" class="mt-3"></div>
 
 </div>
 
@@ -246,36 +253,33 @@
               var row = document.createElement("tr");
               
               var cell1 = document.createElement("td");
-              cell1.style.width = "26%";
+              cell1.style.width = "15%";
               cell1.innerHTML = key;
               row.appendChild(cell1);
 
               var cell2 = document.createElement("td");
-              cell2.style.width = "25%";
-              // cell2.innerHTML = value;
-              cell2.innerHTML = "<a href='static/images/"+taskId+"/protienandepeptides/"+fileName + " " +key+".csv'>"+value[0]+"</a>";
+              cell2.style.width = "15%";
+              cell2.innerHTML = "<a href='static/images/" + taskId + "/protienandepeptides/" + fileName + " " + key + ".csv'>" + value[0] + "</a>";
               row.appendChild(cell2);
 
-
               var cell3 = document.createElement("td");
-              cell3.style.width = "25%";
+              cell3.style.width = "12%";
               cell3.innerHTML = value[1];
-              // getGeneName(key,data => console.log("The data is:", data));
               row.appendChild(cell3);
 
               var cell4 = document.createElement("td");
-              cell4.style.width = "25%";
+              cell4.style.width = "13%";
               cell4.innerHTML = value[2];
               row.appendChild(cell4);
 
               var cell5 = document.createElement("td");
-              cell5.style.width = "25%";
+              cell5.style.width = "45%";
               cell5.innerHTML = `<span title="${value[3]}">${value[3]}</span>`;
               row.appendChild(cell5);
 
               top_protiens.append(row);
-              
           }
+
 
           showSpinner(false);
 
