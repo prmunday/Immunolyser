@@ -10,7 +10,7 @@
 
   <!-- Heatmap Image -->
   <div class="row mb-4">
-    <div class="col-md-8 col-lg-6 mx-auto">
+    <div class="col-12">
       <img id="pepscannerimage" src="static/others/blankpepscanner.png"
           alt="Pepscanner heatmap"
           class="img-fluid rounded border w-100">
@@ -269,7 +269,7 @@
 
               var cell4 = document.createElement("td");
               cell4.style.width = "13%";
-              cell4.innerHTML = value[2];
+              cell4.innerHTML = "<i>" + value[2] + "</i>";
               row.appendChild(cell4);
 
               var cell5 = document.createElement("td");
