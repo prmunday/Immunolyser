@@ -6,9 +6,11 @@ from app.utils import *
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
-import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests, zipfile
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests, zipfile, json, smtplib
 from Bio import SeqIO
 from constants import *
+from email.mime.text import MIMEText
+from app.email_registry import save_email, get_email
 
 project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 
@@ -22,6 +24,52 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 # Load Allele dictionary
 ALLELE_DICTIONARY = pd.read_csv(os.path.join(project_root,'app','static','Immunolyser2.0_Allele_Dictionary.csv'))
+
+@app.route('/submit_email/<job_id>', methods=['POST'])
+def submit_email(job_id):
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email or '@' not in email:
+        logging.warning(f"Invalid email submitted for job {job_id}: {email}")
+        return "Invalid email", 400
+
+    save_email(job_id, email)
+    logging.info(f"Email {email} registered for job {job_id}")
+    return "Email registered", 200
+
+def send_email(to_email, job_id, success=True, error_msg=None):
+
+    from_email = os.getenv("EMAIL_ADDRESS")
+    password = os.getenv("EMAIL_APP_PASSWORD")
+
+    if not from_email or not password:
+        print("Email credentials are not set in environment variables.")
+        return
+
+    if success:
+        subject = f"Immunolyser job {job_id} Completed"
+        body = f"Your job {job_id} has completed successfully!\nAccess the results here: https://dev.immunolyser.cloud.edu.au/{job_id}"
+    else:
+        subject = f"Immunolyser job {job_id} Failed"
+        body = f"Your job {job_id} failed with the following error:\n{error_msg}"
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_email
+    msg['To'] = to_email
+
+    try:
+        print("Connecting to SMTP server...")
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        print("Logging in...")
+        server.login(from_email, password)
+        print("Sending email...")
+        server.sendmail(from_email, [to_email], msg.as_string())
+        print("Email sent.")
+        server.quit()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
 @app.route("/initialiser", methods=["POST", "GET"])
 def initialiser():
@@ -86,246 +134,272 @@ def initialiser():
 @celery.task(name='app.submit_job', bind=True)
 def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species):    
 
-    # Have to take this input from user
-    maxLen = 30
-    minLen = 5
-    logger.info('Preferred Motif Length: %s', motif_length)
-    logger.info('MHC Class of Interest: %s', mhcclass)
-    logger.info('alleles_unformatted: %s', alleles_unformatted)
-    logger.info('Species: %s', species)
-
-    # Deserialize `predictionTools`
-    predictionTools = [Predictor.from_dict(tool) for tool in predictionTools]
-    logger.info('Prediction tools selected: : %s', predictionTools)
-
-    total_peptides = 0
-    max_rows = app.config['MAX_TOTAL_PEPTIDES']
-
-    taskId = self.request.id
-
-    dirName = os.path.join(data_mount, taskId)
     try:
-        # Create target Directory
-        os.makedirs(dirName)
-        logger.info("Directory %s Created", dirName) 
-    except FileExistsError:
-        logger.info("Directory %s already exists", dirName)
+        # Have to take this input from user
+        maxLen = 30
+        minLen = 5
+        logger.info('Preferred Motif Length: %s', motif_length)
+        logger.info('MHC Class of Interest: %s', mhcclass)
+        logger.info('alleles_unformatted: %s', alleles_unformatted)
+        logger.info('Species: %s', species)
 
+        # Deserialize `predictionTools`
+        predictionTools = [Predictor.from_dict(tool) for tool in predictionTools]
+        logger.info('Prediction tools selected: : %s', predictionTools)
 
-    data = {}
-    control = list()
+        total_peptides = 0
+        max_rows = app.config['MAX_TOTAL_PEPTIDES']
 
-    # Creating folders to store images
-    for sample_name in samples.keys():
+        taskId = self.request.id
 
-        is_valid, message = validate_sample_name(sample_name)
-
-        if not is_valid:
-            logger.info("Sample name is not valid. %s", message)
-
-        # Skipping Control Data
-        # if sample_name == "Control":
-        #     continue
-
-        # Creating sub directories to store sample data
+        dirName = os.path.join(data_mount, taskId)
         try:
-            # for seqlogos
-            path_for_logos = os.path.join('app', 'static', 'images', taskId, sample_name, 'seqlogos')
-            if not os.path.exists(path_for_logos):
-                # os.makedirs(directory)
-                Path(path_for_logos).mkdir(parents=True, exist_ok=True)
-                logger.info("Directory Created: %s", path_for_logos) 
+            # Create target Directory
+            os.makedirs(dirName)
+            logger.info("Directory %s Created", dirName) 
         except FileExistsError:
-            logger.info("Directory already exists: %s", path_for_logos)    
+            logger.info("Directory %s already exists", dirName)
 
 
-    # Saving the data and loading into the dictionary
-    for sample_name, replicates in samples.items():
+        data = {}
+        control = list()
 
-        # Creating sub directories to store sample data
-        try:
-            os.mkdir(os.path.join(dirName, sample_name))
-            logger.info("Directory Created: %s", os.path.join(dirName, sample_name)) 
-        except FileExistsError:
-            logger.info("Directory already exists: %s", os.path.join(dirName, sample_name))
+        # Creating folders to store images
+        for sample_name in samples.keys():
 
-        # Not including the control group in data dict 
-        # if sample_name != "Control":
-        data[sample_name] = list()
+            is_valid, message = validate_sample_name(sample_name)
 
-        files_to_save = {}
-        # First pass: Accumulate row counts
+            if not is_valid:
+                logger.info("Sample name is not valid. %s", message)
+
+            # Skipping Control Data
+            # if sample_name == "Control":
+            #     continue
+
+            # Creating sub directories to store sample data
+            try:
+                # for seqlogos
+                path_for_logos = os.path.join('app', 'static', 'images', taskId, sample_name, 'seqlogos')
+                if not os.path.exists(path_for_logos):
+                    # os.makedirs(directory)
+                    Path(path_for_logos).mkdir(parents=True, exist_ok=True)
+                    logger.info("Directory Created: %s", path_for_logos) 
+            except FileExistsError:
+                logger.info("Directory already exists: %s", path_for_logos)    
+
+
+        # Saving the data and loading into the dictionary
         for sample_name, replicates in samples.items():
-            files_to_save[sample_name] = {}
 
-            for file_filename, file_content_base64 in replicates.items():
-                replicate = base64.b64decode(file_content_base64)
-
-                if file_filename != "":
-                    # Read the CSV content using pandas
-                    df = pd.read_csv(io.BytesIO(replicate))
-
-                    # Count rows excluding the header
-                    row_count = len(df)
-                    total_peptides += row_count
-
-                    # Store file information for potential saving
-                    files_to_save[sample_name][file_filename] = replicate
-
-        # Check if total peptides exceed the limit
-        if total_peptides > max_rows:
-            raise Exception(f"Total peptides {total_peptides} exceed the maximum allowed {max_rows}.")
-
-        # Second pass: Save files if within the limit
-        for sample_name, replicates in files_to_save.items():
-            # Create directories if they do not exist
+            # Creating sub directories to store sample data
             try:
                 os.mkdir(os.path.join(dirName, sample_name))
-                logger.info("Directory Created: %s", os.path.join(dirName, sample_name))
+                logger.info("Directory Created: %s", os.path.join(dirName, sample_name)) 
             except FileExistsError:
                 logger.info("Directory already exists: %s", os.path.join(dirName, sample_name))
 
+            # Not including the control group in data dict 
+            # if sample_name != "Control":
             data[sample_name] = list()
-            for file_filename, replicate in replicates.items():
-                # Save the file
-                with open(os.path.join(dirName, sample_name, file_filename), 'wb') as f:
-                    f.write(replicate)
 
-                # Storing the filename in data dictionary
-                data[sample_name].append(file_filename)
+            files_to_save = {}
+            # First pass: Accumulate row counts
+            for sample_name, replicates in samples.items():
+                files_to_save[sample_name] = {}
 
-        # If control data is not uploaded, then deleting the sample from the data dictionary
-        temp = data.copy()
-        for sample_name, replicates in temp.items():
-            if len(replicates) == 0:
-                data.pop(sample_name)
+                for file_filename, file_content_base64 in replicates.items():
+                    replicate = base64.b64decode(file_content_base64)
 
-    # Samples and file uploaded
-    logger.info("Samples and files uploaded: %s", data)
+                    if file_filename != "":
+                        # Read the CSV content using pandas
+                        df = pd.read_csv(io.BytesIO(replicate))
 
-    valid_alleles_present, message = cross_check_the_allele(alleles_unformatted, ALLELE_DICTIONARY)
+                        # Count rows excluding the header
+                        row_count = len(df)
+                        total_peptides += row_count
 
-    if alleles_unformatted != "" and not valid_alleles_present:
-        raise Exception(f"Valid alleles not passed for the job.")
+                        # Store file information for potential saving
+                        files_to_save[sample_name][file_filename] = replicate
 
-    # saving motif length selected in a file
-    motif_length_file = open(os.path.join('app', 'static', 'images', taskId, "motif_length.txt"), "w")
-    motif_length_file.write(motif_length)
-    motif_length_file.close()
+            # Check if total peptides exceed the limit
+            if total_peptides > max_rows:
+                raise Exception(f"Total peptides {total_peptides} exceed the maximum allowed {max_rows}.")
 
-    # saving mhc class selected in a file
-    mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
-    mhcclass_selected_file.write(mhcclass)
-    mhcclass_selected_file.close()
+            # Second pass: Save files if within the limit
+            for sample_name, replicates in files_to_save.items():
+                # Create directories if they do not exist
+                try:
+                    os.mkdir(os.path.join(dirName, sample_name))
+                    logger.info("Directory Created: %s", os.path.join(dirName, sample_name))
+                except FileExistsError:
+                    logger.info("Directory already exists: %s", os.path.join(dirName, sample_name))
 
-    # Save allele compatibility matrix based on alleles and MHC class of preference selected.
-    # if alleles_unformatted != "":
-    # Split alleles only if alleles_unformatted is not an empty string
-    alleles = alleles_unformatted.split(',') if alleles_unformatted else []
+                data[sample_name] = list()
+                for file_filename, replicate in replicates.items():
+                    # Save the file
+                    with open(os.path.join(dirName, sample_name, file_filename), 'wb') as f:
+                        f.write(replicate)
 
-    # Convert predictionTools to a list of full names
-    predictionToolNames = [tool.full_name for tool in predictionTools]
+                    # Storing the filename in data dictionary
+                    data[sample_name].append(file_filename)
 
-    # Create the DataFrame with rows as prediction tools and columns as alleles
-    # If alleles is empty, DataFrame will have no columns
-    allele_compatibility_matrix = pd.DataFrame(index=predictionToolNames, columns=alleles if alleles else [])
+            # If control data is not uploaded, then deleting the sample from the data dictionary
+            temp = data.copy()
+            for sample_name, replicates in temp.items():
+                if len(replicates) == 0:
+                    data.pop(sample_name)
 
-    # Populate the DataFrame
-    for tool in predictionTools:
-        for allele in alleles:
-            match = ALLELE_DICTIONARY[
-                (ALLELE_DICTIONARY["Allele name standardised"] == allele) &
-                (ALLELE_DICTIONARY["Predictor"] == tool.full_name)
-            ]
-            allele_compatibility_matrix.at[tool.full_name, allele] = "Yes" if not match.empty else "No"
+        # Samples and file uploaded
+        logger.info("Samples and files uploaded: %s", data)
 
-    # Save the DataFrame to a CSV file
-    output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
-    allele_compatibility_matrix.to_csv(output_path, index=True)
+        valid_alleles_present, message = cross_check_the_allele(alleles_unformatted, ALLELE_DICTIONARY)
 
-    # Creating directories to store binding prediction results
-    for sample, replicates in data.items():
-        for predictionTool in predictionTools:
-            for replicate in replicates:
-                if alleles_unformatted != "":
-                    for allele in alleles_unformatted.split(','):
-                        try:
-                            if sample != 'Control':
+        if alleles_unformatted != "" and not valid_alleles_present:
+            raise Exception(f"Valid alleles not passed for the job.")
 
-                                # Path to store user friendly binders data
-                                path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4], 'binders',allele.replace(':', '_'))
+        # saving motif length selected in a file
+        motif_length_file = open(os.path.join('app', 'static', 'images', taskId, "motif_length.txt"), "w")
+        motif_length_file.write(motif_length)
+        motif_length_file.close()
 
-                                # Path to store raw binder tool output
-                                path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4],allele.replace(':', '_'))
-                            else:
-                                path = os.path.join('app', 'static', 'images', taskId, sample)
+        # saving mhc class selected in a file
+        mhcclass_selected_file = open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt"), "w")
+        mhcclass_selected_file.write(mhcclass)
+        mhcclass_selected_file.close()
 
-                            if not os.path.exists(path):
-                                # os.makedirs(directory)
-                                Path(path).mkdir(parents=True, exist_ok=True)
-                                print("Directory Created : {}".format(path))
+        # Save allele compatibility matrix based on alleles and MHC class of preference selected.
+        # if alleles_unformatted != "":
+        # Split alleles only if alleles_unformatted is not an empty string
+        alleles = alleles_unformatted.split(',') if alleles_unformatted else []
 
-                            if not os.path.exists(path_predictor_output):
-                                # os.makedirs(directory)
-                                Path(path_predictor_output).mkdir(parents=True, exist_ok=True)
-                                print("Directory Created : {}".format(path_predictor_output))
-                                
-                        except FileExistsError:
-                            print("Directory already exists {}".format(path))
-                
-    sample_data = {}
-    # control_data = {}
+        # Convert predictionTools to a list of full names
+        predictionToolNames = [tool.full_name for tool in predictionTools]
+
+        # Create the DataFrame with rows as prediction tools and columns as alleles
+        # If alleles is empty, DataFrame will have no columns
+        allele_compatibility_matrix = pd.DataFrame(index=predictionToolNames, columns=alleles if alleles else [])
+
+        # Populate the DataFrame
+        for tool in predictionTools:
+            for allele in alleles:
+                match = ALLELE_DICTIONARY[
+                    (ALLELE_DICTIONARY["Allele name standardised"] == allele) &
+                    (ALLELE_DICTIONARY["Predictor"] == tool.full_name)
+                ]
+                allele_compatibility_matrix.at[tool.full_name, allele] = "Yes" if not match.empty else "No"
+
+        # Save the DataFrame to a CSV file
+        output_path = os.path.join('app', 'static', 'images', taskId, "allele_compatibility_matrix.csv")
+        allele_compatibility_matrix.to_csv(output_path, index=True)
+
+        # Creating directories to store binding prediction results
+        for sample, replicates in data.items():
+            for predictionTool in predictionTools:
+                for replicate in replicates:
+                    if alleles_unformatted != "":
+                        for allele in alleles_unformatted.split(','):
+                            try:
+                                if sample != 'Control':
+
+                                    # Path to store user friendly binders data
+                                    path = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4], 'binders',allele.replace(':', '_'))
+
+                                    # Path to store raw binder tool output
+                                    path_predictor_output = os.path.join('app', 'static', 'images', taskId, sample, predictionTool.short_name, replicate[:-4],allele.replace(':', '_'))
+                                else:
+                                    path = os.path.join('app', 'static', 'images', taskId, sample)
+
+                                if not os.path.exists(path):
+                                    # os.makedirs(directory)
+                                    Path(path).mkdir(parents=True, exist_ok=True)
+                                    print("Directory Created : {}".format(path))
+
+                                if not os.path.exists(path_predictor_output):
+                                    # os.makedirs(directory)
+                                    Path(path_predictor_output).mkdir(parents=True, exist_ok=True)
+                                    print("Directory Created : {}".format(path_predictor_output))
+                                    
+                            except FileExistsError:
+                                print("Directory already exists {}".format(path))
+                    
+        sample_data = {}
+        # control_data = {}
+        
+        # Loading sample data in pandas frames
+        for sample_name, file_names in data.items():
+
+            sample_data[sample_name] = dict()
+            for replicate in file_names:
+                sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
+
+        # Have to later add the user input for length
+        for sample_name, sample in sample_data.items():
+            sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
+
+        # Saving 8 to 14 nmers for class one predictions or 12 to 20 for class two predictions
+        if mhcclass == MHC_Class.One:
+            minLenForPrediction = 8
+            maxLenForPrediction = 14
+        elif mhcclass == MHC_Class.Two:
+            minLenForPrediction = 12
+            maxLenForPrediction = 20
+
+        saveNmerData(dirName, sample_data, peptideLength=[minLenForPrediction,maxLenForPrediction], unique = True)
+
+        for i in range(minLenForPrediction,maxLenForPrediction+1):
+            saveNmerData(dirName, sample_data, peptideLength=i, unique = True)
     
-    # Loading sample data in pandas frames
-    for sample_name, file_names in data.items():
+        # Generating binding predictions
+        if alleles_unformatted!="":    
+            for predictionTool in predictionTools:
+                generateBindingPredictions(taskId, alleles_unformatted, predictionTool, ALLELE_DICTIONARY)
 
-        sample_data[sample_name] = dict()
-        for replicate in file_names:
-            sample_data[sample_name][replicate] = pd.read_csv(os.path.join(dirName, sample_name, replicate))
+        # Fetching the binders from the results
+        if alleles_unformatted!="":    
+            for predictionTool in predictionTools:
+                saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
 
-    # Have to later add the user input for length
-    for sample_name, sample in sample_data.items():
-        sample_data[sample_name] = filterPeaksFile(sample, minLen=minLen, maxLen=maxLen)
+            # Store majority voting results
+            # Calling method to generate csv file with Majority Voted binders
+            saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
+        
 
-    # Saving 8 to 14 nmers for class one predictions or 12 to 20 for class two predictions
-    if mhcclass == MHC_Class.One:
-        minLenForPrediction = 8
-        maxLenForPrediction = 14
-    elif mhcclass == MHC_Class.Two:
-        minLenForPrediction = 12
-        maxLenForPrediction = 20
+        # Do not generate Seq2Logo for Class II, if not Allele is selected
+        if mhcclass == MHC_Class.One or (mhcclass == MHC_Class.Two and alleles_unformatted != ''):
+            # Calling script to generate sequence logos
+            subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)
 
-    saveNmerData(dirName, sample_data, peptideLength=[minLenForPrediction,maxLenForPrediction], unique = True)
+        # Calling script to generate gibbsclusters
+        subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass, motif_length], shell=False)
 
-    for i in range(minLenForPrediction,maxLenForPrediction+1):
-        saveNmerData(dirName, sample_data, peptideLength=i, unique = True)
-   
-    # Generating binding predictions
-    if alleles_unformatted!="":    
-        for predictionTool in predictionTools:
-            generateBindingPredictions(taskId, alleles_unformatted, predictionTool, ALLELE_DICTIONARY)
+        # Run HLA-Clust to generate heatmap
+        if mhcclass == MHC_Class.One:
+            runHLAClust(taskId, data, species=species, logger=logger)
 
-    # Fetching the binders from the results
-    if alleles_unformatted!="":    
-        for predictionTool in predictionTools:
-            saveBindersData(taskId, alleles_unformatted, predictionTool, mhcclass)
+        # On job success
+            email = get_email(taskId)
+            if email:
+                logging.info(f"Found email '{email}' for completed task '{taskId}', attempting to send notification.")
+                try:
+                    send_email(email, taskId, success=True)
+                    logging.info(f"Email successfully sent to {email} for job {taskId}.")
+                except Exception as e:
+                    logging.error(f"Failed to send success email to {email} for job {taskId}: {e}")
+            else:
+                logging.info(f"No email found for task {taskId}; skipping email notification.")
 
-        # Store majority voting results
-        # Calling method to generate csv file with Majority Voted binders
-        saveMajorityVotedBinders(taskId, data, predictionTools, alleles_unformatted, ALLELE_DICTIONARY)
-    
+    except Exception as main_exception:
+        logging.error(f"Job {taskId} failed with error: {main_exception}")
 
-    # Do not generate Seq2Logo for Class II, if not Allele is selected
-    if mhcclass == MHC_Class.One or (mhcclass == MHC_Class.Two and alleles_unformatted != ''):
-        # Calling script to generate sequence logos
-        subprocess.check_call(['python3', os.path.join('app','seqlogo.py'), taskId, data_mount, motif_length], shell=False)
-
-    # Calling script to generate gibbsclusters
-    subprocess.check_call(['python3', os.path.join('app', 'gibbscluster.py'), taskId, data_mount, mhcclass, motif_length], shell=False)
-
-    # Run HLA-Clust to generate heatmap
-    if mhcclass == MHC_Class.One:
-        runHLAClust(taskId, data, species=species, logger=logger)
+        email = get_email(taskId)
+        if email:
+            try:
+                send_email(email, taskId, success=False)
+                logging.info(f"Failure email successfully sent to {email} for job {taskId}.")
+            except Exception as e:
+                logging.error(f"Failed to send failure email to {email} for job {taskId}: {e}")
+        else:
+            logging.info(f"No email found for task {taskId}; skipping failure notification.")
 
 @app.route("/analytics")
 def analytics():

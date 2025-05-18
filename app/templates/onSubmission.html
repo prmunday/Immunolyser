@@ -13,39 +13,71 @@
     </div>
 </div>
 
+<div id="emailSection" class="mt-3" style="display: none;">
+    <input type="email" id="emailInput" class="form-control" placeholder="Enter your email for notification">
+    <button class="btn btn-secondary mt-2" onclick="submitEmail()">Submit Email</button>
+</div>
+
 <script>
-    function checkStatus() {
-        const jobId = '{{ message.split("Task ID is ")[1] }}';  // Extract the job ID from the message
-        fetch(`/check_status/${jobId}`)
-            .then(response => response.json())
-            .then(data => {
-                const btn = document.getElementById('checkStatusBtn');
-                const statusMessage = document.getElementById('statusMessage');
-                
-                btn.classList.remove('btn-primary', 'btn-success', 'btn-danger', 'btn-warning'); // Ensure old classes are removed
-                
-                if (data.status === 'success') {
-                    btn.classList.add('btn-success');
-                    btn.innerText = 'Success';
-                    statusMessage.innerHTML = `
-                        <button class="btn btn-primary mr-2" onclick="openReport('${jobId}')">Open Report</button>
-                        <button class="btn btn-primary" onclick="copyToClipboard('${window.location.origin}/${jobId}')">Copy Link</button>
-                    `;
-                } else if (data.status === 'failure') {
-                    btn.classList.add('btn-danger');
-                    btn.innerText = 'Failure';
-                    
-                    // Directly pass the traceback to the modal, ensuring it is URL-encoded
-                    statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${encodeURIComponent(data.traceback)}')">Click to see trace</button>`;
-                } else if (data.status === 'pending') {
-                    btn.classList.add('btn-warning');
-                    btn.innerText = 'Processing';
-                    statusMessage.innerText = 'Status: Processing';
-                } else {
-                    statusMessage.innerText = `Status: ${data.status}`;
-                }
-            });
+function checkStatus() {
+    const jobId = '{{ message.split("Task ID is ")[1] }}';
+    fetch(`/check_status/${jobId}`)
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('checkStatusBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            const emailSection = document.getElementById('emailSection');
+
+            btn.classList.remove('btn-primary', 'btn-success', 'btn-danger', 'btn-warning');
+
+            if (data.status === 'success') {
+                btn.classList.add('btn-success');
+                btn.innerText = 'Success';
+                statusMessage.innerHTML = `
+                    <button class="btn btn-primary mr-2" onclick="openReport('${jobId}')">Open Report</button>
+                    <button class="btn btn-primary" onclick="copyToClipboard('${window.location.origin}/${jobId}')">Copy Link</button>
+                `;
+                emailSection.style.display = 'none';
+            } else if (data.status === 'failure') {
+                btn.classList.add('btn-danger');
+                btn.innerText = 'Failure';
+                statusMessage.innerHTML = `<button class="btn btn-danger" onclick="showTraceback('${encodeURIComponent(data.traceback)}')">Click to see trace</button>`;
+                emailSection.style.display = 'none';
+            } else if (data.status === 'pending') {
+                btn.classList.add('btn-warning');
+                btn.innerText = 'Processing';
+                statusMessage.innerText = 'Status: Processing';
+                emailSection.style.display = 'block';  // Show only if still processing
+            } else {
+                statusMessage.innerText = `Status: ${data.status}`;
+                emailSection.style.display = 'block';
+            }
+        });
 }
+
+function submitEmail() {
+    const email = document.getElementById('emailInput').value;
+    const jobId = '{{ message.split("Task ID is ")[1] }}';
+
+    // Basic client-side email validation
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        alert('Invalid email address!');
+        return;
+    }
+
+    fetch(`/submit_email/${jobId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    }).then(res => {
+        if (res.ok) {
+            document.getElementById('emailSection').innerHTML = '<div class="text-success">Email submitted successfully!</div>';
+        } else {
+            alert('Error submitting email.');
+        }
+    });
+}
+
 
     function openReport(jobId) {
         window.open(`/${jobId}`, '_blank');
