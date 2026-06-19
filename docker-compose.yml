@@ -1,36 +1,84 @@
+# Immunolyser — Docker Compose
+#
+# Works for both modes:
+#   Server:     set DATA_VOLUME=/pvol and IS_DOCKER=true in .env
+#   Local user: defaults (./data) are used automatically
+#
+# Usage:
+#   docker compose up --build        # first run
+#   docker compose up -d             # subsequent runs
+#   docker compose down              # stop
+
 services:
-  flask:
+  flask_app:
     build: .
     container_name: flask_app
-    ports:
-      - "5001:5000"
-    environment:
-      - IMMUNOLYSER_DATA=/data
-      - IS_DOCKER=true
-    volumes:
-      - ./data_files:/data
-      - ./tools:/tools
-      - ./data_files_2:/app/Immunolyser/app/static/images
+    restart: unless-stopped
     command: ["flask"]
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${DATA_VOLUME:-./data}:/pvol
+    env_file: .env
+    environment:
+      - IS_DOCKER=true
+      - IMMUNOLYSER_DATA=/pvol
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    networks:
+      - internal
+      - web
 
-  celery:
+  celery_worker:
     build: .
     container_name: celery_worker
-    environment:
-      - IMMUNOLYSER_DATA=/data
-      - IS_DOCKER=true
-    volumes:
-      - ./data_files:/data
-      - ./tools:/tools
-      - ./data_files_2:/app/Immunolyser/app/static/images
+    restart: unless-stopped
     command: ["celery"]
+    volumes:
+      - ${DATA_VOLUME:-./data}:/pvol
+    env_file: .env
+    environment:
+      - IS_DOCKER=true
+      - IMMUNOLYSER_DATA=/pvol
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 32G
+    networks:
+      - internal
 
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - "6380:6379"
+    restart: unless-stopped
+    # Port not exposed to host — flask_app and celery_worker reach it via the
+    # internal network using the service name "redis" (see config.py IS_DOCKER branch)
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    driver: bridge

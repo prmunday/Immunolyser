@@ -1,173 +1,128 @@
-FROM python:3.12-slim
+FROM python:3.12-slim-bookworm
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Install build tools, R, tcsh, and other required dependencies
-RUN apt-get update && apt-get install -y \
-    bash \
-    git \
-    tar \
-    build-essential \
-    wget \
-    libssl-dev \
-    libbz2-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    zlib1g-dev \
-    sqlite3 \
-    r-base \
-    man-db \
-    ncompress \
-    tcsh \
-    && \
-    wget https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs926/ghostscript-9.26.tar.gz && \
-    tar -xzf ghostscript-9.26.tar.gz && \
-    cd ghostscript-9.26 && \
-    ./configure && make && make install && \
-    pip3 install --no-cache-dir gdown && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# ── Layer 1: OS dependencies ────────────────────────────────────────────────
+# apt-get upgrade -y resolves the bulk of SCA/SCD CVE findings from Checkmarx
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+    bash git wget curl unzip tar \
+    build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev \
+    sqlite3 r-base ncompress tcsh perl \
+    fonts-urw-base35 gsfonts \
+  && rm -rf /var/lib/apt/lists/*
 
-# Clone the repository and checkout the develop branch in one go
-RUN git clone --branch develop --single-branch https://github.com/prmunday/Immunolyser /app/Immunolyser
+# ── Layer 2: Python 2.7 (required by seq2logo and some legacy tool helpers) ─
+# Debian bookworm dropped python2 from main repos — compile from source
+RUN wget -q https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz \
+  && tar xf Python-2.7.18.tgz \
+  && cd Python-2.7.18 \
+  && ./configure --prefix=/usr/local/python2 > /dev/null \
+  && make -j"$(nproc)" > /dev/null \
+  && make install > /dev/null \
+  && cd .. && rm -rf Python-2.7.18 Python-2.7.18.tgz \
+  && ln -sf /usr/local/python2/bin/python2 /usr/local/bin/python2
 
-# Change to the repository directory
-WORKDIR /app/Immunolyser
+RUN wget -q https://bootstrap.pypa.io/pip/2.7/get-pip.py \
+  && python2 get-pip.py > /dev/null && rm get-pip.py \
+  && python2 -m pip install --quiet numpy matplotlib
 
-# Copy the seq2logo tar.gz file from the local tools folder to the container
-COPY app/tools/seq2logo-2.1.all.tar.gz /app/Immunolyser/app/tools/
+# ── Layer 3: Ghostscript 9.53.3 pre-built binary ──────────────────────────
+# System gs (9.06) has a font rendering bug — must use 9.53.3
+RUN wget -q https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz \
+  && tar -xzf ghostscript-9.53.3-linux-x86_64.tgz -C /app/app/tools/ \
+  && rm ghostscript-9.53.3-linux-x86_64.tgz \
+  && chmod +x /app/app/tools/ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64
 
-# Create a tools directory and extract the tar.gz file there
-RUN mkdir -p /app/Immunolyser/app/tools && \
-    tar -xzf /app/Immunolyser/app/tools/seq2logo-2.1.all.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/seq2logo-2.1.all.tar.gz
+# ── Layer 4: App code ───────────────────────────────────────────────────────
+COPY . .
 
-# Copy the gibbscluster tar.gz file to the container
-COPY app/tools/gibbscluster-2.0f.Linux.tar.gz /app/Immunolyser/app/tools/
+# ── Layer 5: seq2logo and GibbsCluster (tarballs in repo) ──────────────────
+RUN tar -xzf app/tools/seq2logo-2.1.all.tar.gz -C app/tools/ \
+  && rm app/tools/seq2logo-2.1.all.tar.gz
 
-# Extract gibbscluster tar.gz
-RUN mkdir -p /app/Immunolyser/app/tools && \
-    tar -xvf /app/Immunolyser/app/tools/gibbscluster-2.0f.Linux.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/gibbscluster-2.0f.Linux.tar.gz
+RUN tar -xvf app/tools/gibbscluster-2.0f.Linux.tar.gz -C app/tools/ \
+  && rm app/tools/gibbscluster-2.0f.Linux.tar.gz
 
-# Update GIBBS path in the gibbscluster file
-RUN sed -i 's|setenv\s*GIBBS .*|setenv GIBBS /app/Immunolyser/app/tools/gibbscluster-2.0|' /app/Immunolyser/app/tools/gibbscluster-2.0/gibbscluster
+# Patch GibbsCluster GIBBS path
+RUN sed -i 's|setenv GIBBS .*|setenv GIBBS /app/app/tools/gibbscluster-2.0|' \
+    app/tools/gibbscluster-2.0/gibbscluster
 
-# Comment out the line containing '$resdir .= "/$prefix";' in GibbsCluster-2.0e_SA.pl; command update for seq2logo and gibbs
+# Patch seq2logo to use bundled Ghostscript 9.53.3
+RUN sed -i "s|gsPath='gs'|gsPath='/app/app/tools/ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64'|" \
+    app/tools/seq2logo-2.1/Seq2Logo.py
+
+# Apply GibbsCluster SA script patches (output path + seqlogo command)
 RUN sed -i \
-    -e 's|^\(\s*\$resdir .= "/\$prefix";\)|# \1  # Comment or remove this line|' \
+    -e 's|^\(\s*\$resdir .= "/\$prefix";\)|# \1  # removed prefix from output path|' \
     -e 's|^\(my \$barplot = "\$resdir/images/\$prefix.gibbs.KLDvsCluster.barplot.png";\)|my \$barplot = "\$resdir/images/gibbsKLDvsCluster.barplot.JPG";|' \
     -e '530s@.*@$cmd .= "$seq2logo -f $corefile -o $logofile -I 2 --format [JPEG] -b $wlc -C 2 -S 2 -t $title \&>/dev/null; ";@' \
-    /app/Immunolyser/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
+    app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl
 
-# Copy the netMHCpan tar.gz file to the container
-COPY app/tools/netMHCpan-4.2c.Linux.tar.gz /app/Immunolyser/app/tools/
+# ── Layer 6: Licensed tools (netMHCpan / netMHCIIpan) ──────────────────────
+# IMPORTANT: These tools require a DTU academic license.
+# Download from https://services.healthtech.dtu.dk/software.php and place the
+# tarballs in app/tools/ BEFORE running docker build.
+# If the tarballs are absent the build continues and those prediction methods
+# will be unavailable at runtime.
+RUN if [ -f app/tools/netMHCpan-4.2c.Linux.tar.gz ]; then \
+      gunzip -c app/tools/netMHCpan-4.2c.Linux.tar.gz | tar xf - -C app/tools/ \
+      && mkdir -p app/tools/netMHCpan-4.2/tmp \
+      && sed -i 's|setenv  *NMHOME  *[^ ]*|setenv NMHOME /app/app/tools/netMHCpan-4.2|g' \
+             app/tools/netMHCpan-4.2/netMHCpan \
+      && sed -i 's|setenv  *TMPDIR  *[^ ]*|setenv TMPDIR /app/app/tools/netMHCpan-4.2/tmp|g' \
+             app/tools/netMHCpan-4.2/netMHCpan \
+      && rm app/tools/netMHCpan-4.2c.Linux.tar.gz; \
+    else echo "WARNING: netMHCpan-4.2c.Linux.tar.gz not found — netMHCpan will be unavailable"; fi
 
-# Uncompress and untar the netMHCpan package
-RUN mkdir -p /app/Immunolyser/app/tools && \
-    cat /app/Immunolyser/app/tools/netMHCpan-4.2c.Linux.tar.gz | gunzip | tar xvf - -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCpan-4.2c.Linux.tar.gz && \
-    mkdir -p /app/Immunolyser/app/tools/netMHCpan-4.2/tmp
+RUN if [ -f app/tools/netMHCIIpan-4.3j.Linux.tar.gz ]; then \
+      tar -xvf app/tools/netMHCIIpan-4.3j.Linux.tar.gz -C app/tools/ \
+      && mkdir -p app/tools/netMHCIIpan-4.3/tmp \
+      && sed -i 's|setenv  *NMHOME  *[^ ]*|setenv NMHOME /app/app/tools/netMHCIIpan-4.3|g' \
+             app/tools/netMHCIIpan-4.3/netMHCIIpan \
+      && rm app/tools/netMHCIIpan-4.3j.Linux.tar.gz; \
+    else echo "WARNING: netMHCIIpan-4.3j.Linux.tar.gz not found — netMHCIIpan will be unavailable"; fi
 
-# Copy the netMHCIIpan tar.gz file to the container
-COPY app/tools/netMHCIIpan-4.3j.Linux.tar.gz /app/Immunolyser/app/tools/
+# ── Layer 7: MixMHCpred and MixMHC2pred ────────────────────────────────────
+RUN wget -q https://github.com/GfellerLab/MixMHCpred/archive/refs/tags/v3.0.tar.gz -O /tmp/mixmhcpred.tar.gz \
+  && tar -xzf /tmp/mixmhcpred.tar.gz -C app/tools/ \
+  && mv app/tools/MixMHCpred-3.0 app/tools/MixMHCpred \
+  && chmod +x app/tools/MixMHCpred/MixMHCpred \
+  && rm /tmp/mixmhcpred.tar.gz
 
-# Uncompress and untar the netMHCIIpan package
-RUN mkdir -p /app/Immunolyser/app/tools && \
-    tar -xvf /app/Immunolyser/app/tools/netMHCIIpan-4.3j.Linux.tar.gz -C /app/Immunolyser/app/tools && \
-    rm /app/Immunolyser/app/tools/netMHCIIpan-4.3j.Linux.tar.gz && \
-    man -d /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.1 | compress > /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan.Z
+RUN wget -q https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -O /tmp/mixmhc2pred.zip \
+  && unzip -q /tmp/mixmhc2pred.zip -d app/tools/ \
+  && chmod +x app/tools/MixMHC2pred-2.0/MixMHC2pred_unix \
+  && rm /tmp/mixmhc2pred.zip
 
-# Update netMHCIIpan configuration to use the correct NMHOME path
-RUN sed -i 's|setenv\s*NMHOME\s*/tools/src/netMHCIIpan-4.3|setenv NMHOME ${PWD}/app/tools/netMHCIIpan-4.3|' \
-    /app/Immunolyser/app/tools/netMHCIIpan-4.3/netMHCIIpan
+# ── Layer 8: HLA-PepClust (MHC-TP) ─────────────────────────────────────────
+# Clone into HLA-PepClust/ — this directory name is hardcoded in app/utils.py
+RUN git clone --depth 1 --branch immunolyser/class2-mhctp \
+      https://github.com/PurcellLab/MHC-TP.git app/tools/HLA-PepClust \
+  && cd app/tools/HLA-PepClust \
+  && python3 -m venv hlapepclust-env \
+  && hlapepclust-env/bin/pip install --quiet -e .
 
-# Update netMHCpan configuration to use the correct NMHOME and TMPDIR paths
-RUN sed -i \
-    -e 's|setenv\s*NMHOME\s*/tools/src/netMHCpan-4.2|setenv NMHOME ${PWD}/app/tools/netMHCpan-4.2|' \
-    -e 's|setenv\s*TMPDIR\s*/tmp|setenv TMPDIR $NMHOME/tmp|' \
-    /app/Immunolyser/app/tools/netMHCpan-4.2/netMHCpan
+# ── Layer 9: Python 3 virtualenv + app dependencies ────────────────────────
+ENV MHCFLURRY_DATA_PATH=/app/.mhcflurry
 
-# Clone MixMHCpred repository
-RUN git clone https://github.com/GfellerLab/MixMHCpred.git /app/Immunolyser/app/tools/MixMHCpred && \
-    chmod +x /app/Immunolyser/app/tools/MixMHCpred/MixMHCpred
+RUN python3 -m venv lenv \
+  && lenv/bin/pip install --quiet --upgrade pip \
+  && lenv/bin/pip install --quiet -r requirements_python3.txt \
+  && lenv/bin/mhcflurry-downloads fetch
 
-RUN wget https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -P /app/Immunolyser/app/tools && \
-    unzip -o /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip -d /app/Immunolyser/app/tools/MixMHC2pred-2.0 && \
-    rm /app/Immunolyser/app/tools/MixMHC2pred-2.0.zip
+# Run any hotfix patching needed after package install
+RUN lenv/bin/python hotfix_package_files.py 2>/dev/null || true
 
-# Download Alleles_list_Mouse.txt and put it in PWMdef directory
-RUN wget http://ec2-18-188-210-66.us-east-2.compute.amazonaws.com:4000/data/Alleles_lists/Alleles_list_Mouse.txt -P /app/Immunolyser/app/tools/MixMHC2pred-2.0/PWMdef
+# ── Layer 10: Non-root user (fixes IaC/CON findings) ───────────────────────
+RUN useradd -m --uid 1000 appuser \
+  && chown -R appuser:appuser /app
 
-# Clone MHC-TP and switch to netmhcpan-data-update-2025 branch
-RUN git clone https://github.com/PurcellLab/MHC-TP.git /app/Immunolyser/app/tools/HLA-PepClust && \
-    cd /app/Immunolyser/app/tools/HLA-PepClust && \
-    git fetch origin netmhcpan-data-update-2025 && \
-    git checkout netmhcpan-data-update-2025
+USER appuser
 
-# Set up Python 3.11 virtual environment and install the package
-RUN cd /app/Immunolyser/app/tools/HLA-PepClust && \
-    python3 -m venv hlapepclust-env && \
-    /bin/bash -c "source hlapepclust-env/bin/activate && pip install -e . && deactivate"
+# ── Healthcheck (fixes IaC finding) ─────────────────────────────────────────
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+  CMD curl -f http://localhost:5000/healthz || exit 1
 
-# Download the large ref_data zip file and unzip it
-RUN mkdir -p /app/Immunolyser/app/tools/HLA-PepClust/data/ref_data && \
-    cd /app/Immunolyser/app/tools/HLA-PepClust/data/ref_data && \
-    python3 -m gdown 'https://drive.google.com/uc?id=1iAAvir1woMOnURkP46zr_ETqpW2oUgGD' && \
-    unzip Gibbs_motifs_human.zip && \
-    rm Gibbs_motifs_human.zip
-
-# Install mhcflurry
-RUN pip install mhcflurry
-
-# Fetch mhcflurry downloads
-RUN mhcflurry-downloads fetch
-
-# Create a virtual environment for Python 3
-RUN python3 -m venv lenv
-
-# Install dependencies for Python 2 and Python 3
-RUN /bin/bash -c "source lenv/bin/activate && \
-    pip install -r requirements_python2.txt && \
-    pip install -r requirements_python3.txt"
-
-# Install Celery, sqlacheny
-RUN /bin/bash -c "pip install celery"
-RUN /bin/bash -c "pip install SQLAlchemy==2.0.31"
-
-# Run the hotfix script
-RUN /bin/bash -c "python hotfix_package_files.py"
-
-# Download and extract Python 2.7.18
-RUN wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && \
-    tar xvf Python-2.7.18.tgz
-
-# Build and install Python 2.7.18
-WORKDIR /app/Immunolyser/Python-2.7.18
-RUN ./configure && \
-    make && \
-    make install
-
-# Install pip for Python 2.7
-RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
-    python2 get-pip.py
-
-# Install numpy for Python 2.7
-RUN python2 -m pip install numpy
-
-# Change to the repository directory
-WORKDIR /app/Immunolyser
-
-# Expose Flask and Celery ports
 EXPOSE 5000
-EXPOSE 5555
 
-# Set a default environment variable for IMMUNOLYSER_DATA
-ENV IMMUNOLYSER_DATA=/data
-
-# Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Set the entrypoint script
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

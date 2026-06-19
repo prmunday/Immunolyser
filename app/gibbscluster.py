@@ -1,6 +1,6 @@
 import sys
 import os
-from subprocess import call
+import subprocess
 
 # Get command-line arguments
 task_id = sys.argv[1]
@@ -40,7 +40,6 @@ if mhc_class == "I":
 
     input_file_ends_with = '_8to14mer.txt'
 
-    # Command to run GibbsCluster for MHC Class I
     for sample in os.listdir(task_path):
         sample_path = os.path.join(task_path, sample)
         if not os.path.isdir(sample_path):
@@ -48,35 +47,37 @@ if mhc_class == "I":
         for replicate in os.listdir(sample_path):
             if replicate.endswith(input_file_ends_with):
                 print('Replicate file:', replicate)
-                gibbs_command = (
-                    f'perl {project_root}/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl '
-                    f'-f {sample_path}/{replicate} '
-                    f'-H R '
-                    f'-G {seq2logo_path} '
-                    f'-g {num_clusters} '  # 1-5 clusters
-                    f'-k {os.cpu_count()} '
-                    f'-T -C -l {motif_length} '
-                    f'-R {project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-13]} '
-                    f'-i {num_iterations} '
-                    f'-t {mc_temperature} '
-                    f'-n {num_temp_steps} '
-                    f'-b {penalty_lambda} '
-                    f'-q {small_cluster_weight} '
-                    f'-S {num_seeds} '
-                    f'-c {sequence_weighting_type} '
-                    f'-z {background_model} '
-                    f'-T {use_trash_cluster} '
-                    f'-j {trash_cluster_threshold} '
-                    f'-D {max_deletion_length} '
-                    f'-I {max_insertion_length} '
-                    f'-u {indel_move_interval} '
-                    f'-x {shift_move_interval} '
-                    f'-s {phase_shift_move_interval} '
-                    f'-p {hydrophobic_p1_preference} '
-                )
-                
-                print("Gibbs Command for MHC Class I:", gibbs_command)
-                print(os.popen(gibbs_command).read())
+                cmd = [
+                    'perl', f'{project_root}/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl',
+                    '-f', f'{sample_path}/{replicate}',
+                    '-H', 'R',
+                    '-G', seq2logo_path,
+                    '-g', num_clusters,
+                    '-k', str(os.cpu_count()),
+                    '-T', '-C', '-l', str(motif_length),
+                    '-R', f'{project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-13]}',
+                    '-i', num_iterations,
+                    '-t', mc_temperature,
+                    '-n', num_temp_steps,
+                    '-b', penalty_lambda,
+                    '-q', small_cluster_weight,
+                    '-S', num_seeds,
+                    '-c', sequence_weighting_type,
+                    '-z', background_model,
+                    '-T', use_trash_cluster,
+                    '-j', trash_cluster_threshold,
+                    '-D', max_deletion_length,
+                    '-I', max_insertion_length,
+                    '-u', indel_move_interval,
+                    '-x', shift_move_interval,
+                    '-s', phase_shift_move_interval,
+                    '-p', hydrophobic_p1_preference,
+                ]
+                print("Gibbs Command for MHC Class I:", ' '.join(cmd))
+                result = subprocess.run(cmd, shell=False, capture_output=True, text=True)
+                print(result.stdout)
+                if result.returncode != 0:
+                    print(result.stderr, file=sys.stderr)
 
 # Command for MHC class II
 elif mhc_class == "II":
@@ -85,12 +86,10 @@ elif mhc_class == "II":
     indel_move_interval = '20'  # For Class II, different move interval
     shift_move_interval = '20'  # Shift moves are activated
     phase_shift_move_interval = '100'  # Phase shift interval for Class II
-    hydrophobic_p1_preference = '1'  # Class II specific (could be 1 or a different preference)
-    arg_C = ''
+    hydrophobic_p1_preference = '1'  # Class II specific
 
     input_file_ends_with = '_12to20mer.txt'
 
-    # Command to run GibbsCluster for MHC Class II
     for sample in os.listdir(task_path):
         sample_path = os.path.join(task_path, sample)
         if not os.path.isdir(sample_path):
@@ -98,32 +97,34 @@ elif mhc_class == "II":
         for replicate in os.listdir(sample_path):
             if replicate.endswith(input_file_ends_with):
                 print('Replicate file:', replicate)
-                gibbs_command = (
-                    f'perl {project_root}/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl '
-                    f'-f {sample_path}/{replicate} '
-                    f'-H R '
-                    f'-G {seq2logo_path} '
-                    f'-g {num_clusters} '  # 1-5 clusters
-                    f'-k {os.cpu_count()} '
-                    f'-T {arg_C} -l {motif_length} '  # No -C for Class II
-                    f'-R {project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-14]} '
-                    f'-i {num_iterations} '
-                    f'-t {mc_temperature} '
-                    f'-n {num_temp_steps} '
-                    f'-b {penalty_lambda} '
-                    f'-q {small_cluster_weight} '
-                    f'-S {num_seeds} '
-                    f'-c {sequence_weighting_type} '
-                    f'-z {background_model} '
-                    f'-T {use_trash_cluster} '
-                    f'-j {trash_cluster_threshold} '
-                    f'-D {max_deletion_length} '
-                    f'-I {max_insertion_length} '
-                    f'-u {indel_move_interval} '
-                    f'-x {shift_move_interval} '
-                    f'-s {phase_shift_move_interval} '
-                    f'-p {hydrophobic_p1_preference} '
-                )
-                
-                print("Gibbs Command for MHC Class II:", gibbs_command)
-                print(os.popen(gibbs_command).read())
+                cmd = [
+                    'perl', f'{project_root}/app/tools/gibbscluster-2.0/GibbsCluster-2.0e_SA.pl',
+                    '-f', f'{sample_path}/{replicate}',
+                    '-H', 'R',
+                    '-G', seq2logo_path,
+                    '-g', num_clusters,
+                    '-k', str(os.cpu_count()),
+                    '-T', '-l', str(motif_length),
+                    '-R', f'{project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-14]}',
+                    '-i', num_iterations,
+                    '-t', mc_temperature,
+                    '-n', num_temp_steps,
+                    '-b', penalty_lambda,
+                    '-q', small_cluster_weight,
+                    '-S', num_seeds,
+                    '-c', sequence_weighting_type,
+                    '-z', background_model,
+                    '-T', use_trash_cluster,
+                    '-j', trash_cluster_threshold,
+                    '-D', max_deletion_length,
+                    '-I', max_insertion_length,
+                    '-u', indel_move_interval,
+                    '-x', shift_move_interval,
+                    '-s', phase_shift_move_interval,
+                    '-p', hydrophobic_p1_preference,
+                ]
+                print("Gibbs Command for MHC Class II:", ' '.join(cmd))
+                result = subprocess.run(cmd, shell=False, capture_output=True, text=True)
+                print(result.stdout)
+                if result.returncode != 0:
+                    print(result.stderr, file=sys.stderr)

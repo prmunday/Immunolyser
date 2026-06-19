@@ -4,45 +4,40 @@ set -e
 # Activate virtual environment
 source lenv/bin/activate
 
-# DB path
+# DB init (Python-based — keeps schema in sync with job_registry.py / email_registry.py)
 DB_FILE="${IMMUNOLYSER_DATA}/results.sqlite"
-
-# Only Flask initializes the database
 if [ "$1" = "flask" ]; then
     if [ ! -f "$DB_FILE" ]; then
-        echo "Creating new SQLite database at $DB_FILE"
-        sqlite3 "$DB_FILE" <<SQL
-CREATE TABLE IF NOT EXISTS email_registry (
-    job_id TEXT PRIMARY KEY,
-    email TEXT,
-    job_name TEXT
-);
-
-CREATE TABLE IF NOT EXISTS job_registry (
-    job_id TEXT PRIMARY KEY,
-    ip_address TEXT,
-    user_agent TEXT,
-    mhc_class TEXT,
-    species TEXT,
-    alleles TEXT,
-    status TEXT,
-    submission_time TEXT,
-    completed_time TEXT,
-    error_message TEXT,
-    country TEXT,
-    referrer TEXT
-);
-SQL
+        echo "Initialising SQLite database at $DB_FILE ..."
+        python3 -c "
+from app.job_registry import init_job_registry
+from app.email_registry import init_email_registry
+init_job_registry()
+init_email_registry()
+print('Database initialised.')
+"
     else
-        echo "Database already exists at $DB_FILE, skipping creation"
+        echo "Database already exists at $DB_FILE"
     fi
+
+    # Warn about missing licensed tools (non-fatal)
+    for tool in \
+        "app/tools/netMHCpan-4.2/netMHCpan:netMHCpan 4.2" \
+        "app/tools/netMHCIIpan-4.3/netMHCIIpan:netMHCIIpan 4.3"; do
+        path="${tool%%:*}"
+        name="${tool##*:}"
+        if [ ! -f "$path" ]; then
+            echo "WARNING: $name not found at $path — predictions using this tool will fail."
+            echo "         See app/tools/README.md for download instructions."
+        fi
+    done
 fi
 
 # Run the service
 if [ "$1" = "flask" ]; then
-    gunicorn --workers 2 --bind 0.0.0.0:5000 --timeout 120 firstdemo:app
+    exec gunicorn --workers 2 --bind 0.0.0.0:5000 --timeout 120 firstdemo:app
 elif [ "$1" = "celery" ]; then
-    celery -A app.celery worker --loglevel=info --concurrency=1
+    exec celery -A app.celery worker --loglevel=info --concurrency=1
 else
     exec "$@"
 fi

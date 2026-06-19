@@ -1,0 +1,14 @@
+.env
+.git
+.github
+__pycache__
+*.pyc
+*.pyo
+lenv/
+*.egg-info/
+.pytest_cache/
+node_modules/
+data_files/
+data_files_2/
+/pvol/
+*.log

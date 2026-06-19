@@ -42,3 +42,7 @@ class Config(object):
     MAX_SAMPLES = 10
     MAX_TOTAL_PEPTIDES = 300000000000000000000000
     MAX_ALLELES = 6
+
+    # reCAPTCHA v3 (leave blank to disable — useful for local dev)
+    RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
+    RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')

@@ -52,6 +52,10 @@ def get_country_from_request(request):
     except Exception:
         return "Unknown"
 
+@app.route("/healthz")
+def healthz():
+    return "ok", 200
+
 @app.route('/submit_email/<job_id>', methods=['POST'])
 def submit_email(job_id):
     data = request.get_json()
@@ -228,15 +232,38 @@ def initialiser():
 
     if request.method == 'GET':
         # Handle GET request
-        return render_template("initialiser.html", 
+        return render_template("initialiser.html",
                                 initialiser=True,
                                 sample_name_max_length=app.config['SAMPLE_NAME_MAX_LENGTH'],
                                 max_samples=app.config['MAX_SAMPLES'],
                                 max_total_peptides=app.config['MAX_TOTAL_PEPTIDES'],
-                                max_alleles=app.config['MAX_ALLELES'])
-    
+                                max_alleles=app.config['MAX_ALLELES'],
+                                recaptcha_site_key=app.config['RECAPTCHA_SITE_KEY'])
+
     elif request.method == 'POST':
         # Handle POST request
+
+        # reCAPTCHA v3 verification.
+        # In production (DEBUG=False) CAPTCHA is mandatory — a missing secret key
+        # means misconfiguration and we block the submission rather than silently
+        # letting bots through. In debug mode we skip so local dev still works.
+        recaptcha_secret = app.config.get('RECAPTCHA_SECRET_KEY', '')
+        if not recaptcha_secret and not app.config.get('DEBUG', False):
+            logger.error("RECAPTCHA_SECRET_KEY is not set in production — blocking submission")
+            return "Service misconfigured. Please contact the administrator.", 503
+        if recaptcha_secret:
+            token = request.form.get('g-recaptcha-response', '')
+            try:
+                rv = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
+                    'secret': recaptcha_secret,
+                    'response': token,
+                    'remoteip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                }, timeout=5).json()
+            except Exception:
+                rv = {}
+            if not rv.get('success') or rv.get('score', 0) < 0.5:
+                logger.warning("reCAPTCHA failed: %s", rv)
+                return "Bot detection failed. Please try again.", 403
 
         # Create list of sample names and the files information
         samples = {}
@@ -256,7 +283,13 @@ def initialiser():
 
         # Raise error if no samples uploaded
         if len(samples) == 0:
-            return f"No Sample uploaded!"
+            return "No Sample uploaded!", 400
+
+        # Enforce safe sample names before queuing — reject at the boundary
+        for sample_name in samples:
+            is_valid, message = validate_sample_name(sample_name)
+            if not is_valid:
+                return f"Invalid sample name '{escape(sample_name)}': {escape(message)}", 400
 
     #         filename = secure_filename(file.filename)
     # file_content = file.read()  # R
@@ -821,7 +854,7 @@ def createGibbsBar():
     cluster = request.form['cluster']
     taskId = request.form['taskId']
     if is_valid_uuid(taskId) == False:
-        return f"The ID '{taskId}' is not a valid task ID."
+        return f"The ID '{escape(taskId)}' is not a valid task ID.", 400
     replicate = request.form['replicate']
     sample = request.form['sample']
 
@@ -876,7 +909,7 @@ def getBinders():
     tool = request.form['tool']
     taskId = request.form['taskId']
     if is_valid_uuid(taskId) == False:
-        return f"The ID '{taskId}' is not a valid task ID."
+        return f"The ID '{escape(taskId)}' is not a valid task ID.", 400
     allele = request.form['allele']
     listonly = request.form['list']
     replicates = request.form['replicates']
@@ -1043,7 +1076,7 @@ def getOverLapPeptides():
 
     taskId = request.form['taskId']
     if is_valid_uuid(taskId) == False:
-        return f"The ID '{taskId}' is not a valid task ID."
+        return f"The ID '{escape(taskId)}' is not a valid task ID.", 400
     replicates = request.form['replicates']
 
     res = []
@@ -1089,7 +1122,7 @@ def download_overlap_peptides():
     selected_samples = request.form.getlist('samples[]')
 
     if not is_valid_uuid(task_id):
-        return f"The ID '{task_id}' is not a valid task ID.", 400
+        return f"The ID '{escape(task_id)}' is not a valid task ID.", 400
 
     peptide_sets = {}
     safe_base = os.path.realpath(os.path.join(data_mount, task_id))
@@ -1129,8 +1162,8 @@ def getSeqLogo():
 
     taskId = request.form['taskId']    
     if is_valid_uuid(taskId) == False:
-        return f"The ID '{taskId}' is not a valid task ID."
-    
+        return f"The ID '{escape(taskId)}' is not a valid task ID.", 400
+
     # MHC Class of Interest
     with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
         mhcclass = f.readline()

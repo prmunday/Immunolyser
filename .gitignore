@@ -1,5 +1,6 @@
 .playwright-mcp/
 app/tools
+!app/tools/README.md
 app/static/images
 .env
 app/__pycache__/*

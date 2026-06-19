@@ -6,7 +6,8 @@
 <br>
 
 <div class="container">
-	<form onSubmit="return checkAlleles();" id="login" action="" method="post" enctype="multipart/form-data" novalidate>
+	<form onSubmit="return handleFormSubmit(this, event);" id="login" action="" method="post" enctype="multipart/form-data" novalidate>
+		<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 		
 		<!-- Section: Data input -->
 		<fieldset class="form-section">
@@ -700,4 +701,38 @@
 	document.addEventListener('DOMContentLoaded', init);
 
 </script>
+
+{% if recaptcha_site_key %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
+<script>
+  var _recaptchaReady = false;
+  grecaptcha.ready(function() { _recaptchaReady = true; });
+
+  // Wraps the existing checkAlleles() to add reCAPTCHA v3 before final form submit.
+  // checkAlleles() is synchronous and returns true/false; reCAPTCHA is async so we
+  // prevent the native submit, fetch the token, then call form.submit() directly.
+  var _recaptchaExecuted = false;
+  function handleFormSubmit(form, event) {
+    if (!checkAlleles()) return false;
+
+    if (_recaptchaExecuted) {
+      _recaptchaExecuted = false;
+      return true;
+    }
+
+    event.preventDefault();
+    grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'submit'}).then(function(token) {
+      document.getElementById('g-recaptcha-response').value = token;
+      _recaptchaExecuted = true;
+      form.submit();
+    });
+    return false;
+  }
+</script>
+{% else %}
+<script>
+  // reCAPTCHA not configured — allow form to submit directly.
+  function handleFormSubmit(form, event) { return checkAlleles(); }
+</script>
+{% endif %}
 {% endblock %}
