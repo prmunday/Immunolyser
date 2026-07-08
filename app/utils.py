@@ -637,11 +637,11 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                             f['Binding Level'] = ""
                             f['Control'] = ""
-                            f['Binding Level'] = f['EL_rank'].apply(
+                            f['Binding Level'] = f['Rank_EL'].apply(
                                 lambda x: 'SB' if float(x) <= 1 else ('WB' if float(x) <= 5 else '')
                             )
                             f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-                            f.rename(columns={'Peptide': 'StrippedPeptide'}, inplace=True)
+                            f.rename(columns={'Peptide': 'StrippedPeptide', 'Rank_EL': 'EL_rank'}, inplace=True)
 
                             s = f.sort_values(by=['EL_rank'])[['StrippedPeptide','Core','EL_rank','Binding Level','Control']]\
                                 .merge(input_file, on='StrippedPeptide',how='left')
