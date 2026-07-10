@@ -12,3 +12,5 @@ data_files/*
 data_files_2/*
 tools/*
 test.ipynb
+# Local-only bug tracking log (not for remote — see conversation memory)
+BUGS_FOUND.md

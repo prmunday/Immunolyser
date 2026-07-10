@@ -333,10 +333,20 @@ def appendPredictedAllelesInfo(clusters, taskId, sample, replicate):
                 predictions = []
                 for _, row in top_rows.iterrows():
                     hla = row['HLA']
-                    # Class I names start with HLA_, Class II don't (e.g. DRB1_0101)
+                    # Naming conventions distinguish species/class:
+                    #   HLA_A0201   -> human Class I
+                    #   H-2-IAb     -> mouse Class II (hyphen after H-2)
+                    #   H2Db        -> mouse Class I (no hyphen)
+                    #   DRB1_0101   -> human Class II (everything else)
                     if hla.startswith('HLA_'):
                         species = 'human'
                         motif_folder = 'Gibbs_motifs_human'
+                    elif hla.startswith('H-2-'):
+                        species = 'mouse_classii'
+                        motif_folder = 'Gibbs_motifs_mouse_classII'
+                    elif hla.startswith('H2'):
+                        species = 'mouse'
+                        motif_folder = 'Gibbs_motifs_mouse'
                     else:
                         species = 'human_classii'
                         motif_folder = 'Gibbs_motifs_human_classII'

@@ -1625,6 +1625,7 @@ def serve_motif_ref(species, filename):
         'human': 'Gibbs_motifs_human',
         'human_classii': 'Gibbs_motifs_human_classII',
         'mouse': 'Gibbs_motifs_mouse',
+        'mouse_classii': 'Gibbs_motifs_mouse_classII',
     }
     if species not in allowed or not filename.endswith('.png'):
         return abort(404)
