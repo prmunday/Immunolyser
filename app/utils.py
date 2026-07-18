@@ -1,4 +1,4 @@
-import plotly, json, re, os, glob, shutil, subprocess
+import plotly, json, re, os, glob, shutil, subprocess, tempfile
 import plotly.graph_objs as go
 import pandas as pd
 from numpy import std, mean
@@ -428,20 +428,31 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                         for allele in alleles_unformatted.split(","):
                             # Check if the allele is compatible with the current tool
                             if compatibility_matrix.at[method.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
-                                # Run the command for compatible alleles
+                                # Run the command for compatible alleles.
+                                # netMHCpan hard-limits -xlsfile to 256 chars, but our destination
+                                # path (built from the taskId/sample/replicate filename) can exceed
+                                # that for long user-uploaded filenames. Write to a short temp path
+                                # instead and move the result into place afterward.
                                 netmhcpan_xlsfile = '{}/app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(
                                     project_root, taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)
-                                result = subprocess.run(
-                                    ['{}/app/tools/netMHCpan-4.2/netMHCpan'.format(project_root),
-                                    '-xls', '-BA', '-p',
-                                    '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.2 b', MHC_Class.One, ALLELE_DICTIONARY),
-                                    '-xlsfile', netmhcpan_xlsfile],
-                                    capture_output=True, text=True,
-                                )
-                                if result.returncode != 0 or not os.path.exists(netmhcpan_xlsfile):
-                                    print(f"  NetMHCpan ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500]}")
-                                    raise RuntimeError(f"NetMHCpan failed for allele {allele}: {result.stderr[:500] or 'no output produced'}")
+                                tmp_fd, tmp_xlsfile = tempfile.mkstemp(suffix='.xls')
+                                os.close(tmp_fd)
+                                try:
+                                    result = subprocess.run(
+                                        ['{}/app/tools/netMHCpan-4.2/netMHCpan'.format(project_root),
+                                        '-xls', '-BA', '-p',
+                                        '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
+                                        '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.2 b', MHC_Class.One, ALLELE_DICTIONARY),
+                                        '-xlsfile', tmp_xlsfile],
+                                        capture_output=True, text=True,
+                                    )
+                                    if result.returncode != 0 or not os.path.exists(tmp_xlsfile) or os.path.getsize(tmp_xlsfile) == 0:
+                                        print(f"  NetMHCpan ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500] or result.stdout[-500:]}")
+                                        raise RuntimeError(f"NetMHCpan failed for allele {allele}: {result.stderr[:500] or result.stdout[-500:] or 'no output produced'}")
+                                    shutil.move(tmp_xlsfile, netmhcpan_xlsfile)
+                                finally:
+                                    if os.path.exists(tmp_xlsfile):
+                                        os.remove(tmp_xlsfile)
 
                     # Check if the method (prediction tool) is 'MHCflurry' and process accordingly
                     if method.short_name == Class_One_Predictors.MHCflurry.short_name:
@@ -489,20 +500,29 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                         for allele in alleles_unformatted.split(','):
                             # Check if the allele is compatible with NetMHCpanII
                             if compatibility_matrix.at[Class_Two_Predictors.NetMHCpanII.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
-                                # Prepare the command to run NetMHCpanII for compatible alleles
+                                # Prepare the command to run NetMHCpanII for compatible alleles.
+                                # netMHCIIpan hard-limits -xlsfile to 256 chars; write to a short
+                                # temp path and move into place (see NetMHCpan block above).
                                 netmhcpanii_xlsfile = f'{project_root}/app/static/images/{taskId}/{sample}/{Class_Two_Predictors.NetMHCpanII}/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}'
+                                tmp_fd, tmp_xlsfile = tempfile.mkstemp(suffix='.xls')
+                                os.close(tmp_fd)
                                 command = [
                                     f'{project_root}/app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls', '-inptype', '1',
                                     '-f', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
                                     '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', MHC_Class.Two, ALLELE_DICTIONARY),
-                                    '-xlsfile', netmhcpanii_xlsfile
+                                    '-xlsfile', tmp_xlsfile
                                 ]
 
                                 # Run the command for the compatible allele
-                                result = run(command, capture_output=True, text=True)
-                                if result.returncode != 0 or not os.path.exists(netmhcpanii_xlsfile):
-                                    print(f"  NetMHCpanII ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500]}")
-                                    raise RuntimeError(f"NetMHCpanII failed for allele {allele}: {result.stderr[:500] or 'no output produced'}")
+                                try:
+                                    result = run(command, capture_output=True, text=True)
+                                    if result.returncode != 0 or not os.path.exists(tmp_xlsfile) or os.path.getsize(tmp_xlsfile) == 0:
+                                        print(f"  NetMHCpanII ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500] or result.stdout[-500:]}")
+                                        raise RuntimeError(f"NetMHCpanII failed for allele {allele}: {result.stderr[:500] or result.stdout[-500:] or 'no output produced'}")
+                                    shutil.move(tmp_xlsfile, netmhcpanii_xlsfile)
+                                finally:
+                                    if os.path.exists(tmp_xlsfile):
+                                        os.remove(tmp_xlsfile)
         
             os.chdir(project_root)
 

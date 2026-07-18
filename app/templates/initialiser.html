@@ -330,7 +330,7 @@
 		const nameField = document.getElementById('sample_name-' + sampleIndex);
 		if (nameField && nameField.value === '') {
 			const autoName = files[0].name.replace(/\.csv$/i, '').replace(/[^a-zA-Z0-9_]/g, '_');
-			nameField.value = autoName;
+			nameField.value = autoName.slice(0, maxLengthSampleName);
 		}
 
 		showSpinner(true);
