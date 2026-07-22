@@ -15,10 +15,17 @@
 #   docker compose up --build        # first run
 #   docker compose up -d             # subsequent runs
 #   docker compose down              # stop
+#
+# flask_app and celery_worker share the same `image:` tag deliberately —
+# both build from the identical Dockerfile/context, so without a shared
+# tag Compose builds two full ~5.7GB images instead of one, which caused
+# real ENOSPC failures during testing. With a shared tag, Compose builds
+# once and both services reference it.
 
 services:
   flask_app:
     build: .
+    image: immunolyser:latest
     container_name: flask_app
     restart: unless-stopped
     command: ["flask"]
@@ -55,6 +62,7 @@ services:
 
   celery_worker:
     build: .
+    image: immunolyser:latest
     container_name: celery_worker
     restart: unless-stopped
     command: ["celery"]

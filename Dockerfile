@@ -125,29 +125,37 @@ RUN git clone --depth 1 --branch immunolyser/class2-mhctp \
 RUN cp -r app/tools/HLA-PepClust/data/ref_data /app/.hlapepclust-ref-data-seed
 
 # ── Layer 9: Python 3 virtualenv + app dependencies ────────────────────────
-# MHCFLURRY_DOWNLOADS_DIR is the variable mhcflurry actually reads (verified
-# against its source — MHCFLURRY_DATA_PATH, used here previously, is not a
-# real mhcflurry variable and was silently ignored). Without this, downloads
-# fetched during the build (as root) land in /root/.local/share/mhcflurry,
-# but the app runs as non-root appuser at runtime and looks in appuser's
-# home dir instead — finds nothing, every MHCflurry prediction fails.
-# Pointing both the build-time fetch and the runtime lookup at the same
-# fixed path under /app (owned by appuser via the chown in Layer 10) fixes
-# this for both. Must be the full versioned path (mhcflurry's own default
-# platform-specific dir has a release/version subpath baked in, but an
-# explicit MHCFLURRY_DOWNLOADS_DIR override is used as-is, with no
-# subpath appended) — check the installed mhcflurry version's actual
-# release/version pair (mhcflurry-downloads path models_class1) rather
-# than assuming 4/2.2.0 stays correct forever.
-ENV MHCFLURRY_DOWNLOADS_DIR=/app/.mhcflurry/4/2.2.0
-
 # mhcflurry still imports pkg_resources, which setuptools 82.0.0 (Feb 2026)
 # removed entirely — pin to a version that still has it.
+#
+# IMPORTANT: do NOT set MHCFLURRY_DOWNLOADS_DIR before this fetch runs.
+# Read mhcflurry's own source (mhcflurry/downloads.py configure()): the
+# release-lookup logic that `mhcflurry-downloads fetch` depends on
+# (get_current_release() / get_downloads_metadata()) only runs inside an
+# `if not MHCFLURRY_DOWNLOADS_DIR:` branch — if that var is set at all,
+# release detection is skipped entirely and fetch fails with a `KeyError:
+# None`, regardless of --release or MHCFLURRY_DOWNLOADS_CURRENT_RELEASE
+# (neither is consulted on this path — verified by reading the source
+# after both appeared to have no effect). MHCFLURRY_DOWNLOADS_DIR is only
+# meant for "data already exists here", not "download fresh data here".
+# So: fetch to the default location (as root) first, then relocate.
 RUN python3 -m venv lenv \
   && lenv/bin/pip install --quiet --upgrade pip \
   && lenv/bin/pip install --quiet "setuptools==75.6.0" \
   && lenv/bin/pip install --quiet -r requirements_python3.txt \
   && lenv/bin/mhcflurry-downloads fetch
+
+# Downloads fetched as root (above) land in /root/.local/share/mhcflurry/...
+# — but the app runs as non-root appuser at runtime (Layer 10) and would
+# look in appuser's own home dir instead, finding nothing. Relocate to a
+# fixed path under /app (owned by appuser via the chown below) and point
+# MHCFLURRY_DOWNLOADS_DIR there for runtime lookups only — safe here since
+# by this point the fetch is already done and this env var only affects
+# get_path()-based lookups (used by the app), not the release-detection
+# logic in `fetch` above.
+RUN mkdir -p /app/.mhcflurry \
+  && cp -r /root/.local/share/mhcflurry/. /app/.mhcflurry/
+ENV MHCFLURRY_DOWNLOADS_DIR=/app/.mhcflurry/4/2.2.0
 
 # Run any hotfix patching needed after package install
 RUN lenv/bin/python hotfix_package_files.py 2>/dev/null || true
