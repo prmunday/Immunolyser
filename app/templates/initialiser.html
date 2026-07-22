@@ -441,11 +441,11 @@
 			return false;
 		}
 
-		alleleText = document.getElementById('alleles');
-		
+		var alleleInputEl = document.getElementById('alleles');
+
 		var selected_class = document.getElementById("mhc_class").value;
 		// Warning to select alleles
-		if (alleleText.value.length==0){
+		if (alleleInputEl.value.length==0){
 			if(allele_warning==false){
 				showSpinner(false);
 				alert('If the form is submitted without the allele names, no binding prediction will be performed. If you wish to proceed without allele names, simply press Submit again.');
@@ -454,7 +454,7 @@
 			}
 		}
 
-		const alleleText = alleleInputEl.value;
+		var alleleText = alleleInputEl.value;
 
 		if(alleleText ==""){
 			return true;
