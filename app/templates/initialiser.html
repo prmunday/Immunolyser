@@ -725,7 +725,10 @@
     grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'submit'}).then(function(token) {
       document.getElementById('g-recaptcha-response').value = token;
       _recaptchaExecuted = true;
-      form.submit();
+      // form.submit is shadowed by the <input name="submit"> button (a named form
+      // control shadows same-named form methods), so form.submit() throws — call
+      // the real HTMLFormElement method explicitly instead.
+      HTMLFormElement.prototype.submit.call(form);
     });
     return false;
   }
