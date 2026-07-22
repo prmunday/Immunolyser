@@ -62,6 +62,7 @@
 </div>
 
 <form onSubmit="return submitPep();" id="pepscanner" action="{{ url_for('pepscanner') }}" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- <label for="sample" hidden>Peptide File</label>  -->
     <!-- <input id="file" name="file" required type="file" class="col-md-6 mb-3">	 -->
 
