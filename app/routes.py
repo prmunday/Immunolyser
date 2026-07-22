@@ -291,6 +291,16 @@ def initialiser():
             if not is_valid:
                 return f"Invalid sample name '{escape(sample_name)}': {escape(message)}", 400
 
+        # Validate sample names server-side too — the client-side check (including the
+        # filename auto-fill) can be bypassed, and an oversized/invalid name here ends up
+        # embedded in downstream tool paths (e.g. NetMHCpan's -xlsfile has a 256-char limit).
+        max_sample_name_length = app.config['SAMPLE_NAME_MAX_LENGTH']
+        for sample_name in samples:
+            if not sample_name or not re.match(r'^[a-zA-Z0-9_]+$', sample_name):
+                return f"Invalid sample name '{sample_name}'. Sample names must be non-empty and contain only alphanumeric characters or underscores.", 400
+            if len(sample_name) > max_sample_name_length:
+                return f"Invalid sample name '{sample_name}'. Sample names must be at most {max_sample_name_length} characters.", 400
+
     #         filename = secure_filename(file.filename)
     # file_content = file.read()  # R
 
@@ -1658,6 +1668,7 @@ def serve_motif_ref(species, filename):
         'human': 'Gibbs_motifs_human',
         'human_classii': 'Gibbs_motifs_human_classII',
         'mouse': 'Gibbs_motifs_mouse',
+        'mouse_classii': 'Gibbs_motifs_mouse_classII',
     }
     if species not in allowed or not filename.endswith('.png'):
         return abort(404)

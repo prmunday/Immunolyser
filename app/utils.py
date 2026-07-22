@@ -1,9 +1,9 @@
-import plotly, json, re, os, glob, shutil, subprocess
+import plotly, json, re, os, glob, shutil, subprocess, tempfile
 import plotly.graph_objs as go
 import pandas as pd
 from numpy import std, mean
 from statistics import stdev
-from subprocess import call, Popen, run, DEVNULL
+from subprocess import Popen, run
 from distutils.dir_util import copy_tree
 from zipfile import ZipFile
 from os.path import basename
@@ -333,10 +333,20 @@ def appendPredictedAllelesInfo(clusters, taskId, sample, replicate):
                 predictions = []
                 for _, row in top_rows.iterrows():
                     hla = row['HLA']
-                    # Class I names start with HLA_, Class II don't (e.g. DRB1_0101)
+                    # Naming conventions distinguish species/class:
+                    #   HLA_A0201   -> human Class I
+                    #   H-2-IAb     -> mouse Class II (hyphen after H-2)
+                    #   H2Db        -> mouse Class I (no hyphen)
+                    #   DRB1_0101   -> human Class II (everything else)
                     if hla.startswith('HLA_'):
                         species = 'human'
                         motif_folder = 'Gibbs_motifs_human'
+                    elif hla.startswith('H-2-'):
+                        species = 'mouse_classii'
+                        motif_folder = 'Gibbs_motifs_mouse_classII'
+                    elif hla.startswith('H2'):
+                        species = 'mouse'
+                        motif_folder = 'Gibbs_motifs_mouse'
                     else:
                         species = 'human_classii'
                         motif_folder = 'Gibbs_motifs_human_classII'
@@ -418,16 +428,31 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                         for allele in alleles_unformatted.split(","):
                             # Check if the allele is compatible with the current tool
                             if compatibility_matrix.at[method.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
-                                # Run the command for compatible alleles
-                                subprocess.run(
-                                    ['{}/app/tools/netMHCpan-4.2/netMHCpan'.format(project_root),
-                                    '-xls', '-BA', '-p',
-                                    '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
-                                    '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.2 b', MHC_Class.One, ALLELE_DICTIONARY),
-                                    '-xlsfile', '{}/app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(
-                                        project_root, taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)],
-                                    stdout=DEVNULL,  # Suppress standard output
-                                )
+                                # Run the command for compatible alleles.
+                                # netMHCpan hard-limits -xlsfile to 256 chars, but our destination
+                                # path (built from the taskId/sample/replicate filename) can exceed
+                                # that for long user-uploaded filenames. Write to a short temp path
+                                # instead and move the result into place afterward.
+                                netmhcpan_xlsfile = '{}/app/static/images/{}/{}/NetMHCpan/{}/{}/{}'.format(
+                                    project_root, taskId, sample, replicate[:-13], allele.replace(':', '_'), replicate)
+                                tmp_fd, tmp_xlsfile = tempfile.mkstemp(suffix='.xls')
+                                os.close(tmp_fd)
+                                try:
+                                    result = subprocess.run(
+                                        ['{}/app/tools/netMHCpan-4.2/netMHCpan'.format(project_root),
+                                        '-xls', '-BA', '-p',
+                                        '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
+                                        '-a', get_allele_name_tool_specific(allele, 'netMHCpan 4.2 b', MHC_Class.One, ALLELE_DICTIONARY),
+                                        '-xlsfile', tmp_xlsfile],
+                                        capture_output=True, text=True,
+                                    )
+                                    if result.returncode != 0 or not os.path.exists(tmp_xlsfile) or os.path.getsize(tmp_xlsfile) == 0:
+                                        print(f"  NetMHCpan ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500] or result.stdout[-500:]}")
+                                        raise RuntimeError(f"NetMHCpan failed for allele {allele}: {result.stderr[:500] or result.stdout[-500:] or 'no output produced'}")
+                                    shutil.move(tmp_xlsfile, netmhcpan_xlsfile)
+                                finally:
+                                    if os.path.exists(tmp_xlsfile):
+                                        os.remove(tmp_xlsfile)
 
                     # Check if the method (prediction tool) is 'MHCflurry' and process accordingly
                     if method.short_name == Class_One_Predictors.MHCflurry.short_name:
@@ -457,30 +482,47 @@ def generateBindingPredictions(taskId, alleles_unformatted, method, ALLELE_DICTI
                                 # Run MixMHC2pred-2.0 command
                                 mixmhc2_outdir = f'{project_root}/app/static/images/{taskId}/{sample}/MixMHC2pred/{replicate[:-14]}/{allele.replace(":", "_")}'
                                 os.makedirs(mixmhc2_outdir, exist_ok=True)
+                                mixmhc2_outfile = f'{mixmhc2_outdir}/{replicate}'
                                 command = [
                                     f'{project_root}/app/tools/MixMHC2pred-2.0/MixMHC2pred_unix',
                                     '-i', f'{data_mount}/{taskId}/{sample}/{replicate}',
-                                    '-o', f'{mixmhc2_outdir}/{replicate}',
+                                    '-o', mixmhc2_outfile,
                                     '-a', get_allele_name_tool_specific(allele, 'MixMHC2pred-2.0', MHC_Class.Two, ALLELE_DICTIONARY),
                                     '--no_context'
                                 ]
-                                call(command)
+                                result = subprocess.run(command, capture_output=True, text=True)
+                                if result.returncode != 0 or not os.path.exists(mixmhc2_outfile):
+                                    print(f"  MixMHC2pred ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[-500:]}")
+                                    raise RuntimeError(f"MixMHC2pred failed for allele {allele}: {result.stderr[-500:] or 'no output produced'}")
 
                     # Check if the method (prediction tool) is 'NetMHCpanII' and process accordingly
                     if method.short_name == Class_Two_Predictors.NetMHCpanII.short_name:
                         for allele in alleles_unformatted.split(','):
                             # Check if the allele is compatible with NetMHCpanII
                             if compatibility_matrix.at[Class_Two_Predictors.NetMHCpanII.full_name, allele] == 'Yes':  # or 'No', depending on your matrix values
-                                # Prepare the command to run NetMHCpanII for compatible alleles
+                                # Prepare the command to run NetMHCpanII for compatible alleles.
+                                # netMHCIIpan hard-limits -xlsfile to 256 chars; write to a short
+                                # temp path and move into place (see NetMHCpan block above).
+                                netmhcpanii_xlsfile = f'{project_root}/app/static/images/{taskId}/{sample}/{Class_Two_Predictors.NetMHCpanII}/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}'
+                                tmp_fd, tmp_xlsfile = tempfile.mkstemp(suffix='.xls')
+                                os.close(tmp_fd)
                                 command = [
                                     f'{project_root}/app/tools/netMHCIIpan-4.3/netMHCIIpan', '-xls', '-inptype', '1',
                                     '-f', '{}/{}/{}/{}'.format(data_mount, taskId, sample, replicate),
                                     '-a', get_allele_name_tool_specific(allele, 'netMHCIIpan 4.3 e', MHC_Class.Two, ALLELE_DICTIONARY),
-                                    '-xlsfile', f'{project_root}/app/static/images/{taskId}/{sample}/{Class_Two_Predictors.NetMHCpanII}/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}'
+                                    '-xlsfile', tmp_xlsfile
                                 ]
 
                                 # Run the command for the compatible allele
-                                run(command, stdout=DEVNULL)  # Suppress standard output
+                                try:
+                                    result = run(command, capture_output=True, text=True)
+                                    if result.returncode != 0 or not os.path.exists(tmp_xlsfile) or os.path.getsize(tmp_xlsfile) == 0:
+                                        print(f"  NetMHCpanII ERROR (rc={result.returncode}) for allele={allele}: {result.stderr[:500] or result.stdout[-500:]}")
+                                        raise RuntimeError(f"NetMHCpanII failed for allele {allele}: {result.stderr[:500] or result.stdout[-500:] or 'no output produced'}")
+                                    shutil.move(tmp_xlsfile, netmhcpanii_xlsfile)
+                                finally:
+                                    if os.path.exists(tmp_xlsfile):
+                                        os.remove(tmp_xlsfile)
         
             os.chdir(project_root)
 
@@ -625,11 +667,11 @@ def saveBindersData(taskId, alleles, method, mhcclass):
 
                             f['Binding Level'] = ""
                             f['Control'] = ""
-                            f['Binding Level'] = f['EL_rank'].apply(
+                            f['Binding Level'] = f['Rank_EL'].apply(
                                 lambda x: 'SB' if float(x) <= 1 else ('WB' if float(x) <= 5 else '')
                             )
                             f['Control'] = f['Peptide'].apply(lambda x : 'Y' if x in control_peptides else '')
-                            f.rename(columns={'Peptide': 'StrippedPeptide'}, inplace=True)
+                            f.rename(columns={'Peptide': 'StrippedPeptide', 'Rank_EL': 'EL_rank'}, inplace=True)
 
                             s = f.sort_values(by=['EL_rank'])[['StrippedPeptide','Core','EL_rank','Binding Level','Control']]\
                                 .merge(input_file, on='StrippedPeptide',how='left')
