@@ -24,14 +24,10 @@
             var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             var unsafeMethods = /^(POST|PUT|PATCH|DELETE)$/i;
 
-            if (window.jQuery) {
-                jQuery(document).ajaxSend(function (event, xhr, settings) {
-                    if (unsafeMethods.test(settings.type || 'GET')) {
-                        xhr.setRequestHeader('X-CSRFToken', csrfToken);
-                    }
-                });
-            }
-
+            // Note: jQuery's $.ajax() is intentionally NOT patched separately here —
+            // it goes through XMLHttpRequest under the hood, so the XHR patch below
+            // already covers it. Patching both double-sets the header (setRequestHeader
+            // appends rather than replaces), corrupting the token.
             var originalOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function (method) {
                 this._csrfMethod = method;
