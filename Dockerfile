@@ -4,8 +4,11 @@ WORKDIR /app
 
 # ── Layer 1: OS dependencies ────────────────────────────────────────────────
 # apt-get upgrade -y resolves the bulk of SCA/SCD CVE findings from Checkmarx
+# curl deliberately excluded — a security scan flagged it as unnecessary
+# attack surface on a prior image; wget already covers everything we need,
+# including the HEALTHCHECK below.
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
-    bash git wget curl unzip tar \
+    bash git wget unzip tar \
     build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev \
     sqlite3 r-base ncompress tcsh perl \
     fonts-urw-base35 gsfonts \
@@ -26,15 +29,17 @@ RUN wget -q https://bootstrap.pypa.io/pip/2.7/get-pip.py \
   && python2 get-pip.py > /dev/null && rm get-pip.py \
   && python2 -m pip install --quiet numpy matplotlib
 
-# ── Layer 3: Ghostscript 9.53.3 pre-built binary ──────────────────────────
-# System gs (9.06) has a font rendering bug — must use 9.53.3
+# ── Layer 4: App code ───────────────────────────────────────────────────────
+COPY . .
+
+# ── Layer 3b: Ghostscript 9.53.3 pre-built binary ──────────────────────────
+# System gs (9.06) has a font rendering bug — must use 9.53.3. Must come
+# after COPY: extracts into app/tools/, which doesn't exist until the repo
+# is copied in.
 RUN wget -q https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz \
   && tar -xzf ghostscript-9.53.3-linux-x86_64.tgz -C /app/app/tools/ \
   && rm ghostscript-9.53.3-linux-x86_64.tgz \
   && chmod +x /app/app/tools/ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64
-
-# ── Layer 4: App code ───────────────────────────────────────────────────────
-COPY . .
 
 # ── Layer 5: seq2logo and GibbsCluster (tarballs in repo) ──────────────────
 RUN tar -xzf app/tools/seq2logo-2.1.all.tar.gz -C app/tools/ \
@@ -64,12 +69,17 @@ RUN sed -i \
 # tarballs in app/tools/ BEFORE running docker build.
 # If the tarballs are absent the build continues and those prediction methods
 # will be unavailable at runtime.
+# The vendor scripts use a literal TAB between "setenv" and "NMHOME" (not
+# spaces) on the NMHOME line specifically, while other setenv lines use
+# spaces — a space-only sed pattern silently fails to match NMHOME, leaving
+# it pointed at the vendor's own build path (/tools/src/...) and breaking
+# every prediction at runtime with "no binaries found". Match either.
 RUN if [ -f app/tools/netMHCpan-4.2c.Linux.tar.gz ]; then \
       gunzip -c app/tools/netMHCpan-4.2c.Linux.tar.gz | tar xf - -C app/tools/ \
       && mkdir -p app/tools/netMHCpan-4.2/tmp \
-      && sed -i 's|setenv  *NMHOME  *[^ ]*|setenv NMHOME /app/app/tools/netMHCpan-4.2|g' \
+      && sed -i 's|setenv[ \t]*NMHOME[ \t]*[^ \t]*|setenv NMHOME /app/app/tools/netMHCpan-4.2|g' \
              app/tools/netMHCpan-4.2/netMHCpan \
-      && sed -i 's|setenv  *TMPDIR  *[^ ]*|setenv TMPDIR /app/app/tools/netMHCpan-4.2/tmp|g' \
+      && sed -i 's|setenv[ \t]*TMPDIR[ \t]*[^ \t]*|setenv TMPDIR /app/app/tools/netMHCpan-4.2/tmp|g' \
              app/tools/netMHCpan-4.2/netMHCpan \
       && rm app/tools/netMHCpan-4.2c.Linux.tar.gz; \
     else echo "WARNING: netMHCpan-4.2c.Linux.tar.gz not found — netMHCpan will be unavailable"; fi
@@ -77,7 +87,7 @@ RUN if [ -f app/tools/netMHCpan-4.2c.Linux.tar.gz ]; then \
 RUN if [ -f app/tools/netMHCIIpan-4.3j.Linux.tar.gz ]; then \
       tar -xvf app/tools/netMHCIIpan-4.3j.Linux.tar.gz -C app/tools/ \
       && mkdir -p app/tools/netMHCIIpan-4.3/tmp \
-      && sed -i 's|setenv  *NMHOME  *[^ ]*|setenv NMHOME /app/app/tools/netMHCIIpan-4.3|g' \
+      && sed -i 's|setenv[ \t]*NMHOME[ \t]*[^ \t]*|setenv NMHOME /app/app/tools/netMHCIIpan-4.3|g' \
              app/tools/netMHCIIpan-4.3/netMHCIIpan \
       && rm app/tools/netMHCIIpan-4.3j.Linux.tar.gz; \
     else echo "WARNING: netMHCIIpan-4.3j.Linux.tar.gz not found — netMHCIIpan will be unavailable"; fi
@@ -89,8 +99,13 @@ RUN wget -q https://github.com/GfellerLab/MixMHCpred/archive/refs/tags/v3.0.tar.
   && chmod +x app/tools/MixMHCpred/MixMHCpred \
   && rm /tmp/mixmhcpred.tar.gz
 
+# The release zip extracts flat (MixMHC2pred_unix, PWMdef/, README.md, ... at
+# archive root, no top-level MixMHC2pred-2.0/ folder) — extract straight into
+# the target dir we create, not app/tools/ itself (would collide with our
+# own app/tools/README.md).
 RUN wget -q https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -O /tmp/mixmhc2pred.zip \
-  && unzip -q /tmp/mixmhc2pred.zip -d app/tools/ \
+  && mkdir -p app/tools/MixMHC2pred-2.0 \
+  && unzip -q /tmp/mixmhc2pred.zip -d app/tools/MixMHC2pred-2.0 \
   && chmod +x app/tools/MixMHC2pred-2.0/MixMHC2pred_unix \
   && rm /tmp/mixmhc2pred.zip
 
@@ -102,11 +117,35 @@ RUN git clone --depth 1 --branch immunolyser/class2-mhctp \
   && python3 -m venv hlapepclust-env \
   && hlapepclust-env/bin/pip install --quiet -e .
 
-# ── Layer 9: Python 3 virtualenv + app dependencies ────────────────────────
-ENV MHCFLURRY_DATA_PATH=/app/.mhcflurry
+# data/ref_data ships committed content (mouse Class I motifs, human/mouse .db,
+# warmed numba_cache for those) but at runtime a HOST volume is bind-mounted
+# over this exact path (see docker-compose.yml / HLA_PEPCLUST_REF_DATA) so the
+# large human/Class II downloads persist across rebuilds. A bind mount hides
+# whatever's here, so stash a copy for entrypoint.sh to seed the mount with.
+RUN cp -r app/tools/HLA-PepClust/data/ref_data /app/.hlapepclust-ref-data-seed
 
+# ── Layer 9: Python 3 virtualenv + app dependencies ────────────────────────
+# MHCFLURRY_DOWNLOADS_DIR is the variable mhcflurry actually reads (verified
+# against its source — MHCFLURRY_DATA_PATH, used here previously, is not a
+# real mhcflurry variable and was silently ignored). Without this, downloads
+# fetched during the build (as root) land in /root/.local/share/mhcflurry,
+# but the app runs as non-root appuser at runtime and looks in appuser's
+# home dir instead — finds nothing, every MHCflurry prediction fails.
+# Pointing both the build-time fetch and the runtime lookup at the same
+# fixed path under /app (owned by appuser via the chown in Layer 10) fixes
+# this for both. Must be the full versioned path (mhcflurry's own default
+# platform-specific dir has a release/version subpath baked in, but an
+# explicit MHCFLURRY_DOWNLOADS_DIR override is used as-is, with no
+# subpath appended) — check the installed mhcflurry version's actual
+# release/version pair (mhcflurry-downloads path models_class1) rather
+# than assuming 4/2.2.0 stays correct forever.
+ENV MHCFLURRY_DOWNLOADS_DIR=/app/.mhcflurry/4/2.2.0
+
+# mhcflurry still imports pkg_resources, which setuptools 82.0.0 (Feb 2026)
+# removed entirely — pin to a version that still has it.
 RUN python3 -m venv lenv \
   && lenv/bin/pip install --quiet --upgrade pip \
+  && lenv/bin/pip install --quiet "setuptools==75.6.0" \
   && lenv/bin/pip install --quiet -r requirements_python3.txt \
   && lenv/bin/mhcflurry-downloads fetch
 
@@ -121,7 +160,7 @@ USER appuser
 
 # ── Healthcheck (fixes IaC finding) ─────────────────────────────────────────
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
-  CMD curl -f http://localhost:5000/healthz || exit 1
+  CMD wget -q --spider http://localhost:5000/healthz || exit 1
 
 EXPOSE 5000
 

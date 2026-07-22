@@ -1,8 +1,15 @@
 # Immunolyser — Docker Compose
 #
 # Works for both modes:
-#   Server:     set DATA_VOLUME=/pvol and IS_DOCKER=true in .env
-#   Local user: defaults (./data) are used automatically
+#   Server:     set DATA_VOLUME=/pvol, HLA_PEPCLUST_REF_DATA=/opt/immunolyser-ref-data,
+#               and IS_DOCKER=true in .env
+#   Local user: defaults (./data, ./hla-pepclust-ref-data) are used automatically
+#
+# HLA_PEPCLUST_REF_DATA holds the MHC-TP reference databases (ref_data/, including
+# numba_cache/) on the HOST, bind-mounted into the container. This is required —
+# without it, ref_data lives only inside the container's writable layer and is lost
+# on every `docker compose up --build` / container recreation, along with the warmed
+# Numba cache (silent empty-output failure — see app/tools/README.md).
 #
 # Usage:
 #   docker compose up --build        # first run
@@ -19,6 +26,7 @@ services:
       - "5000:5000"
     volumes:
       - ${DATA_VOLUME:-./data}:/pvol
+      - ${HLA_PEPCLUST_REF_DATA:-./hla-pepclust-ref-data}:/app/app/tools/HLA-PepClust/data/ref_data
     env_file: .env
     environment:
       - IS_DOCKER=true
@@ -27,11 +35,15 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5000/healthz"]
       interval: 30s
       timeout: 10s
       start_period: 90s
       retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     deploy:
       resources:
         limits:
@@ -48,6 +60,7 @@ services:
     command: ["celery"]
     volumes:
       - ${DATA_VOLUME:-./data}:/pvol
+      - ${HLA_PEPCLUST_REF_DATA:-./hla-pepclust-ref-data}:/app/app/tools/HLA-PepClust/data/ref_data
     env_file: .env
     environment:
       - IS_DOCKER=true
@@ -55,6 +68,10 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     deploy:
       resources:
         limits:
@@ -74,6 +91,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       - internal
 

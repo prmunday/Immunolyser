@@ -4,6 +4,31 @@ set -e
 # Activate virtual environment
 source lenv/bin/activate
 
+# app/static/images is where job output (prediction CSVs, seqlogos, gibbs-
+# cluster/MHC-TP results, allele_compatibility_matrix.csv, ...) gets written
+# during processing, and where the web UI reads it back from. On bare-metal
+# this is a symlink to /pvol (the persistent data volume) so it's the same
+# filesystem everywhere. flask_app and celery_worker are SEPARATE containers
+# though — without this symlink, each has its own private, ephemeral
+# app/static/images/, so the worker's output is invisible to the web
+# container serving report pages. Both containers already mount /pvol
+# (see docker-compose.yml), so replicate the same symlink here.
+if [ ! -L app/static/images ]; then
+    rm -rf app/static/images
+    ln -s /pvol app/static/images
+    echo "Linked app/static/images -> /pvol"
+fi
+
+# Seed the bind-mounted ref_data volume with the committed defaults (mouse
+# Class I motifs, human/mouse .db, warmed numba_cache) the first time it's
+# empty — the bind mount in docker-compose.yml hides whatever git cloned
+# there, so an empty host dir would otherwise start with nothing at all.
+REF_DATA_DIR="app/tools/HLA-PepClust/data/ref_data"
+if [ -d "/app/.hlapepclust-ref-data-seed" ] && [ -z "$(ls -A "$REF_DATA_DIR" 2>/dev/null)" ]; then
+    echo "Seeding $REF_DATA_DIR from image defaults (mouse Class I + numba cache) ..."
+    cp -r /app/.hlapepclust-ref-data-seed/. "$REF_DATA_DIR"/
+fi
+
 # DB init (Python-based — keeps schema in sync with job_registry.py / email_registry.py)
 DB_FILE="${IMMUNOLYSER_DATA}/results.sqlite"
 if [ "$1" = "flask" ]; then

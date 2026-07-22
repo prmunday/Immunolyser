@@ -2,6 +2,12 @@
 
 This directory holds the bioinformatics prediction tools used by Immunolyser.
 
+The Dockerfile / `docker-compose.yml` in the repo root are a single setup path
+that works for both a local/self-hosted install and our own server deployment
+— only the `.env` values (`DATA_VOLUME`, `HLA_PEPCLUST_REF_DATA`) differ. A
+local user runs `docker compose up --build` with the defaults; a server
+deployment points those two variables at persistent host paths instead.
+
 ## Tools included in the repository (open-source)
 
 The following tool archives are committed to this repo and extracted automatically during `docker build`:
@@ -28,7 +34,17 @@ The Dockerfile detects whether the tarballs are present and prints a warning (no
 
 ## Ref data for HLA-PepClust
 
-The large reference databases (~1 GB each) are NOT in the repository and must be downloaded separately after `docker compose up`:
+The large reference databases (~1 GB each) are NOT in the repository and are NOT
+baked into the image. `docker-compose.yml` bind-mounts a host directory to
+`app/tools/HLA-PepClust/data/ref_data` inside the container — by default
+`./hla-pepclust-ref-data` next to `docker-compose.yml`, or set
+`HLA_PEPCLUST_REF_DATA=/path/on/host` in `.env` to point elsewhere (e.g. a data
+volume on a server). Because it's a bind mount, whatever you download lands on
+the host and survives `docker compose down`, image rebuilds, and container
+recreation — including the warmed Numba cache (`ref_data/numba_cache/`), which
+must NOT be rebuilt on every fresh container (see warm-up step below).
+
+Download the reference data once, after the first `docker compose up`:
 
 ```bash
 # Inside the running flask_app container:
