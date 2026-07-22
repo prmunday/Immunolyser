@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Immunolyser 2.0</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -16,6 +17,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Attach the CSRF token to every same-page AJAX/fetch POST-like request,
+        // so Flask-WTF's CSRFProtect can be enabled without touching each call site.
+        (function () {
+            var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            var unsafeMethods = /^(POST|PUT|PATCH|DELETE)$/i;
+
+            if (window.jQuery) {
+                jQuery(document).ajaxSend(function (event, xhr, settings) {
+                    if (unsafeMethods.test(settings.type || 'GET')) {
+                        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+                    }
+                });
+            }
+
+            var originalOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function (method) {
+                this._csrfMethod = method;
+                return originalOpen.apply(this, arguments);
+            };
+            var originalSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function () {
+                if (unsafeMethods.test(this._csrfMethod || 'GET')) {
+                    this.setRequestHeader('X-CSRFToken', csrfToken);
+                }
+                return originalSend.apply(this, arguments);
+            };
+
+            var originalFetch = window.fetch;
+            window.fetch = function (input, init) {
+                init = init || {};
+                var method = (init.method || 'GET').toUpperCase();
+                if (unsafeMethods.test(method)) {
+                    init.headers = new Headers(init.headers || {});
+                    init.headers.set('X-CSRFToken', csrfToken);
+                }
+                return originalFetch.call(this, input, init);
+            };
+        })();
+    </script>
 </head>
 <body>
 

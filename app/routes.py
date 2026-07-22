@@ -1298,7 +1298,7 @@ def generatePepscanner(demo=False):
         uploaded_file = request.files['file']
         uploaded_background_file = request.files.get('background')  # Use get() to handle the case where 'background' might not be present
         protiens = request.form['protein_ids']
-        fileName = uploaded_file.filename.replace('C:\\fakepath\\', "")
+        fileName = secure_filename(uploaded_file.filename.replace('C:\\fakepath\\', ""))
 
         # Input peptide file
         peptides_file = os.path.join(project_root, 'app', 'static', 'images', taskId, fileName)
@@ -1645,15 +1645,25 @@ def download_seq2logo_peptides(taskid, sample, replicate):
 @app.route('/download_gibbscluster_core/<taskid>/<sample>/<replicate>/<cluster_attempt>')
 def download_gibbscluster_core(taskid, sample, replicate, cluster_attempt):
     logger.info(f"Download request for Gibbs core: taskid={taskid}, sample={sample}, replicate={replicate}, cluster={cluster_attempt}")
-    
-    core_base = os.path.join(project_root, 'app', 'static', 'images', taskid, sample, 'gibbscluster', replicate)
+
+    if not is_valid_uuid(taskid):
+        return "Invalid task ID", 400
+
+    _safe = re.compile(r'^[a-zA-Z0-9_\-\.]+$')
+    if not (_safe.match(sample) and _safe.match(replicate) and _safe.match(cluster_attempt)):
+        return "Invalid path component", 400
+
+    safe_base_dir = os.path.realpath(os.path.join(project_root, 'app', 'static', 'images', taskid))
+    core_base = os.path.join(safe_base_dir, sample, 'gibbscluster', replicate)
     matches = glob.glob(os.path.join(core_base, '*', 'cores', f'*{cluster_attempt}*'))
 
     if not matches:
         logger.warning(f"No core file found for cluster {cluster_attempt} under {core_base}")
         return abort(404, description=f"No core file found for cluster {cluster_attempt}.")
 
-    core_file = matches[0]
+    core_file = os.path.realpath(matches[0])
+    if not core_file.startswith(safe_base_dir + os.sep):
+        return "Forbidden", 403
     logger.info(f"Serving core file: {core_file}")
 
     try:

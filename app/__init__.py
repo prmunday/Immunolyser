@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_wtf.csrf import CSRFProtect
 from config import Config
 from celery import Celery
 from celery.schedules import crontab
@@ -26,6 +27,8 @@ def index():
     return render_template("index.html", index=True)
 
 app.config.from_object(Config)
+
+csrf = CSRFProtect(app)
 
 celery = make_celery(app)
 

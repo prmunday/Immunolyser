@@ -264,7 +264,10 @@
 
               var cell2 = document.createElement("td");
               cell2.style.width = "15%";
-              cell2.innerHTML = "<a href='static/images/" + taskId + "/protienandepeptides/" + fileName + " " + key + ".csv'>" + value[0] + "</a>";
+              var link = document.createElement("a");
+              link.href = "static/images/" + encodeURIComponent(taskId) + "/protienandepeptides/" + encodeURIComponent(fileName + " " + key + ".csv");
+              link.textContent = value[0];
+              cell2.appendChild(link);
               row.appendChild(cell2);
 
               var cell3 = document.createElement("td");
