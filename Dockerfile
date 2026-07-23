@@ -105,7 +105,7 @@ RUN wget -q https://github.com/GfellerLab/MixMHCpred/archive/refs/tags/v3.0.tar.
 # own app/tools/README.md).
 RUN wget -q https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -O /tmp/mixmhc2pred.zip \
   && mkdir -p app/tools/MixMHC2pred-2.0 \
-  && unzip -q /tmp/mixmhc2pred.zip -d app/tools/MixMHC2pred-2.0 \
+  && unzip -oq /tmp/mixmhc2pred.zip -d app/tools/MixMHC2pred-2.0 \
   && chmod +x app/tools/MixMHC2pred-2.0/MixMHC2pred_unix \
   && rm /tmp/mixmhc2pred.zip
 
