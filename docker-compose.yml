@@ -92,6 +92,17 @@ services:
     image: redis:alpine
     container_name: redis
     restart: unless-stopped
+    # cap_drop: ALL below strips CAP_SETUID/CAP_SETGID, which the image's own
+    # entrypoint needs to drop from root to the "redis" user before starting
+    # the server. Without it, redis-server ends up running as root anyway —
+    # but /data is still owned by the "redis" user (999:1000) at 755, and
+    # root has no permission-bypass without CAP_DAC_OVERRIDE either. Result:
+    # every background save fails with EACCES, and Redis's own
+    # stop-writes-on-bgsave-error safety setting then refuses ALL write
+    # commands, silently breaking the Celery task queue. Setting the user
+    # explicitly here starts the container as the right UID from the outset,
+    # sidestepping the entrypoint's privilege-drop step entirely.
+    user: "999:1000"
     # Port not exposed to host — flask_app and celery_worker reach it via the
     # internal network using the service name "redis" (see config.py IS_DOCKER branch)
     healthcheck:
