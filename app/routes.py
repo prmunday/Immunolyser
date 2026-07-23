@@ -33,6 +33,26 @@ logger = logging.getLogger(__name__)
 # Configure logging format and level as needed
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
+class _LogForgingFilter(logging.Filter):
+    """Strips CR/LF from log messages and args so attacker-controlled input
+    (job IDs, emails, etc.) can't forge fake log lines."""
+    @staticmethod
+    def _sanitize(value):
+        if isinstance(value, str):
+            return value.replace('\r', '\\r').replace('\n', '\\n')
+        return value
+
+    def filter(self, record):
+        record.msg = self._sanitize(record.msg)
+        if isinstance(record.args, tuple):
+            record.args = tuple(self._sanitize(a) for a in record.args)
+        elif isinstance(record.args, dict):
+            record.args = {k: self._sanitize(v) for k, v in record.args.items()}
+        return True
+
+for _handler in logging.getLogger().handlers:
+    _handler.addFilter(_LogForgingFilter())
+
 GEOIP_DB_PATH = os.path.join(project_root,'app','static', 'temp', 'GeoLite2-Country_20251021', 'GeoLite2-Country.mmdb')
 
 @app.context_processor
@@ -83,7 +103,7 @@ def _build_email_html(job_display, job_id, success, results_url, base_url="https
         cta_block = f"""
         <tr>
           <td align="center" style="padding:24px 0 8px;">
-            <a href="{results_url}" target="_blank"
+            <a href="{results_url}" target="_blank" rel="noopener noreferrer"
                style="background:{btn_color};color:#ffffff;text-decoration:none;
                       padding:14px 32px;border-radius:6px;font-size:16px;
                       font-weight:bold;display:inline-block;">
@@ -1959,8 +1979,8 @@ def export_report(taskId):
         overlapLayout=overlapLayout,
         image_map=image_map,
         csv_map=csv_map,
-        overlap_upset_data_json=json.dumps(overlap_upset_data),
-        binders_data_json=json.dumps(binders_data),
+        overlap_upset_data_json=escape_json_for_inline_script(json.dumps(overlap_upset_data)),
+        binders_data_json=escape_json_for_inline_script(json.dumps(binders_data)),
         plotly_js=open(os.path.join(project_root, 'app', 'static', 'vendor', 'plotly-cartesian.min.js')).read(),
         upsetjs_js=open(os.path.join(project_root, 'app', 'static', 'vendor', 'upsetjs.min.js')).read(),
         bootstrap_css=open(os.path.join(project_root, 'app', 'static', 'vendor', 'bootstrap.min.css')).read(),

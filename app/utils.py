@@ -19,6 +19,18 @@ data_mount = app.config['IMMUNOLYSER_DATA']
 regex_find_cureved_brackets = '\(.*?\)'
 regex_find_square_brackets = '\[.*?\]'
 
+def escape_json_for_inline_script(json_str):
+    """Escape a JSON string for safe embedding inside an HTML <script> block
+    via Jinja2's |safe filter. Without this, a user-controlled value (e.g. a
+    sample name) containing '</script>' would prematurely close the tag and
+    let attacker-supplied markup execute (Stored XSS). '<', '>' and '&' never
+    appear in JSON structural syntax, only inside string values, so this
+    replace is safe and doesn't corrupt the JSON."""
+    return (json_str
+            .replace('<', '\\u003c')
+            .replace('>', '\\u003e')
+            .replace('&', '\\u0026'))
+
 def plot_lenght_distribution(samples, hist="percent", taskId=None):
     fig = go.Figure()
     export_dir = os.path.join(project_root, "app" ,"static", "images", taskId,  "export", "peptide_length_distribution")
@@ -75,7 +87,7 @@ def plot_lenght_distribution(samples, hist="percent", taskId=None):
     )
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return graphJSON
+    return escape_json_for_inline_script(graphJSON)
     
 STANDARD_AA = set("ACDEFGHIKLMNPQRSTVWY")
 # The following method filters the data to remove contamination.
