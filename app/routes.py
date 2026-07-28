@@ -902,7 +902,7 @@ def createGibbsBar():
     with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
         mhcclass = f.readline()
 
-    barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/*/images/*.barplot.png')
+    barLocation = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/*.barplot.JPG')
 
     if len(barLocation) == 1:
         barLocation = barLocation[0][4:]
@@ -910,19 +910,19 @@ def createGibbsBar():
         barLocation = f'/static/others/gibbsBarNotFound.JPG'
 
     if len(cluster) == 0:
-        tab_files = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/*/images/gibbs.KLDvsClusters.tab')
+        tab_files = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/images/gibbs.KLDvsClusters.tab')
         bestCluster = pd.read_table(tab_files[0])
         bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
 
         print(f"generateGibbs : Best Cluster for {sample}'s {replicate} : {bestCluster}")
 
-        seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/*/logos/gibbs_logos_*of{bestCluster}*-001.png'))]
+        seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{bestCluster}*-001.jpg'))]
 
     else:
-        seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/*/logos/gibbs_logos_*of{cluster}*-001.png'))]
+        seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*-001.jpg'))]
 
         if len(seqClusters) != int(cluster):
-            seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/*/logos/gibbs_logos_*of{cluster}*-001.png'))]
+            seqClusters = [[x[4:], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate}/logos/gibbs_logos_*of{cluster}*-001.jpg'))]
 
     # Adding information regarding number of peptides in the core
     findNumberOfPeptidesInCore(seqClusters, taskId, sample, replicate+'.txt')
@@ -1675,7 +1675,7 @@ def download_gibbscluster_core(taskid, sample, replicate, cluster_attempt):
 
     safe_base_dir = os.path.realpath(os.path.join(project_root, 'app', 'static', 'images', taskid))
     core_base = os.path.join(safe_base_dir, sample, 'gibbscluster', replicate)
-    matches = glob.glob(os.path.join(core_base, '*', 'cores', f'*{cluster_attempt}*'))
+    matches = glob.glob(os.path.join(core_base, 'cores', f'*{cluster_attempt}*'))
 
     if not matches:
         logger.warning(f"No core file found for cluster {cluster_attempt} under {core_base}")

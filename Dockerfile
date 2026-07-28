@@ -23,7 +23,8 @@ RUN wget -q https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz \
   && make -j"$(nproc)" > /dev/null \
   && make install > /dev/null \
   && cd .. && rm -rf Python-2.7.18 Python-2.7.18.tgz \
-  && ln -sf /usr/local/python2/bin/python2 /usr/local/bin/python2
+  && ln -sf /usr/local/python2/bin/python2 /usr/local/bin/python2 \
+  && ln -sf /usr/local/python2/bin/python2.7 /usr/local/bin/python2.7
 
 RUN wget -q https://bootstrap.pypa.io/pip/2.7/get-pip.py \
   && python2 get-pip.py > /dev/null && rm get-pip.py \

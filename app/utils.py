@@ -205,9 +205,9 @@ def getGibbsImages(logger, taskId, samples_data):
 
         for replicate in sorted(replicates.keys()):
 
-            logger.info(f'Path for Barplots: app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/images/*.png')
+            logger.info(f'Path for Barplots: app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.JPG')
 
-            bar_plot = [x[len('app/static/'):] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/images/*.barplot.png')]
+            bar_plot = [x[len('app/static/'):] for x in glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.barplot.JPG')]
 
             # Processing only if Bar Plot was generated for the input
             if len(bar_plot) == 0:
@@ -215,11 +215,11 @@ def getGibbsImages(logger, taskId, samples_data):
                 continue
 
             # Finding the best cluster
-            tab_files = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/images/gibbs.KLDvsClusters.tab')
+            tab_files = glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/gibbs.KLDvsClusters.tab')
             bestCluster = pd.read_table(tab_files[0])
             bestCluster = bestCluster[bestCluster.columns].sum(axis=1).idxmax()
 
-            clusters = [[x[len('app/static/'):], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/logos/gibbs_logos_*of{bestCluster}*-001.png'))]
+            clusters = [[x[len('app/static/'):], "Number of peptides in core could not be calculated", [], None, None] for x in sorted(glob.glob(f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/gibbs_logos_*of{bestCluster}*-001.jpg'))]
 
             # Finding the number of records used for the cluster
             findNumberOfPeptidesInCore(clusters, taskId, sample, replicate)
@@ -246,14 +246,14 @@ def getGibbsImagesAll(logger, taskId, samples_data):
 
         for replicate in sorted(replicates.keys()):
             bar_plots = [x[len('app/static/'):] for x in glob.glob(
-                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/images/*.barplot.png')]
+                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/*.barplot.JPG')]
             if not bar_plots:
                 continue
 
             bar_plot = bar_plots[0]
 
             tab_files = glob.glob(
-                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/images/gibbs.KLDvsClusters.tab')
+                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/images/gibbs.KLDvsClusters.tab')
             if not tab_files:
                 continue
             best_df = pd.read_table(tab_files[0])
@@ -261,7 +261,7 @@ def getGibbsImagesAll(logger, taskId, samples_data):
 
             # Determine max cluster count from logo filenames
             all_logos = glob.glob(
-                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/logos/gibbs_logos_*-001.png')
+                f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/gibbs_logos_*-001.jpg')
             max_n = 0
             for lf in all_logos:
                 try:
@@ -275,7 +275,7 @@ def getGibbsImagesAll(logger, taskId, samples_data):
                 entries = [
                     [x[len('app/static/'):], "Number of peptides in core could not be calculated", [], None, None]
                     for x in sorted(glob.glob(
-                        f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/logos/gibbs_logos_*of{n}*-001.png'))
+                        f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/gibbs_logos_*of{n}*-001.jpg'))
                 ]
                 findNumberOfPeptidesInCore(entries, taskId, sample, replicate)
                 appendPredictedAllelesInfo(entries, taskId, sample, replicate)
@@ -285,7 +285,7 @@ def getGibbsImagesAll(logger, taskId, samples_data):
 
             for n in range(1, min(max_n, 6) + 1):
                 logos_n = glob.glob(
-                    f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/logos/gibbs_logos_*of{n}*-001.png')
+                    f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/logos/gibbs_logos_*of{n}*-001.jpg')
                 if logos_n:
                     gibbs_all[sample][replicate[:-4]][str(n)] = {'bar_plot': bar_plot, 'clusters': _make_clusters(n)}
 
@@ -300,7 +300,7 @@ def findNumberOfPeptidesInCore(clusters, taskId, sample, replicate):
         cluster_attempt = os.path.basename(cluster[0]).split("_")[2].split("-")[0]
 
         try:
-            path_for_core = f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/*/cores/*{cluster_attempt}*'
+            path_for_core = f'app/static/images/{taskId}/{sample}/gibbscluster/{replicate[:-4]}/cores/*{cluster_attempt}*'
             print(f'findNumberOfPeptidesInCore : Searching for Core at={path_for_core}')
 
             core_files = glob.glob(path_for_core)
