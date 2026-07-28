@@ -961,13 +961,17 @@ def runHLAClust(taskId, data, species=None, use_mhc_tp_full_DB=None, mhcclass=No
                             Path(path).mkdir(parents=True, exist_ok=True)
                             logger.info(f'Directory Created : {path}')
 
-                            # Running the tool for every replicate
+                            # Running the tool for every replicate. clust-search expects a
+                            # directory that directly contains 'cores/' and 'matrices/' as
+                            # children (it does its own os.path.join(gibbs_folder, 'matrices')
+                            # internally) - that's gibbs_base itself in this flattened Docker
+                            # GibbsCluster output layout (see the Dockerfile's sed patch that
+                            # removed the old $prefix subdirectory nesting).
                             gibbs_base = os.path.join(project_root, 'app', 'static', 'images', taskId, sample, 'gibbscluster', replicate[:-4])
-                            gibbs_subdirs = sorted([d for d in os.listdir(gibbs_base) if os.path.isdir(os.path.join(gibbs_base, d))])
-                            input_file = os.path.join(gibbs_base, gibbs_subdirs[0]) if gibbs_subdirs else gibbs_base
+                            input_file = gibbs_base
                             ref_file = os.path.join(project_root, 'app', 'tools', 'HLA-PepClust', 'data', 'ref_data')
 
-                            run_clust_search(
+                            clust_result = run_clust_search(
                                 input_file=input_file,
                                 ref_file=ref_file,
                                 output_dir=path,
@@ -977,6 +981,8 @@ def runHLAClust(taskId, data, species=None, use_mhc_tp_full_DB=None, mhcclass=No
                                 allele_file=allele_file,
                                 logger=logger
                             )
+                            if clust_result and 'error' in clust_result:
+                                logger.error(f"HLA Clust failed for {sample}/{replicate}: {clust_result['error']}")
 
                     except FileExistsError:
                         logger.info(f'Directory already exists {path}')
@@ -1034,8 +1040,10 @@ def run_clust_search(input_file, ref_file, output_dir, species, db_species=None,
         return {"success": "Clustering completed", "output": result.stdout}
 
     except Exception as e:
+        if logger:
+            logger.error(f"run_clust_search failed: {e}")
         return {"error": str(e)}
-    
+
 def getHLAClustResults(taskId, data):
     print(f'getMajorityBindingImages method called with taskId: {taskId}')
 
