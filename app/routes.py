@@ -751,7 +751,7 @@ def getExistingReport(taskId):
     # Extract alleles as a comma-separated string
     alleles_unformatted = ','.join(set(allele_compatibility_matrix.columns))
 
-    samples =[ f.name for f in os.scandir(dirName) if f. is_dir()]
+    samples = sorted(f.name for f in os.scandir(dirName) if f.is_dir())
 
     # Saving the data and loading into the dictionary
     for sample_name  in samples:
@@ -1794,7 +1794,7 @@ def export_report(taskId):
     dirName = os.path.join(data_mount, taskId)
 
     data = {}
-    for sample_name in [f.name for f in os.scandir(dirName) if f.is_dir()]:
+    for sample_name in sorted(f.name for f in os.scandir(dirName) if f.is_dir()):
         replicates = [fn for fn in os.listdir(os.path.join(dirName, sample_name)) if fn.endswith('.csv')]
         if replicates:
             data[sample_name] = replicates
