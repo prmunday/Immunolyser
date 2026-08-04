@@ -647,7 +647,7 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                     for allele in alleles.split(','):
                         if compatibility_matrix.at[Class_Two_Predictors.MixMHC2pred.full_name, allele] == 'Yes':
                             print(f"  Compatible allele found for MixMHC2pred: {allele}")
-                            f = pd.read_csv(f'{project_root}/app/static/images/{taskId}/{sample}/MixMHC2pred/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}', skiprows=19, sep='\t')
+                            f = pd.read_csv(f'{project_root}/app/static/images/{taskId}/{sample}/MixMHC2pred/{replicate[:-14]}/{allele.replace(":", "_")}/{replicate}', comment='#', sep='\t')
 
                             f['Binding Level'] = ""
                             f['Control'] = ""

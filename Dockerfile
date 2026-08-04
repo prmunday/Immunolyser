@@ -104,7 +104,18 @@ RUN wget -q https://github.com/GfellerLab/MixMHCpred/archive/refs/tags/v3.0.tar.
 # archive root, no top-level MixMHC2pred-2.0/ folder) — extract straight into
 # the target dir we create, not app/tools/ itself (would collide with our
 # own app/tools/README.md).
-RUN wget -q https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.0.2.2/MixMHC2pred-2.0.zip -O /tmp/mixmhc2pred.zip \
+#
+# Using the v2.1 beta1 release, not the stable v2.0.2.2 one: v2.0.2.2 only
+# bundles human (HLA) allele PWM definitions. Non-human alleles (e.g. mouse
+# H-2) normally come from a separate download at mixmhc2pred.gfellerlab.org/PWMdef,
+# but that site is no longer live (domain now resolves to an unrelated host,
+# cert doesn't even match). v2.1.beta1 bundles PWMdef for all supported species
+# in the same package as its binary — the binary and PWMdef format are
+# versioned together (pan_v29), so don't mix v2.0.2.2's binary with v2.1's
+# PWMdef data or vice versa. The directory is still called MixMHC2pred-2.0
+# because that string is also the tool-name key used to look up allele names
+# in app/static/Immunolyser2.0_Allele_Dictionary.csv — keep it as-is.
+RUN wget -q https://github.com/GfellerLab/MixMHC2pred/releases/download/v2.1.beta1/MixMHC2pred-2.1.beta1.zip -O /tmp/mixmhc2pred.zip \
   && mkdir -p app/tools/MixMHC2pred-2.0 \
   && unzip -oq /tmp/mixmhc2pred.zip -d app/tools/MixMHC2pred-2.0 \
   && chmod +x app/tools/MixMHC2pred-2.0/MixMHC2pred_unix \
