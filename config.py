@@ -26,9 +26,10 @@ class Config(object):
         CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use localhost on the server
     CELERY_RESULT_BACKEND = f'db+sqlite:///{DB_PATH}'
     CELERY_DEFAULT_QUEUE='celery'  # Ensure all tasks are routed to 'celery' queue
-    # Redis re-delivers tasks whose visibility timeout is exceeded. Long jobs (many alleles)
-    # can run for several hours, so set this well above the worst-case job duration.
-    CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 43200}  # 12 hours
+    # Redis re-delivers tasks whose visibility timeout is exceeded. Must stay comfortably
+    # above the longest possible task runtime (see LONG_JOB_TIME_LIMIT below) — otherwise
+    # Redis can re-deliver a still-running long job to a second worker mid-run.
+    CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 100000}  # ~27.8 hours
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 
@@ -43,6 +44,25 @@ class Config(object):
     MAX_TOTAL_PEPTIDES = 300000000000000000000000
     MAX_ALLELES = 6
 
+    # Non-blocking heads-up shown per-sample above this peptide count (GibbsCluster
+    # runtime scales worse than linearly with peptide count — see the ~9,840-peptide/
+    # ~3h vs ~27,900-peptide/~9h23m comparison that motivated this). Informational
+    # only, does not block submission; separate from the MAX_TOTAL_PEPTIDES hard cap
+    # above, which sums across all samples rather than checking any one sample.
+    PEPTIDE_WARNING_THRESHOLD = int(os.environ.get('PEPTIDE_WARNING_THRESHOLD', 10000))
+
     # reCAPTCHA v3 (leave blank to disable — useful for local dev)
     RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
     RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
+
+    # Emails allowed to run jobs with an extended time limit (see LONG_JOB_* below),
+    # for datasets too large to finish within the default limit. Comma-separated,
+    # matched case-insensitively. Kept out of git — set only in the server's .env.
+    # Deliberately not exposed anywhere in the UI or API responses.
+    LONG_JOB_ALLOWED_EMAILS = {
+        e.strip().lower()
+        for e in os.environ.get('LONG_JOB_ALLOWED_EMAILS', '').split(',')
+        if e.strip()
+    }
+    LONG_JOB_SOFT_TIME_LIMIT = 72000  # 20 hours
+    LONG_JOB_TIME_LIMIT = 72300       # 20 hours 5 minutes

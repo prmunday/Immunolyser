@@ -54,7 +54,7 @@ if mhc_class == "I":
                     '-G', seq2logo_path,
                     '-g', num_clusters,
                     '-k', str(os.cpu_count()),
-                    '-T', '-C', '-l', str(motif_length),
+                    '-l', str(motif_length),
                     '-R', f'{project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-13]}',
                     '-i', num_iterations,
                     '-t', mc_temperature,
@@ -64,15 +64,21 @@ if mhc_class == "I":
                     '-S', num_seeds,
                     '-c', sequence_weighting_type,
                     '-z', background_model,
-                    '-T', use_trash_cluster,
                     '-j', trash_cluster_threshold,
                     '-D', max_deletion_length,
                     '-I', max_insertion_length,
                     '-u', indel_move_interval,
-                    '-x', shift_move_interval,
+                    '-r', shift_move_interval,
                     '-s', phase_shift_move_interval,
-                    '-p', hydrophobic_p1_preference,
                 ]
+                # Boolean-only flags (no argument in GibbsCluster's getopts spec) must come
+                # last: Getopt::Std stops parsing at the first token that doesn't start with
+                # '-', so a bare flag followed by a value silently drops every flag after it.
+                if use_trash_cluster == '1':
+                    cmd.append('-T')
+                cmd.append('-C')
+                if hydrophobic_p1_preference == '1':
+                    cmd.append('-p')
                 print("Gibbs Command for MHC Class I:", ' '.join(cmd))
                 result = subprocess.run(cmd, shell=False, capture_output=True, text=True)
                 print(result.stdout)
@@ -104,7 +110,7 @@ elif mhc_class == "II":
                     '-G', seq2logo_path,
                     '-g', num_clusters,
                     '-k', str(os.cpu_count()),
-                    '-T', '-l', str(motif_length),
+                    '-l', str(motif_length),
                     '-R', f'{project_root}/app/static/images/{task_id}/{sample}/gibbscluster/{replicate[:-14]}',
                     '-i', num_iterations,
                     '-t', mc_temperature,
@@ -114,15 +120,20 @@ elif mhc_class == "II":
                     '-S', num_seeds,
                     '-c', sequence_weighting_type,
                     '-z', background_model,
-                    '-T', use_trash_cluster,
                     '-j', trash_cluster_threshold,
                     '-D', max_deletion_length,
                     '-I', max_insertion_length,
                     '-u', indel_move_interval,
-                    '-x', shift_move_interval,
+                    '-r', shift_move_interval,
                     '-s', phase_shift_move_interval,
-                    '-p', hydrophobic_p1_preference,
                 ]
+                # Boolean-only flags (no argument in GibbsCluster's getopts spec) must come
+                # last: Getopt::Std stops parsing at the first token that doesn't start with
+                # '-', so a bare flag followed by a value silently drops every flag after it.
+                if use_trash_cluster == '1':
+                    cmd.append('-T')
+                if hydrophobic_p1_preference == '1':
+                    cmd.append('-p')
                 print("Gibbs Command for MHC Class II:", ' '.join(cmd))
                 result = subprocess.run(cmd, shell=False, capture_output=True, text=True)
                 print(result.stdout)

@@ -588,6 +588,11 @@ def saveBindersData(taskId, alleles, method, mhcclass):
                 # Adding PTM detected method
                 input_file['PTM detected'] = input_file.apply(lambda x: 'N' if x['Peptide'] == x['StrippedPeptide'] else 'Y', axis=1)
 
+                # Collapsing duplicate PSM rows (raw uploads have one row per spectrum match,
+                # multiple per peptide) to one row per StrippedPeptide — this is the merge key
+                # used below, and duplicates here cause many-to-many merge blowups downstream.
+                input_file = input_file.drop_duplicates('StrippedPeptide', keep='first')
+
                 # Initialsing the allele and binders collection
                 alleles_dict = {}
 

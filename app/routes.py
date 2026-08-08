@@ -258,6 +258,7 @@ def initialiser():
                                 max_samples=app.config['MAX_SAMPLES'],
                                 max_total_peptides=app.config['MAX_TOTAL_PEPTIDES'],
                                 max_alleles=app.config['MAX_ALLELES'],
+                                peptide_warning_threshold=app.config['PEPTIDE_WARNING_THRESHOLD'],
                                 recaptcha_site_key=app.config['RECAPTCHA_SITE_KEY'])
 
     elif request.method == 'POST':
@@ -329,7 +330,8 @@ def initialiser():
         alleles_unformatted = request.form.get('alleles')
         species = request.form.get('species')
         use_mhc_tp_full_DB = request.form.get('useFullDB', 'no')
-        
+        email = (request.form.get('email') or '').strip()
+
         ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
         country = get_country_from_request(request)
 
@@ -349,7 +351,22 @@ def initialiser():
                 Class_One_Predictors.MHCflurry.to_dict(),
             ]
 
-        task = submit_job.delay(samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species, use_mhc_tp_full_DB)
+        # Datasets too large to finish within the default time limit can be approved
+        # for an extended one — gated by a secret, server-side email allowlist (never
+        # exposed in the UI/API), so the submission flow looks identical either way.
+        # Must be decided at dispatch time: soft_time_limit/time_limit are fixed once
+        # the Celery task is queued and can't be changed after the fact.
+        task_kwargs = {}
+        if email.lower() in app.config['LONG_JOB_ALLOWED_EMAILS']:
+            task_kwargs = {
+                'soft_time_limit': app.config['LONG_JOB_SOFT_TIME_LIMIT'],
+                'time_limit': app.config['LONG_JOB_TIME_LIMIT'],
+            }
+
+        task = submit_job.apply_async(
+            args=[samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species, use_mhc_tp_full_DB],
+            **task_kwargs
+        )
 
         insert_job(
             job_id=task.id,
@@ -361,6 +378,11 @@ def initialiser():
             referrer=referrer,
             status="SUBMITTED"
         )
+
+        # Register the email immediately if provided at submission time, so users
+        # who fill it in here don't also need the post-hoc /submit_email flow.
+        if email and re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            save_email(task.id, email=email)
 
         return redirect(url_for('job_confirmation', task_id=task.id))
 

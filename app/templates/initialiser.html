@@ -30,9 +30,10 @@
 					<label for="sample_name" hidden>Sample</label> 
 					<input id="sample_name-1" name="sample-1" required type="text" class="col-md-7 mb-3">
 					
-					<label for="sample_file-1" hidden>Peptide file</label> 
+					<label for="sample_file-1" hidden>Peptide file</label>
 					<input id="sample_file-1" multiple name="sample-1" required type="file"
-						   class="col-md-5 mb-3" onchange="calculateNumberOfPeptidesInCsv(event)" accept=".csv">    
+						   class="col-md-5 mb-3" onchange="calculateNumberOfPeptidesInCsv(event)" accept=".csv">
+					<small class="peptide-warning form-text text-warning col-md-5 offset-md-7" style="display:none;"></small>
 				</div>
 			</div>
 
@@ -143,6 +144,13 @@
 			</div>
 		</fieldset>
 
+		<!-- Optional notification email -->
+		<div class="form-row mb-3">
+			<label class="col-md-7" for="email">Email (optional)</label>
+			<input type="email" class="col-md-5 form-control" id="email" name="email"
+				placeholder="Enter your email for notification">
+		</div>
+
 		<!-- Submit -->
 		<div class="mt-3 mb-4">
 			<input class="btn-submit" id="submit" name="submit" type="submit" value="Submit Job">
@@ -158,6 +166,7 @@
 	let maxSamples = parseInt("{{ max_samples }}");
 	let maxRows = parseInt("{{ max_total_peptides }}");
 	let maxAlleles = parseInt("{{ max_alleles }}");
+	let peptideWarningThreshold = parseInt("{{ peptide_warning_threshold }}");
 	const peptidesPerSample = {
 		'sample_file-1': 0 // Mandatory first sample with 0 peptides to start with
 	};
@@ -268,6 +277,13 @@
 		fileInput.id = "sample_file-" + sampleId;
 		fileInput.value = "";
 		fileInput.setAttribute('onchange', 'calculateNumberOfPeptidesInCsv(event)');
+
+		const warningEl = cln.querySelector(".peptide-warning");
+		if (warningEl) {
+			warningEl.style.display = "none";
+			warningEl.textContent = "";
+		}
+
 		samples.appendChild(cln);
 
 		// Update dictionary tracking number of pepitdes
@@ -355,6 +371,21 @@
 					if (filesProcessed === files.length) {
 						peptidesPerSample[event.target.id] = totalRows;
 						showSpinner(false);
+
+						// Non-blocking heads-up for samples large enough that processing
+						// (in particular Gibbs clustering) may take a long time. Informational
+						// only — does not prevent submission.
+						const warningEl = event.target.parentElement.querySelector(".peptide-warning");
+						if (warningEl) {
+							if (totalRows > peptideWarningThreshold) {
+								warningEl.textContent = `Heads up: this sample has ${totalRows.toLocaleString()} peptides, ` +
+									`which is large. Processing (especially clustering) may take significantly longer than usual.`;
+								warningEl.style.display = "block";
+							} else {
+								warningEl.style.display = "none";
+								warningEl.textContent = "";
+							}
+						}
 					}
 				};
 
