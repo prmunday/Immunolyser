@@ -88,6 +88,40 @@ services:
     networks:
       - internal
 
+  celery_beat:
+    build: .
+    image: immunolyser:latest
+    container_name: celery_beat
+    restart: unless-stopped
+    command: ["beat"]
+    # Beat only enqueues scheduled tasks onto the broker — the actual task
+    # bodies (including dispatch_pending_jobs' file I/O) run in celery_worker,
+    # which already mounts these same volumes. Mounted here too for import-time
+    # consistency (config.py resolves IMMUNOLYSER_DATA/results.sqlite at
+    # startup) and so the persistent schedule file (see entrypoint.sh) lands
+    # on /pvol rather than the container's ephemeral filesystem.
+    volumes:
+      - ${DATA_VOLUME:-./data}:/pvol
+      - ${HLA_PEPCLUST_REF_DATA:-./hla-pepclust-ref-data}:/app/app/tools/HLA-PepClust/data/ref_data
+    env_file: .env
+    environment:
+      - IS_DOCKER=true
+      - IMMUNOLYSER_DATA=/pvol
+    depends_on:
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    networks:
+      - internal
+
   redis:
     image: redis:alpine
     container_name: redis

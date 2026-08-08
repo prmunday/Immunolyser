@@ -63,6 +63,11 @@ if [ "$1" = "flask" ]; then
     exec gunicorn --workers 2 --bind 0.0.0.0:5000 --timeout 120 firstdemo:app
 elif [ "$1" = "celery" ]; then
     exec celery -A app.celery worker --loglevel=info --concurrency=1
+elif [ "$1" = "beat" ]; then
+    # --schedule points the persistent schedule file (last-run timestamps, used
+    # to avoid re-firing a task on restart) at /pvol instead of the container's
+    # ephemeral filesystem, so it survives container recreation.
+    exec celery -A app.celery beat --loglevel=info --schedule=/pvol/celerybeat-schedule
 else
     exec "$@"
 fi
