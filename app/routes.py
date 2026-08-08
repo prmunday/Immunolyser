@@ -6,7 +6,7 @@ from app.utils import *
 from pathlib import Path
 from app.Pepscan import PepScan
 from collections import Counter,OrderedDict
-import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests, zipfile, json, smtplib, traceback, urllib.parse
+import uuid, logging, base64, re, shutil, glob, os, pandas as pd, subprocess, io, requests, zipfile, json, smtplib, traceback, urllib.parse, time
 from datetime import datetime, timedelta
 from Bio import SeqIO
 from constants import *
@@ -29,6 +29,11 @@ project_root = os.path.dirname(os.path.realpath(os.path.join(__file__, "..")))
 DEMO_TASK_ID = app.config['DEMO_TASK_ID']
 
 data_mount = app.config['IMMUNOLYSER_DATA']
+
+# Where /initialiser stashes a submission's data while dispatch is deferred —
+# see dispatch_pending_jobs() below for why.
+PENDING_JOBS_DIR = '_pending_jobs'
+
 logger = logging.getLogger(__name__)
 # Configure logging format and level as needed
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -330,7 +335,6 @@ def initialiser():
         alleles_unformatted = request.form.get('alleles')
         species = request.form.get('species')
         use_mhc_tp_full_DB = request.form.get('useFullDB', 'no')
-        email = (request.form.get('email') or '').strip()
 
         ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
         country = get_country_from_request(request)
@@ -351,25 +355,31 @@ def initialiser():
                 Class_One_Predictors.MHCflurry.to_dict(),
             ]
 
-        # Datasets too large to finish within the default time limit can be approved
-        # for an extended one — gated by a secret, server-side email allowlist (never
-        # exposed in the UI/API), so the submission flow looks identical either way.
-        # Must be decided at dispatch time: soft_time_limit/time_limit are fixed once
-        # the Celery task is queued and can't be changed after the fact.
-        task_kwargs = {}
-        if email.lower() in app.config['LONG_JOB_ALLOWED_EMAILS']:
-            task_kwargs = {
-                'soft_time_limit': app.config['LONG_JOB_SOFT_TIME_LIMIT'],
-                'time_limit': app.config['LONG_JOB_TIME_LIMIT'],
-            }
-
-        task = submit_job.apply_async(
-            args=[samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species, use_mhc_tp_full_DB],
-            **task_kwargs
-        )
+        # Dispatch is deferred rather than immediate. Datasets too large to finish
+        # within the default time limit can be approved for an extended one, but
+        # that decision needs the submitter's email — which is only collected on
+        # the confirmation page shown *after* this request, via the existing
+        # /submit_email flow. A Celery task's soft_time_limit/time_limit can't be
+        # changed once queued, so we generate the job id ourselves, persist the
+        # submission, and let dispatch_pending_jobs (periodic task, below) do the
+        # actual dispatch once it knows whether an allowlisted email showed up —
+        # or the grace period elapses first, whichever happens sooner.
+        job_id = str(uuid.uuid4())
+        pending_dir = os.path.join(data_mount, PENDING_JOBS_DIR)
+        os.makedirs(pending_dir, exist_ok=True)
+        with open(os.path.join(pending_dir, f'{job_id}.json'), 'w') as f:
+            json.dump({
+                'samples': samples,
+                'motif_length': motif_length,
+                'mhcclass': mhcclass,
+                'alleles_unformatted': alleles_unformatted,
+                'predictionTools': predictionTools,
+                'species': species,
+                'use_mhc_tp_full_DB': use_mhc_tp_full_DB,
+            }, f)
 
         insert_job(
-            job_id=task.id,
+            job_id=job_id,
             country=country,
             mhc_class=mhcclass,
             species=species,
@@ -379,12 +389,7 @@ def initialiser():
             status="SUBMITTED"
         )
 
-        # Register the email immediately if provided at submission time, so users
-        # who fill it in here don't also need the post-hoc /submit_email flow.
-        if email and re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            save_email(task.id, email=email)
-
-        return redirect(url_for('job_confirmation', task_id=task.id))
+        return redirect(url_for('job_confirmation', task_id=job_id))
 
 @celery.task(name='app.submit_job', bind=True, soft_time_limit=7200, time_limit=7260)
 def submit_job(self, samples, motif_length, mhcclass, alleles_unformatted, predictionTools, species, use_mhc_tp_full_DB):
@@ -1729,6 +1734,72 @@ def serve_motif_ref(species, filename):
     if not os.path.isfile(filepath):
         return abort(404)
     return send_file(filepath, mimetype='image/png')
+
+
+@celery.task(name='app.routes.dispatch_pending_jobs')
+def dispatch_pending_jobs():
+    """Dispatch jobs queued by /initialiser once we know whether the long-job
+    time limit applies. Deferred because that decision needs the submitter's
+    email, which is only collected on the confirmation page shown *after*
+    the job id already exists (see /initialiser's PENDING_JOBS_DIR comment).
+    Runs frequently (see CELERYBEAT_SCHEDULE) so dispatch still feels
+    near-instant for the common case once an allowlisted email is registered,
+    while giving everyone else a short grace period before falling back to
+    the default limit automatically."""
+    pending_dir = os.path.join(data_mount, PENDING_JOBS_DIR)
+    if not os.path.isdir(pending_dir):
+        return
+
+    grace_seconds = app.config['PENDING_DISPATCH_GRACE_SECONDS']
+    now = time.time()
+
+    for filename in os.listdir(pending_dir):
+        if not filename.endswith('.json'):
+            continue
+        job_id = filename[:-len('.json')]
+        filepath = os.path.join(pending_dir, filename)
+
+        try:
+            age = now - os.path.getmtime(filepath)
+        except FileNotFoundError:
+            continue  # another sweep (or a slow restart race) already claimed it
+
+        email = get_email(job_id)
+        is_long_job_approved = bool(email) and email.strip().lower() in app.config['LONG_JOB_ALLOWED_EMAILS']
+
+        if not is_long_job_approved and age < grace_seconds:
+            continue  # still within the grace window — give them a chance to add an email
+
+        try:
+            with open(filepath, 'r') as f:
+                payload = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            logger.exception(f"dispatch_pending_jobs: could not read pending job {job_id}, skipping")
+            continue
+
+        limit_kwargs = {}
+        if is_long_job_approved:
+            limit_kwargs = {
+                'soft_time_limit': app.config['LONG_JOB_SOFT_TIME_LIMIT'],
+                'time_limit': app.config['LONG_JOB_TIME_LIMIT'],
+            }
+
+        submit_job.apply_async(
+            args=[
+                payload['samples'], payload['motif_length'], payload['mhcclass'],
+                payload['alleles_unformatted'], payload['predictionTools'],
+                payload['species'], payload['use_mhc_tp_full_DB'],
+            ],
+            task_id=job_id,
+            **limit_kwargs,
+        )
+
+        try:
+            os.remove(filepath)
+        except FileNotFoundError:
+            pass
+
+        logger.info(f"dispatch_pending_jobs: dispatched job_id={job_id} long_job_approved={is_long_job_approved}")
 
 
 @celery.task(name='app.routes.warn_expiring_jobs')

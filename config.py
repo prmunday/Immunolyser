@@ -66,3 +66,10 @@ class Config(object):
     }
     LONG_JOB_SOFT_TIME_LIMIT = 72000  # 20 hours
     LONG_JOB_TIME_LIMIT = 72300       # 20 hours 5 minutes
+
+    # How long dispatch_pending_jobs waits after submission before dispatching a
+    # job with the default (non-extended) time limit, giving the submitter a
+    # window to add an allowlisted email via the confirmation page first. See
+    # /initialiser's PENDING_JOBS_DIR comment in app/routes.py for why dispatch
+    # is deferred at all rather than immediate.
+    PENDING_DISPATCH_GRACE_SECONDS = int(os.environ.get('PENDING_DISPATCH_GRACE_SECONDS', 90))

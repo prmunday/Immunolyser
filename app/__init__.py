@@ -35,6 +35,10 @@ celery = make_celery(app)
 from app import routes
 
 celery.conf.CELERYBEAT_SCHEDULE = {
+    'dispatch-pending-jobs': {
+        'task': 'app.routes.dispatch_pending_jobs',
+        'schedule': 15.0,  # seconds — keeps submission-to-dispatch latency low
+    },
     'warn-expiring-jobs': {
         'task': 'app.routes.warn_expiring_jobs',
         'schedule': crontab(hour=8, minute=0),
