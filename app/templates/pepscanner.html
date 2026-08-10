@@ -66,7 +66,7 @@
     <!-- <label for="sample" hidden>Peptide File</label>  -->
     <!-- <input id="file" name="file" required type="file" class="col-md-6 mb-3">	 -->
 
-    <div style="padding-left: 18px;" class="input-group mb-3">
+    <div class="input-group mb-3 pepscan-field">
       <div class="custom-file">
           <input type="file" class="custom-file-input" id="file" style="cursor: pointer;" name="file" required accept=".csv">
           <label class="custom-file-label" for="file" id="filename">Select the peptide File</label>
@@ -74,7 +74,7 @@
       <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select an input csv file.&#013;The file should contain 'Peptide' and 'Accession' columns."></i>
     </div>
 
-    <div style="padding-left: 18px;" class="input-group mb-3">
+    <div class="input-group mb-3 pepscan-field">
         <div class="custom-file">
             <input type="file" class="custom-file-input" id="background" style="cursor: pointer;" name="background" required accept=".fasta">
             <label class="custom-file-label" for="background">Select the target proteome fasta file (optional)</label>
@@ -82,7 +82,7 @@
         <i class="fa fa-question-circle" aria-hidden="true" style="cursor: pointer; padding-left: 10px; padding-top: 6px;" data-toggle="tooltip" data-placement="right" title="Please select the target fasta file.&#013;This is the file you would download from UniProt as proteome from any species. If you don't upload this, the human proteome with proteins reviewed by UniProt (Swiss-Prot reviewed) will be used as the target."></i>
     </div>
     
-    <div style="padding-left: 18px;" class="input-group mb-3">
+    <div class="input-group mb-3 pepscan-field">
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" value="" id="runProtPeptigram" checked>
 
@@ -96,7 +96,7 @@
     </div>
     
   
-    <div class="col" style="padding-left: 18px;">
+    <div class="col pepscan-field">
         <div style="display: flex; align-items: center;">
             <input type="text" class="form-control" id="proteinInput" placeholder="Type protein ID and press Enter" style="flex: 1; margin-right: 10px;">
             <input type="hidden" name="protein_ids" id="proteinHiddenInput">

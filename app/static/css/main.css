@@ -356,6 +356,29 @@ input[type=text]:focus, input[type=password]:focus {
 }
 
 /* ============================================================
+   Scrollable filter/view panel pairs (overlap, gibbs, allele-upset)
+   ============================================================ */
+.scroll-panel {
+    max-height: 1000px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    word-break: break-word;
+}
+.view-panel {
+    max-height: 1000px;
+    overflow-y: auto;
+}
+.view-panel--padded {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.scroll-panel .form-check-label {
+    display: block;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* ============================================================
    Gibbs Cluster Row — flat flex-wrap layout (replaces Slick carousel)
    ============================================================ */
 .gibbs-cluster-row {
@@ -477,7 +500,7 @@ input[type=text]:focus, input[type=password]:focus {
 .mhctp-row { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
 .mhctp-row.top-match { font-weight: 600; }
 .mhctp-rank { color: #888; min-width: 18px; }
-.mhctp-allele { min-width: 54px; font-family: monospace; }
+.mhctp-allele { min-width: 54px; font-family: monospace; white-space: nowrap; }
 .mhctp-bar-wrap { flex: 1; background: #eee; border-radius: 3px; height: 6px; }
 .mhctp-bar-fill { background: #4a90d9; height: 6px; border-radius: 3px; }
 .mhctp-score { min-width: 32px; color: #555; }
@@ -517,8 +540,12 @@ input[type=text]:focus, input[type=password]:focus {
 }
 
 /* ============================================================
-   Pepscanner Image
+   Pepscanner form fields
    ============================================================ */
+.pepscan-field {
+    padding-left: 18px;
+}
+
 #pepscannerimage {
     max-width: 100%;
     height: auto;
@@ -532,4 +559,33 @@ input[type=text]:focus, input[type=password]:focus {
 .badge {
     padding: 0.4em 0.7em;
     font-size: 0.82em;
+}
+
+/* ============================================================
+   Chip links (Gibbs/seq2logo "download" links)
+   ============================================================ */
+.chip-link {
+    font-size: 0.7rem;
+    padding: 1px 5px;
+    color: var(--color-muted);
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+/* ============================================================
+   Reference table (binding prediction tool/threshold summary)
+   ============================================================ */
+.ref-table {
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+.ref-table th,
+.ref-table td {
+    border: 1px solid var(--color-border);
+    padding: 4px;
+}
+.ref-table th {
+    background-color: var(--color-bg);
 }

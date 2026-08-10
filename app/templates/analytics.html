@@ -70,7 +70,7 @@
         <br>
         <div class="container" style="max-height: 100%;">
             <div class="row">
-                <div id="overlapScrollBar" class="col-2 overflow-auto" style="max-height: 1000px; word-break: break-word;">
+                <div id="overlapScrollBar" class="col-2 scroll-panel">
 
                 {% for sample, replicates in overlapLayout.items() %}
                 <div class="mb-2">
@@ -99,7 +99,7 @@
 
             </div>
 
-                <div id="overallViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
+                <div id="overallViewPane" class="col-10 view-panel">
                     <div id="overlap_render" class="upset"></div>
                 </div>
             </div>
@@ -127,8 +127,7 @@
                             <!-- Tiny download button below the image -->
                             <div style="margin-top: 5px;">
                                 <a href="{{ url_for('download_seq2logo_peptides', taskid=taskId, sample=sample, replicate=replicate[0]) }}"
-                                class="btn btn-sm"
-                                style="font-size: 0.7rem; padding: 1px 5px; color: #666; background-color: transparent; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;">
+                                class="btn btn-sm chip-link">
                                     download input
                                 </a>
                             </div>
@@ -154,7 +153,7 @@
 
             <div class="container" style="max-height: 100%;">
                 <div class="row">
-                    <div id="gibbsScrollBar" class="col-2 overflow-auto" style="max-height: 1000px; word-break: break-word;">
+                    <div id="gibbsScrollBar" class="col-2 scroll-panel">
 
                         {% for sample, replicates in gibbsImages.items() %}
                         <div class="mb-2">
@@ -182,7 +181,7 @@
 
                     </div>
 
-                    <div id="gibbsViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px; padding-right: 30px ; padding-left: 30px">
+                    <div id="gibbsViewPane" class="col-10 view-panel view-panel--padded">
 
                         <div class="seqlogo">
                             {% for sample, replicates in gibbsImages.items() %}
@@ -237,8 +236,7 @@
                                                         <!-- Download core button -->
                                                         <div style="text-align: center; margin-top: 5px;">
                                                             <a href="{{ url_for('download_gibbscluster_core', taskid=taskId, sample=sample, replicate=replicate, cluster_attempt=cluster[5]) }}"
-                                                            class="btn btn-sm"
-                                                            style="font-size: 0.7rem; padding: 1px 5px; color: #666; background-color: transparent; border: 1px solid #ccc; border-radius: 4px; text-decoration: none;"
+                                                            class="btn btn-sm chip-link"
                                                             download="{{ cluster[5] }}.core.txt">
                                                                 download core
                                                             </a>
@@ -388,15 +386,8 @@
 
                             var downloadBtn = document.createElement('a');
                             downloadBtn.href = `/download_gibbscluster_core/${taskId}/${sample}/${replicate}/${cluster[5]}`;
-                            downloadBtn.className = "btn btn-sm";
+                            downloadBtn.className = "btn btn-sm chip-link";
                             downloadBtn.textContent = "download core";
-                            downloadBtn.style.fontSize = "0.7rem";
-                            downloadBtn.style.padding = "1px 5px";
-                            downloadBtn.style.color = "#666";
-                            downloadBtn.style.backgroundColor = "transparent";
-                            downloadBtn.style.border = "1px solid #ccc";
-                            downloadBtn.style.borderRadius = "4px";
-                            downloadBtn.style.textDecoration = "none";
 
                             btnWrapper.appendChild(downloadBtn);
                             container.appendChild(btnWrapper);
@@ -504,7 +495,7 @@
 
             <div class="container" style="max-height: 100%; padding: 0px;">
                 <div class="row">
-                    <div id="alleleScrollBar" class="col-2" style=" word-break: break-word; overflow-x: hidden; overflow-y: auto; max-height: 1000px;">
+                    <div id="alleleScrollBar" class="col-2 scroll-panel">
 
                         {% for allele, samples in upsetLayout.items() %}
                             <div class="col">
@@ -551,7 +542,7 @@
 
 
                     </div>
-                    <div id="upsetViewPane" class="col-10" style="overflow-y: auto; max-height: 1000px;">
+                    <div id="upsetViewPane" class="col-10 view-panel">
 
                         <div>
                             {% for allele in upsetLayout.keys() %}
@@ -596,61 +587,61 @@
                         Only peptides within tool-specific thresholds for strong or weak binders are included. 
                         Thresholds vary depending on the prediction tool and MHC class, for example:
                     </p>
-                    <table style="border-collapse: collapse; margin-bottom: 10px;">
+                    <table class="ref-table">
                         <thead>
                             <tr>
-                                <th style="border: 1px solid #ccc; padding: 4px;">MHC</th>
-                                <th style="border: 1px solid #ccc; padding: 4px;">Tool</th>
-                                <th style="border: 1px solid #ccc; padding: 4px;">Peptide length</th>
-                                <th style="border: 1px solid #ccc; padding: 4px;">Output column</th>
-                                <th style="border: 1px solid #ccc; padding: 4px;">Strong binder threshold</th>
-                                <th style="border: 1px solid #ccc; padding: 4px;">Weak binder threshold</th>
+                                <th>MHC</th>
+                                <th>Tool</th>
+                                <th>Peptide length</th>
+                                <th>Output column</th>
+                                <th>Strong binder threshold</th>
+                                <th>Weak binder threshold</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border: 1px solid #ccc; padding: 4px;">Class I</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">NetMHCpan-4.2</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">8–14-mers</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">EL_rank</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">0.50%</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">2.00%</td>
+                                <td>Class I</td>
+                                <td>NetMHCpan-4.2</td>
+                                <td>8–14-mers</td>
+                                <td>EL_rank</td>
+                                <td>0.50%</td>
+                                <td>2.00%</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">MixMHCpred 3.0</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">%Rank_bestAllele</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">2</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">10</td>
+                                <td></td>
+                                <td>MixMHCpred 3.0</td>
+                                <td></td>
+                                <td>%Rank_bestAllele</td>
+                                <td>2</td>
+                                <td>10</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">MHCflurry 2.0</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">presentation_percentile</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">0.2%</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">5%</td>
+                                <td></td>
+                                <td>MHCflurry 2.0</td>
+                                <td></td>
+                                <td>presentation_percentile</td>
+                                <td>0.2%</td>
+                                <td>5%</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #ccc; padding: 4px;">Class II</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">NetMHCIIpan-4.3</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">12–20-mers</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">%Rank_EL</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">1.00%</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">5.00%</td>
+                                <td>Class II</td>
+                                <td>NetMHCIIpan-4.3</td>
+                                <td>12–20-mers</td>
+                                <td>%Rank_EL</td>
+                                <td>1.00%</td>
+                                <td>5.00%</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">MixMHC2pred-2.0</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;"></td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">%Rank_best</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">2</td>
-                                <td style="border: 1px solid #ccc; padding: 4px;">10</td>
+                                <td></td>
+                                <td>MixMHC2pred-2.0</td>
+                                <td></td>
+                                <td>%Rank_best</td>
+                                <td>2</td>
+                                <td>10</td>
                             </tr>
                         </tbody>
                     </table>
-                    <p style="font-size:0.85em; color:#666; margin-top:6px;">
+                    <p style="font-size:0.85em; color: var(--color-muted); margin-top:6px;">
                         <em>Note: NetMHCpan-4.2c (updated March 2026) renamed the output column <code>Rank</code> to <code>EL_rank</code> (eluted ligand rank). Results from older versions may use the original column name.</em>
                     </p>
                     <ul>

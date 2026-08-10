@@ -6,6 +6,8 @@
     <title>Immunolyser Report — {{ taskId }}</title>
     <style>{{ bootstrap_css | safe }}</style>
     <style>
+        /* Standalone offline export — cannot link static/css/main.css. Mirror any
+           relevant new classes from main.css here manually. */
         body { font-family: Arial, sans-serif; padding: 20px; }
         .report-section { border: 1px solid #ddd; border-radius: 6px; padding: 20px; margin-bottom: 30px; }
         .section-info { background: #f8f9fa; border-left: 4px solid #007bff; padding: 10px 15px; margin-bottom: 15px; }
@@ -17,6 +19,10 @@
         .export-notice { background: #e8f4f8; border: 1px solid #bee5eb; border-radius: 4px; padding: 10px 15px; margin-bottom: 20px; font-size: 0.9em; }
         fieldset { border: none; }
         h3 { border-bottom: 2px solid #007bff; padding-bottom: 6px; margin-bottom: 16px; }
+        /* mirrors .scroll-panel / .view-panel in main.css */
+        .scroll-panel { max-height: 1000px; overflow-y: auto; overflow-x: hidden; word-break: break-word; }
+        .view-panel { max-height: 1000px; overflow-y: auto; }
+        .scroll-panel .form-check-label { display: block; word-break: break-word; overflow-wrap: anywhere; }
     </style>
 </head>
 <body>
@@ -169,7 +175,7 @@
 
     <div class="container" style="padding:0;">
         <div class="row">
-            <div class="col-2" style="word-break:break-word; overflow-y:auto; max-height:1000px;">
+            <div class="col-2 scroll-panel">
                 {% for allele, samples in upsetLayout.items() %}
                 <div class="col">
                     <div class="form-check">
@@ -197,7 +203,7 @@
                 {% endfor %}
             </div>
 
-            <div class="col-10" style="overflow-y:auto; max-height:1000px;">
+            <div class="col-10 view-panel">
                 {% for allele in upsetLayout.keys() %}
                 <div id="{{ allele }}_upset" class="upsetPlot" hidden>
                     <div class="row" style="margin-left:30px;">
