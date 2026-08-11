@@ -66,6 +66,18 @@ services:
     container_name: celery_worker
     restart: unless-stopped
     command: ["celery"]
+    # SIGTERM triggers Celery's warm shutdown (stop consuming new tasks, let
+    # whatever's currently executing finish) rather than killing it outright —
+    # but only if Docker gives it time before following up with SIGKILL. The
+    # default 10s stop_grace_period is nowhere near enough for prediction jobs
+    # (minutes to LONG_JOB_TIME_LIMIT's 20h — see config.py), so any
+    # `docker compose up`/`restart`/`down` was silently killing in-flight jobs
+    # (e.g. 842149c6 on 2026-08-10, mid-GibbsCluster, no error logged — it just
+    # vanished). This buys short/near-finished jobs a real chance to complete;
+    # it can't cover a 20h long-approved job, which is why deploy/safe_deploy.sh
+    # checks for active jobs and requires explicit confirmation before recreating
+    # this container at all.
+    stop_grace_period: 300s
     volumes:
       - ${DATA_VOLUME:-./data}:/pvol
       - ${HLA_PEPCLUST_REF_DATA:-./hla-pepclust-ref-data}:/app/app/tools/HLA-PepClust/data/ref_data
