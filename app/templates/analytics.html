@@ -256,7 +256,7 @@
                                                         <div style="text-align: center; margin-top: 5px;">
                                                             <a href="{{ url_for('download_gibbscluster_core', taskid=taskId, sample=sample, replicate=replicate, cluster_attempt=cluster[5]) }}"
                                                             class="btn btn-sm chip-link"
-                                                            download="{{ cluster[5] }}.core.txt">
+                                                            download="{{ cluster[5] }}.core.csv">
                                                                 download core
                                                             </a>
                                                         </div>
@@ -719,7 +719,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <!-- Plotly.js -->
-    <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <script src="https://unpkg.com/@upsetjs/bundle"></script>
  
     <script type="text/javascript">
@@ -1046,11 +1046,11 @@
                         // Plotly.newPlot("violinPlotDiv", traces, layout, { responsive: true });
 
                         // Show violin description
-                        document.getElementById("violinDescription").style.display = "block";
+                        document.getElementById("violinPlotDescription").style.display = "block";
                     } else {
                         // Hide violin plot + description if no specific tool
                         document.getElementById("violinPlotDiv").innerHTML = "";
-                        document.getElementById("violinDescription").style.display = "none";
+                        document.getElementById("violinPlotDescription").style.display = "none";
                     }
                 }
             });
