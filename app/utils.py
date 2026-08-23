@@ -144,6 +144,126 @@ def omitPTMContent(x):
 
     return x
 
+def load_original_upload_for_join(taskId, sample, replicate_stem):
+    """Load a sample's original uploaded CSV, processed the same way saveBindersData()
+    prepares it before merging binder results back onto it (StrippedPeptide join key,
+    PTM detected flag, deduped on StrippedPeptide to avoid many-to-many merge blowups —
+    see commit 3c0e874). Reused by the download routes that enrich peptide/core exports
+    with the other columns from the user's original upload.
+
+    Returns None if the original upload file doesn't exist, so callers can fall back to
+    their unenriched behaviour instead of failing.
+    """
+    upload_path = os.path.join(data_mount, taskId, sample, f'{replicate_stem}.csv')
+    if not os.path.isfile(upload_path):
+        return None
+
+    original = pd.read_csv(upload_path)
+    original = original[original['Peptide'].apply(lambda x: isinstance(x, str) and x.strip() != '')]
+    original['StrippedPeptide'] = original['Peptide'].apply(omitPTMContent)
+    original['PTM detected'] = original.apply(lambda x: 'N' if x['Peptide'] == x['StrippedPeptide'] else 'Y', axis=1)
+    original = original.drop_duplicates('StrippedPeptide', keep='first')
+    original = original.rename(columns={'Peptide': 'Original Peptide'})
+
+    return original
+
+def build_enriched_gibbscluster_core_csv(taskId, sample, replicate, cluster_attempt, core_base):
+    """Build an enriched CSV for a single GibbsCluster core download.
+
+    Cores in cores/gibbs.<cg>of<g>.core are 9-mer substrings of the full peptide, so they
+    can't be joined to the original upload directly on StrippedPeptide. GibbsCluster's own
+    display file (res/gibbs.<g>g.ds.out — see GibbsCluster-2.0e_SA.pl, which writes both
+    files from the same in-memory per-row data) pairs the exact full Sequence with its Core
+    on the same row, filtered to the group (Gn == cluster_attempt's cg - 1) that produced
+    this particular .core file. That gives an exact peptide<->core mapping to join on,
+    instead of guessing via substring matching.
+
+    Returns None (caller should fall back to serving the raw .core file) if the
+    cluster_attempt can't be parsed or the display file doesn't exist/parse.
+    """
+    match = re.match(r'^(\d+)of(\d+)$', cluster_attempt)
+    if not match:
+        return None
+
+    cg, g = int(match.group(1)), int(match.group(2))
+    ds_out_path = os.path.join(core_base, 'res', f'gibbs.{g}g.ds.out')
+    if not os.path.isfile(ds_out_path):
+        return None
+
+    rows = []
+    with open(ds_out_path, 'r') as f:
+        next(f, None)  # header line
+        for line in f:
+            fields = line.split()
+            if len(fields) < 5:
+                continue
+            if fields[1] != str(cg - 1):
+                continue
+            rows.append({'Sequence': fields[3], 'Core': fields[4]})
+
+    if not rows:
+        return None
+
+    cluster_df = pd.DataFrame(rows)
+    cluster_df['StrippedPeptide'] = cluster_df['Sequence'].apply(omitPTMContent)
+
+    original = load_original_upload_for_join(taskId, sample, replicate)
+    if original is not None:
+        cluster_df = cluster_df.merge(original, on='StrippedPeptide', how='left')
+
+    return cluster_df.to_csv(index=False)
+
+def resolve_upset_samples(taskId, raw_name):
+    """UpSetJS set names can be a single sample or a cross-sample intersection like
+    'SampleA ∩ SampleB' (both the within-sample tool-intersection chart and the
+    cross-sample overlap chart build their sets from real sample names). Split on '∩'
+    and keep only tokens that match an actual sample directory, so callers can enrich a
+    selected-binders download regardless of which chart it came from.
+    """
+    sample_root = os.path.join(data_mount, taskId)
+    if not os.path.isdir(sample_root):
+        return []
+
+    existing = set(os.listdir(sample_root))
+    candidates = [s.strip() for s in raw_name.split('∩')]
+    return [c for c in candidates if c in existing]
+
+def load_original_uploads_for_samples(taskId, sample_names):
+    """Enrichment source for the upset-plot 'selected binders' download: concatenates
+    the processed original-upload data (see load_original_upload_for_join) across every
+    replicate of every given sample, tagging each row with which sample it came from.
+    A peptide appearing in more than one sample/replicate keeps the first match's extra
+    columns (StrippedPeptide is the join key downstream, so only one row per peptide can
+    survive the merge anyway).
+
+    Returns None if no sample resolved to any original upload, so callers can fall back
+    to their unenriched behaviour.
+    """
+    frames = []
+    for sample in sample_names:
+        sample_dir = os.path.join(data_mount, taskId, sample)
+        if not os.path.isdir(sample_dir):
+            continue
+        for fname in os.listdir(sample_dir):
+            if fname[-12:] == '8to14mer.txt':
+                replicate_stem = fname[:-13]
+            elif fname[-13:] == '12to20mer.txt':
+                replicate_stem = fname[:-14]
+            else:
+                continue
+
+            original = load_original_upload_for_join(taskId, sample, replicate_stem)
+            if original is not None:
+                original = original.copy()
+                original['Matched Sample'] = sample
+                frames.append(original)
+
+    if not frames:
+        return None
+
+    combined = pd.concat(frames, ignore_index=True)
+    return combined.drop_duplicates('StrippedPeptide', keep='first')
+
 def saveNmerData(location, samples, peptideLength = 9, unique = True):
 
     for file_name, data in samples.items():

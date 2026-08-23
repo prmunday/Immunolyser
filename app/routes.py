@@ -1212,14 +1212,21 @@ def download_overlap_peptides():
 @app.route("/api/getSeqLogo", methods=["POST"])
 def getSeqLogo():
 
-    name = request.form['name']
+    raw_name = request.form['name']
+    name = raw_name
     plot_type = request.form['plotType']
 
     name = str(name).replace('∩','and').replace('(','').replace(')','').replace(' ','_').strip()
 
-    taskId = request.form['taskId']    
+    taskId = request.form['taskId']
     if is_valid_uuid(taskId) == False:
         return f"The ID '{escape(taskId)}' is not a valid task ID.", 400
+
+    # Enrichment source for the 'selected-binders.txt' download: resolve which sample(s)
+    # this upset-plot click covers (raw_name may be a single sample or a cross-sample
+    # intersection like "SampleA ∩ SampleB") and load their original-upload columns.
+    enrichment_samples = resolve_upset_samples(taskId, raw_name)
+    original_uploads = load_original_uploads_for_samples(taskId, enrichment_samples) if enrichment_samples else None
 
     # MHC Class of Interest
     with open(os.path.join('app', 'static', 'images', taskId, "mhcclass.txt")) as f:
@@ -1243,7 +1250,10 @@ def getSeqLogo():
         peptideswithcores = peptides['peptide'].str.split(' : ',expand=True)
         peptideswithcores.columns = ['Peptide' ,'StrippedPeptide','Core']
 
-        peptideswithcores[['Peptide','Core']].to_csv(binders_location,index=False)
+        if original_uploads is not None:
+            peptideswithcores.merge(original_uploads, on='StrippedPeptide', how='left').to_csv(binders_location, index=False)
+        else:
+            peptideswithcores[['Peptide','Core']].to_csv(binders_location,index=False)
 
         nine_mers = peptideswithcores.shape[0]
 
@@ -1254,7 +1264,10 @@ def getSeqLogo():
 
     else:
         total_peptides = peptides.shape[0]
-        peptides.to_csv(binders_location,index=False,header=False)
+        if original_uploads is not None:
+            peptides.rename(columns={'peptide': 'StrippedPeptide'}).merge(original_uploads, on='StrippedPeptide', how='left').to_csv(binders_location, index=False)
+        else:
+            peptides.to_csv(binders_location,index=False,header=False)
 
         motif_length_file_path = os.path.join('app', 'static', 'images', taskId, "motif_length.txt")
         with open(motif_length_file_path, 'r') as f:
@@ -1684,7 +1697,22 @@ def download_seq2logo_peptides(taskid, sample, replicate):
     logger.info(f"Serving peptide file: {peptides_file}")
 
     try:
-        return send_file(peptides_file, as_attachment=True)
+        suffix = f'_{motif_length}mer.txt'
+        replicate_stem = os.path.basename(peptides_file)[:-len(suffix)]
+        original = load_original_upload_for_join(taskid, sample, replicate_stem)
+
+        if original is None:
+            return send_file(peptides_file, as_attachment=True)
+
+        stripped_peptides = pd.read_csv(peptides_file, header=None, names=['StrippedPeptide'])
+        enriched = stripped_peptides.merge(original, on='StrippedPeptide', how='left')
+
+        buffer = io.StringIO()
+        enriched.to_csv(buffer, index=False)
+        response = make_response(buffer.getvalue())
+        response.headers["Content-Disposition"] = f"attachment; filename={replicate_stem}_seqlogo_input.csv"
+        response.headers["Content-Type"] = "text/csv"
+        return response
     except Exception:
         logger.exception(f"Failed to send file: {peptides_file}")
         return abort(500, description="Error sending peptide file.")
@@ -1714,6 +1742,13 @@ def download_gibbscluster_core(taskid, sample, replicate, cluster_attempt):
     logger.info(f"Serving core file: {core_file}")
 
     try:
+        enriched_csv = build_enriched_gibbscluster_core_csv(taskid, sample, replicate, cluster_attempt, core_base)
+        if enriched_csv is not None:
+            response = make_response(enriched_csv)
+            response.headers["Content-Disposition"] = f"attachment; filename={replicate}_{cluster_attempt}_core.csv"
+            response.headers["Content-Type"] = "text/csv"
+            return response
+
         return send_file(core_file, mimetype="text/plain", as_attachment=False)
     except Exception:
         logger.exception(f"Failed to send core file: {core_file}")
