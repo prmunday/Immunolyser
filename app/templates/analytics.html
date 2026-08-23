@@ -727,7 +727,7 @@
         var graphs = {{peptide_percent | safe}};
         var graphsd = {{peptide_density | safe}};
         
-        Plotly.plot('chart',graphs,{});        
+        Plotly.newPlot('chart',graphs,{});
 
         function myfunction(){
             checkbox = document.getElementById('customSwitch1');
